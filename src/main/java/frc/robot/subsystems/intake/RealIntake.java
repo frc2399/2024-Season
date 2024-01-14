@@ -45,19 +45,13 @@ public class RealIntake implements IntakeIO {
     }
 
     @Override
-    public void setPosition(double position) {
-        intakeEncoder.setPosition(position);
-    }
-
-    @Override
     public void setCurrentLimit(int current) {
         intakeMotorController.setSmartCurrentLimit(current);        
     }
 
     @Override
     public void periodicUpdate() {
-        SmartDashboard.putNumber("intake/current (A)", getCurrent());
-        SmartDashboard.putNumber("intake/temp (C)", intakeMotorController.getMotorTemperature());        
+       
     }
 
 }

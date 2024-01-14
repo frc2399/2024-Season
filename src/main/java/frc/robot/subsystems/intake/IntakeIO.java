@@ -5,7 +5,6 @@ public interface IntakeIO {
     public double getCurrent();
     public double getEncoderSpeed();
     public double getEncoderPosition();
-    public void setPosition(double position);
     public void setCurrentLimit(int current);
     public void periodicUpdate();
 }

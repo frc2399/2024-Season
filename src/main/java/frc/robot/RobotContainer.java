@@ -29,6 +29,9 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import java.util.List;
 import frc.robot.subsystems.*;
+import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeIO;
+import frc.robot.subsystems.intake.RealIntake;
 import frc.robot.subsystems.shooter.RealShooter;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterIO;
@@ -45,7 +48,9 @@ public class RobotContainer {
 //   private static Gyro m_gyro = new Gyro(); 
   public boolean fieldOrientedDrive = false;
 
-  public static Shooter shooter;
+  public static Shooter m_shooter;
+
+  public static Intake m_intake;
  
 
   // The driver's controller
@@ -58,11 +63,18 @@ public class RobotContainer {
     // Configure the button bindings
     SmartDashboard.putNumber("Shoot speed", SmartDashboard.getNumber("Shoot speed", 0));
     setUpShooter();
+    setUpIntake();
     configureButtonBindings();
 
-    shooter.setDefaultCommand(
+    m_shooter.setDefaultCommand(
         new InstantCommand(
-            () -> shooter.setMotor(SmartDashboard.getNumber("Shoot speed", 0)), shooter));
+            () -> m_shooter.setMotor(SmartDashboard.getNumber("Shoot speed", 0)),
+            m_shooter));
+
+    m_intake.setDefaultCommand(
+        new InstantCommand(
+            () -> m_intake.setMotor(0),
+            m_intake));
 
     // Configure default commands
     // m_robotDrive.setDefaultCommand(
@@ -107,8 +119,8 @@ public class RobotContainer {
     //         () -> m_robotDrive.setZero(),
     //         m_robotDrive));
 
-    new JoystickButton(m_driverController, XboxController.Button.kA.value).onTrue(
-        new InstantCommand(
+    new JoystickButton(m_driverController, XboxController.Button.kA.value)
+        .onTrue(new InstantCommand(
         () -> fieldOrientedDrive = !fieldOrientedDrive));
 
     // new JoystickButton(m_driverController, XboxController.Button.kB.value)
@@ -117,18 +129,34 @@ public class RobotContainer {
     
     new JoystickButton(m_driverController, XboxController.Button.kLeftBumper.value)
         .whileTrue(new InstantCommand(
-        () -> shooter.setMotor(0)));
-  }
+        () -> m_shooter.setMotor(0)));
+    
+    new Trigger(() -> m_driverController.getRawAxis(Axis.kRightTrigger.value) > 0.1)
+        .whileTrue(new InstantCommand(
+        () -> m_intake.setMotor(1)));
+
+    new Trigger(() -> m_driverController.getRawAxis(Axis.kRightTrigger.value) > 0.1)
+        .whileTrue(new InstantCommand(
+        () -> m_intake.setMotor(-1)));
+    }
 
   private void setUpShooter () {
-
   
     ShooterIO shooterIO;
        
         shooterIO = new RealShooter();
 
-    shooter = new Shooter(shooterIO);
-}
+    m_shooter = new Shooter(shooterIO);
+  }
+
+  private void setUpIntake () {
+
+    IntakeIO intakeIO;
+       
+        intakeIO = new RealIntake();
+
+    m_intake = new Intake(intakeIO);
+  }
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
