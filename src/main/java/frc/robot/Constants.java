@@ -24,6 +24,10 @@ import edu.wpi.first.math.util.Units;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+
+  public static final int NEO550_CURRENT_LIMIT = 20;
+  public static final int NEO_CURRENT_LIMIT = 50;
+
   public static final class DriveConstants {
     // Driving Parameters - Note that these are not the maximum capable speeds of
     // the robot, rather the allowed maximum speeds
@@ -125,6 +129,18 @@ public final class Constants {
     public static final int kTurningMotorCurrentLimit = 20; // amps
   }
 
+  public static final class ShooterConstants {
+
+    public static final int SHOOT_LOW_MOTOR_ID = 4;
+    public static final int SHOOT_HIGH_MOTOR_ID = 3;
+    public static final double INTAKE_SLEW_RATE = 10;
+    public static final double CONE_OUT_SPEED = 1.0;
+    public static final double CUBE_IN_SPEED = 0.6;
+    public static final double CUBE_OUT_SPEED = -1.0;
+    public static final int CONE_IN_CURRENT = 30;
+    public static final int CUBE_IN_CURRENT = 25;
+    public static final int OUT_CURRENT = 30;
+}
   public static final class OIConstants {
     public static final int kDriverControllerPort = 0;
     public static final double kDriveDeadband = 0.1;
