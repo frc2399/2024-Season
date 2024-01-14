@@ -129,6 +129,18 @@ public final class Constants {
     public static final int kTurningMotorCurrentLimit = 20; // amps
   }
 
+  public static final class IntakeConstants {
+
+    public static final int INTAKE_MOTOR_ID = 2;
+    public static final double INTAKE_SLEW_RATE = 10;
+    public static final double CONE_OUT_SPEED = 1.0;
+    public static final double CUBE_IN_SPEED = 0.6;
+    public static final double CUBE_OUT_SPEED = -1.0;
+    public static final int CONE_IN_CURRENT = 30;
+    public static final int CUBE_IN_CURRENT = 25;
+    public static final int OUT_CURRENT = 30;
+}
+
   public static final class ShooterConstants {
 
     public static final int SHOOT_LOW_MOTOR_ID = 4;
