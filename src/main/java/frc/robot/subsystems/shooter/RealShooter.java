@@ -2,8 +2,11 @@ package frc.robot.subsystems.shooter;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkPIDController;
+import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.Constants.ShooterConstants;
@@ -15,6 +18,8 @@ public class RealShooter implements ShooterIO {
     public static CANSparkMax shooterMotorControllerHigh;
     public static RelativeEncoder shooterLowEncoder;
     public static RelativeEncoder shooterHighEncoder;
+    public static SparkPIDController shooterHighController;
+    public static SparkPIDController shooterLowController;
     private double slewRate = 0.2;
 
     public RealShooter()
@@ -28,12 +33,25 @@ public class RealShooter implements ShooterIO {
         // initialize motor encoder
         shooterLowEncoder = shooterMotorControllerLow.getEncoder();
         shooterHighEncoder = shooterMotorControllerHigh.getEncoder();
+
+        //initialize PID controllers
+        shooterHighController = shooterMotorControllerHigh.getPIDController();
+        shooterLowController = shooterMotorControllerLow.getPIDController();
+        shooterHighController.setP(1);
+        shooterLowController.setP(1);
+
+
     }
 
     @Override
     public void setMotor(double shootSpeed) {
         shooterMotorControllerLow.set(shootSpeed);
         shooterMotorControllerHigh.set(-shootSpeed);
+    }
+
+    public void setMotorWithPID(double shootSpeed) {
+        shooterHighController.setReference(-shootSpeed, ControlType.kDutyCycle);
+        shooterLowController.setReference(shootSpeed, ControlType.kDutyCycle);
     }
 
     public double getCurrent()

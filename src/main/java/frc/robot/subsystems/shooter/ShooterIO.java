@@ -8,4 +8,5 @@ public interface ShooterIO {
     public void setPosition(double position);
     public void setCurrentLimit(int current);
     public void periodicUpdate();
+    public void setMotorWithPID(double speed);
 }
