@@ -23,6 +23,10 @@ public class Intake extends SubsystemBase {
     intakeIO.setMotor(intakeSpeed);
   }
 
+  public void setSpeed(double speed) {
+    intakeIO.setSpeed(speed);
+  }
+
   //returns speed of the intake
   public double getEncoderSpeed() {
     return intakeIO.getEncoderSpeed();

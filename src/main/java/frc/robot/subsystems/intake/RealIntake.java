@@ -2,6 +2,8 @@ package frc.robot.subsystems.intake;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkPIDController;
+import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -13,6 +15,7 @@ public class RealIntake implements IntakeIO {
 
     public static CANSparkMax intakeMotorController;
     public static RelativeEncoder intakeEncoder;
+    public static SparkPIDController intakeController;
     private double slewRate = 0.2;
 
     public RealIntake()
@@ -22,11 +25,20 @@ public class RealIntake implements IntakeIO {
 
         // initialize motor encoder
         intakeEncoder = intakeMotorController.getEncoder();
+        intakeController = intakeMotorController.getPIDController();
+        intakeController.setP(1);
     }
 
     @Override
     public void setMotor(double intakeSpeed) {
         intakeMotorController.set(intakeSpeed);
+    }
+
+    public void setSpeed(double speedPercent) {
+        intakeController.setReference(speedPercent * Constants.NEO550_MAX_SPEED_RPM, ControlType.kVelocity);
+        SmartDashboard.putNumber("shooter reference", speedPercent);
+        SmartDashboard.putNumber("shooter speed (RPM)", getEncoderSpeed() / Constants.NEO550_MAX_SPEED_RPM);
+
     }
 
     public double getCurrent()
