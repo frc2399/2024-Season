@@ -25,7 +25,7 @@ public class RealShooter implements ShooterIO {
     public RealShooter()
     {
         shooterMotorControllerLow = MotorUtil.createSparkMAX(ShooterConstants.SHOOT_LOW_MOTOR_ID, MotorType.kBrushless, 
-            Constants.NEO_CURRENT_LIMIT, false, true, slewRate);
+            Constants.NEO_CURRENT_LIMIT, true, true, slewRate);
         
         shooterMotorControllerHigh = MotorUtil.createSparkMAX(ShooterConstants.SHOOT_HIGH_MOTOR_ID, MotorType.kBrushless, 
             Constants.NEO_CURRENT_LIMIT, false, true, slewRate);
@@ -46,11 +46,11 @@ public class RealShooter implements ShooterIO {
     @Override
     public void setMotor(double shootSpeed) {
         shooterMotorControllerLow.set(shootSpeed);
-        shooterMotorControllerHigh.set(-shootSpeed);
+        shooterMotorControllerHigh.set(shootSpeed);
     }
 
     public void setMotorWithPID(double shootSpeed) {
-        shooterHighController.setReference(-shootSpeed, ControlType.kDutyCycle);
+        shooterHighController.setReference(shootSpeed, ControlType.kDutyCycle);
         shooterLowController.setReference(shootSpeed, ControlType.kDutyCycle);
     }
 
