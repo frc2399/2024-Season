@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import java.util.Map;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -17,18 +18,28 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Axis;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ProfiledPIDSubsystem;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SelectCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import java.util.List;
+import java.util.Map;
+
 import frc.robot.subsystems.*;
+import frc.robot.subsystems.arm.Arm;
+import frc.robot.subsystems.arm.ArmIO;
+import frc.robot.subsystems.arm.RealArm;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.RealIntake;
@@ -47,10 +58,11 @@ public class RobotContainer {
 //   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
 //   private static Gyro m_gyro = new Gyro(); 
   public boolean fieldOrientedDrive = false;
+  public static CommandSelector angleHeight = CommandSelector.INTAKE;
 
   public static Shooter m_shooter;
-
   public static Intake m_intake;
+  public static Arm m_arm;
  
 
   // The driver's controller
@@ -62,21 +74,46 @@ public class RobotContainer {
   public RobotContainer() {
     // Configure the button bindings
     SmartDashboard.putNumber("Shoot speed", SmartDashboard.getNumber("Shoot speed", 0));
-    setUpShooter();
-    setUpIntake();
+    setUpSubsystems();
+    configureDefaultCommands();
     configureButtonBindings();
+  }
 
+  //construct subsystems
+  private void setUpSubsystems() {
+    //m_robotDrive = new DriveSubsystem();
+    //m_gyro = new Gyro(); 
+    //set up IOs
+    ShooterIO shooterIO;
+    ArmIO armIO;
+    IntakeIO intakeIO;
+   
+    //IOs currently always real
+    intakeIO = new RealIntake();
+    armIO = new RealArm();
+    shooterIO = new RealShooter();
+
+    //initialize subsystems
+    m_intake = new Intake(intakeIO);  
+    m_arm = new Arm(armIO);
+    m_shooter = new Shooter(shooterIO);
+  }
+
+  // Configure default commands
+  private void configureDefaultCommands() {
+    //default command for the shooter: setting speed to number input from the smart dashboard
     m_shooter.setDefaultCommand(
         new InstantCommand(
             () -> m_shooter.setSpeed(SmartDashboard.getNumber("Shoot speed", 0)),
             m_shooter));
 
+    //default command for intake: do nothing
     m_intake.setDefaultCommand(
         new InstantCommand(
             () -> m_intake.setMotor(0),
             m_intake));
-
-    // Configure default commands
+    
+    //default command for drivetrain: drive based on controller inputs
     // m_robotDrive.setDefaultCommand(
     //     // The left stick controls translation of the robot.
     //     // Turning is controlled by the X axis of the right stick.
@@ -87,6 +124,7 @@ public class RobotContainer {
     //             -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband),
     //             fieldOrientedDrive, false),
     //         m_robotDrive));
+        //this version only goes straight (for testing)
         // new RunCommand(
         //     () -> m_robotDrive.drive(
         //         -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
@@ -95,8 +133,6 @@ public class RobotContainer {
         //         fieldOrientedDrive, false),
         //     m_robotDrive));
   }
-
-
 
   /**
    * Use this method to define your button->command mappings. Buttons can be
@@ -131,32 +167,42 @@ public class RobotContainer {
         .whileTrue(new InstantCommand(
         () -> m_shooter.setMotor(0)));
     
-    new Trigger(() -> m_driverController.getRawAxis(Axis.kRightTrigger.value) > 0.1)
+    //Left trigger to intake
+    new Trigger(() -> m_driverController.getRawAxis(Axis.kLeftTrigger.value) > 0.1)
         .whileTrue(new InstantCommand(
         () -> m_intake.setMotor(1)));
 
+    //Right trigger to outtake
     new Trigger(() -> m_driverController.getRawAxis(Axis.kRightTrigger.value) > 0.1)
         .whileTrue(new InstantCommand(
         () -> m_intake.setMotor(-1)));
-    }
-
-  private void setUpShooter () {
-  
-    ShooterIO shooterIO;
-       
-        shooterIO = new RealShooter();
-
-    m_shooter = new Shooter(shooterIO);
+    
+    //Right stick up to move arm up
+    new Trigger(() -> m_driverController.getRawAxis(Axis.kRightY.value) < -0.1)
+        .whileTrue(makeSetSpeedGravityCompensationCommand(m_arm, 0.2))
+        .onFalse(makeSetSpeedGravityCompensationCommand(m_arm, 0));
+    
+     //Right stick down to move arm down
+    new Trigger(() -> m_driverController.getRawAxis(Axis.kRightY.value) > 0.1)
+        .whileTrue(makeSetSpeedGravityCompensationCommand(m_arm, -0.2))
+        .onFalse(makeSetSpeedGravityCompensationCommand(m_arm, 0));
   }
 
-  private void setUpIntake () {
-
-    IntakeIO intakeIO;
-       
-        intakeIO = new RealIntake();
-
-    m_intake = new Intake(intakeIO);
+  public static Command makeSetPositionCommand(ProfiledPIDSubsystem base, double target) {
+      return new SequentialCommandGroup(
+          new ConditionalCommand(new InstantCommand(() -> {}), new InstantCommand(() -> base.enable()), () -> base.isEnabled()),
+          new InstantCommand(() -> base.setGoal(target), base)
+      );
   }
+
+  private Command makeSetSpeedGravityCompensationCommand(Arm a, double speed) {
+    return new SequentialCommandGroup(
+        new InstantCommand(() -> a.disable()),
+        new RunCommand(() -> a.setSpeedGravityCompensation(speed), a)
+    );
+  }
+
+
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
@@ -202,4 +248,31 @@ public class RobotContainer {
 //     // Run path following command, then stop at the end.
 //     return swerveControllerCommand.andThen(() -> m_robotDrive.drive(0, 0, 0, false, false));
 //   }
+
+  public enum CommandSelector {
+        INTAKE,    
+        AMP,
+        SPEAKER_SUBWOOFER_STRAIGHT,
+        SPEAKER_SUBWOOFER_SIDE,
+        SPEAKER_PODIUM
+  }
+
+  private CommandSelector select() {
+       return angleHeight;
+  }
+
+  public static String toString(CommandSelector node) {
+        return "Node: " + node;
+  }
+
+  private Command selectPositionCommand() {
+        return new SelectCommand(
+            Map.ofEntries(
+                Map.entry(CommandSelector.INTAKE, makeSetPositionCommand(m_arm, ArmConstants.INTAKE_ANGLE)),
+                Map.entry(CommandSelector.AMP, makeSetPositionCommand(m_arm, ArmConstants.AMP_ANGLE)),
+                Map.entry(CommandSelector.SPEAKER_SUBWOOFER_STRAIGHT,makeSetPositionCommand(m_arm, ArmConstants.SPEAKER_SUBWOOFER_STRAIGHT_ANGLE)),
+                Map.entry(CommandSelector.SPEAKER_SUBWOOFER_SIDE, makeSetPositionCommand(m_arm, ArmConstants.SPEAKER_SUBWOOFER_SIDE_ANGLE)),
+                Map.entry(CommandSelector.SPEAKER_PODIUM, makeSetPositionCommand(m_arm, ArmConstants.SPEAKER_PODIUM_ANGLE))),
+            this::select);
+  }
 }

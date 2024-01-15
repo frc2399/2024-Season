@@ -164,6 +164,16 @@ public final class Constants {
     //can be 2 degrees off from goal setpoints and still considered at goal; made higher so arm.atGoal() in placeConeOnNode cmd will execute in auton
     public static final double ANGLE_TOLERANCE_AUTON = Units.degreesToRadians(2);
 
+    public static final double INTAKE_ANGLE = 0;
+
+    public static final double AMP_ANGLE = 0;
+
+    public static final double SPEAKER_SUBWOOFER_STRAIGHT_ANGLE = 0;
+
+    public static final double SPEAKER_SUBWOOFER_SIDE_ANGLE = 0;
+
+    public static final double SPEAKER_PODIUM_ANGLE = 0;
+
     }
 
   public static final class OIConstants {
