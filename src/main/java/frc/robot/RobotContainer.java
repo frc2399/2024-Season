@@ -68,7 +68,7 @@ public class RobotContainer {
 
     m_shooter.setDefaultCommand(
         new InstantCommand(
-            () -> m_shooter.setMotorWithPID(SmartDashboard.getNumber("Shoot speed", 0)),
+            () -> m_shooter.setSpeed(SmartDashboard.getNumber("Shoot speed", 0)),
             m_shooter));
 
     m_intake.setDefaultCommand(

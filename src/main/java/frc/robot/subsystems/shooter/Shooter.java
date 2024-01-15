@@ -55,7 +55,7 @@ public class Shooter extends SubsystemBase {
     shooterIO.periodicUpdate();
   }
 
-public void setMotorWithPID(double speed) {
-    shooterIO.setMotorWithPID(speed);
+public void setSpeed(double speed) {
+    shooterIO.setSpeed(speed);
 }
 }
