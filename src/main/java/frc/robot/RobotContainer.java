@@ -61,8 +61,8 @@ public class RobotContainer {
   public static CommandSelector angleHeight = CommandSelector.INTAKE;
 
   public static Shooter m_shooter;
-  public static Intake m_intake;
-  public static Arm m_arm;
+  // public static Intake m_intake;
+  // public static Arm m_arm;
  
 
   // The driver's controller
@@ -85,17 +85,17 @@ public class RobotContainer {
     //m_gyro = new Gyro(); 
     //set up IOs
     ShooterIO shooterIO;
-    ArmIO armIO;
-    IntakeIO intakeIO;
+    // ArmIO armIO;
+    // IntakeIO intakeIO;
    
     //IOs currently always real
-    intakeIO = new RealIntake();
-    armIO = new RealArm();
+    // intakeIO = new RealIntake();
+    // armIO = new RealArm();
     shooterIO = new RealShooter();
 
     //initialize subsystems
-    m_intake = new Intake(intakeIO);  
-    m_arm = new Arm(armIO);
+    // m_intake = new Intake(intakeIO);  
+    // m_arm = new Arm(armIO);
     m_shooter = new Shooter(shooterIO);
   }
 
@@ -104,14 +104,14 @@ public class RobotContainer {
     //default command for the shooter: setting speed to number input from the smart dashboard
     m_shooter.setDefaultCommand(
         new InstantCommand(
-            () -> m_shooter.setSpeed(SmartDashboard.getNumber("Shoot speed", 0)),
+            () -> m_shooter.setMotor(SmartDashboard.getNumber("Shoot speed", 0)),
             m_shooter));
 
     //default command for intake: do nothing
-    m_intake.setDefaultCommand(
-        new InstantCommand(
-            () -> m_intake.setMotor(0),
-            m_intake));
+    // m_intake.setDefaultCommand(
+    //     new InstantCommand(
+    //         () -> m_intake.setMotor(0),
+    //         m_intake));
     
     //default command for drivetrain: drive based on controller inputs
     // m_robotDrive.setDefaultCommand(
@@ -168,24 +168,24 @@ public class RobotContainer {
         () -> m_shooter.setMotor(0)));
     
     //Left trigger to intake
-    new Trigger(() -> m_driverController.getRawAxis(Axis.kLeftTrigger.value) > 0.1)
-        .whileTrue(new InstantCommand(
-        () -> m_intake.setMotor(1)));
+    // new Trigger(() -> m_driverController.getRawAxis(Axis.kLeftTrigger.value) > 0.1)
+    //     .whileTrue(new InstantCommand(
+    //     () -> m_intake.setMotor(1)));
 
-    //Right trigger to outtake
-    new Trigger(() -> m_driverController.getRawAxis(Axis.kRightTrigger.value) > 0.1)
-        .whileTrue(new InstantCommand(
-        () -> m_intake.setMotor(-1)));
+    // //Right trigger to outtake
+    // new Trigger(() -> m_driverController.getRawAxis(Axis.kRightTrigger.value) > 0.1)
+    //     .whileTrue(new InstantCommand(
+    //     () -> m_intake.setMotor(-1)));
     
-    //Right stick up to move arm up
-    new Trigger(() -> m_driverController.getRawAxis(Axis.kRightY.value) < -0.1)
-        .whileTrue(makeSetSpeedGravityCompensationCommand(m_arm, 0.2))
-        .onFalse(makeSetSpeedGravityCompensationCommand(m_arm, 0));
+    // //Right stick up to move arm up
+    // new Trigger(() -> m_driverController.getRawAxis(Axis.kRightY.value) < -0.1)
+    //     .whileTrue(makeSetSpeedGravityCompensationCommand(m_arm, 0.2))
+    //     .onFalse(makeSetSpeedGravityCompensationCommand(m_arm, 0));
     
-     //Right stick down to move arm down
-    new Trigger(() -> m_driverController.getRawAxis(Axis.kRightY.value) > 0.1)
-        .whileTrue(makeSetSpeedGravityCompensationCommand(m_arm, -0.2))
-        .onFalse(makeSetSpeedGravityCompensationCommand(m_arm, 0));
+    //  //Right stick down to move arm down
+    // new Trigger(() -> m_driverController.getRawAxis(Axis.kRightY.value) > 0.1)
+    //     .whileTrue(makeSetSpeedGravityCompensationCommand(m_arm, -0.2))
+    //     .onFalse(makeSetSpeedGravityCompensationCommand(m_arm, 0));
   }
 
   public static Command makeSetPositionCommand(ProfiledPIDSubsystem base, double target) {
@@ -265,14 +265,14 @@ public class RobotContainer {
         return "Node: " + node;
   }
 
-  private Command selectPositionCommand() {
-        return new SelectCommand(
-            Map.ofEntries(
-                Map.entry(CommandSelector.INTAKE, makeSetPositionCommand(m_arm, ArmConstants.INTAKE_ANGLE)),
-                Map.entry(CommandSelector.AMP, makeSetPositionCommand(m_arm, ArmConstants.AMP_ANGLE)),
-                Map.entry(CommandSelector.SPEAKER_SUBWOOFER_STRAIGHT,makeSetPositionCommand(m_arm, ArmConstants.SPEAKER_SUBWOOFER_STRAIGHT_ANGLE)),
-                Map.entry(CommandSelector.SPEAKER_SUBWOOFER_SIDE, makeSetPositionCommand(m_arm, ArmConstants.SPEAKER_SUBWOOFER_SIDE_ANGLE)),
-                Map.entry(CommandSelector.SPEAKER_PODIUM, makeSetPositionCommand(m_arm, ArmConstants.SPEAKER_PODIUM_ANGLE))),
-            this::select);
-  }
+  // private Command selectPositionCommand() {
+  //       return new SelectCommand(
+  //           Map.ofEntries(
+  //               Map.entry(CommandSelector.INTAKE, makeSetPositionCommand(m_arm, ArmConstants.INTAKE_ANGLE)),
+  //               Map.entry(CommandSelector.AMP, makeSetPositionCommand(m_arm, ArmConstants.AMP_ANGLE)),
+  //               Map.entry(CommandSelector.SPEAKER_SUBWOOFER_STRAIGHT,makeSetPositionCommand(m_arm, ArmConstants.SPEAKER_SUBWOOFER_STRAIGHT_ANGLE)),
+  //               Map.entry(CommandSelector.SPEAKER_SUBWOOFER_SIDE, makeSetPositionCommand(m_arm, ArmConstants.SPEAKER_SUBWOOFER_SIDE_ANGLE)),
+  //               Map.entry(CommandSelector.SPEAKER_PODIUM, makeSetPositionCommand(m_arm, ArmConstants.SPEAKER_PODIUM_ANGLE))),
+  //           this::select);
+  // }
 }

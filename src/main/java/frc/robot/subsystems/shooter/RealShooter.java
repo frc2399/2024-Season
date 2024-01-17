@@ -35,8 +35,11 @@ public class RealShooter implements ShooterIO {
         //initialize PID controllers, set gains
         shooterHighController = shooterMotorControllerHigh.getPIDController();
         shooterLowController = shooterMotorControllerLow.getPIDController();
-        shooterHighController.setP(1);
-        shooterLowController.setP(1);
+        shooterHighController.setFeedbackDevice(shooterHighEncoder);
+        shooterLowController.setFeedbackDevice(shooterLowEncoder);
+        shooterHighController.setP(0.1);
+        shooterLowController.setP(0.1);
+
 
 
     }
