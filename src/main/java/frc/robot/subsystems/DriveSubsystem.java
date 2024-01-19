@@ -25,9 +25,6 @@ import frc.robot.subsystems.Gyro;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj.XboxController;
 
-
-
-
 public class DriveSubsystem extends SubsystemBase {
   // Create MAXSwerveModules
   private final MAXSwerveModule m_frontLeft = new MAXSwerveModule(
@@ -80,7 +77,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem() {
-    
+
   }
 
   @Override
@@ -92,27 +89,27 @@ public class DriveSubsystem extends SubsystemBase {
     // m_leftEncoder.getDistance(),
     // m_rightEncoder.getDistance());
     // m_field.setRobotPose(m_odometry.getPoseMeters());
-    //Gyro log (spain without the a followed by spain without the s)
+    // Gyro log (spain without the a followed by spain without the s)
     SmartDashboard.putNumber("Gyro angle", Gyro.yaw % 360);
     SmartDashboard.putNumber("Gyro pitch", Gyro.pitch % 360);
     SmartDashboard.putNumber("Gyro roll", Gyro.roll % 360);
     pitchRate = derivativeCalculator.calculate(getGyroPitch());
-    //Drive input log
+    // Drive input log
     SmartDashboard.putNumber("Right Front Drive Input", m_frontRight.getDriveVolts());
     SmartDashboard.putNumber("Left Front Drive Input", m_frontLeft.getDriveVolts());
     SmartDashboard.putNumber("Right Rear Drive Input", m_rearRight.getDriveVolts());
     SmartDashboard.putNumber("Left Rear Drive Input", m_rearLeft.getDriveVolts());
-    //Drive output log
+    // Drive output log
     SmartDashboard.putNumber("Right Front Drive Output", m_frontRight.getDriveOutput());
     SmartDashboard.putNumber("Left Front Drive Output", m_frontLeft.getDriveOutput());
     SmartDashboard.putNumber("Right Rear Drive Output", m_rearRight.getDriveOutput());
     SmartDashboard.putNumber("Left Rear Drive Output", m_rearLeft.getDriveOutput());
-    //Drive speed log
+    // Drive speed log
     SmartDashboard.putNumber("Right Front Drive Speed", m_frontRight.getDriveSpeed());
     SmartDashboard.putNumber("Left Front Drive Speed", m_frontLeft.getDriveSpeed());
     SmartDashboard.putNumber("Right Rear Drive Speed", m_rearRight.getDriveSpeed());
     SmartDashboard.putNumber("Left Rear Drive Speed", m_rearLeft.getDriveSpeed());
-    //Turn speed log
+    // Turn speed log
     SmartDashboard.putNumber("Right Front Turn Speed", m_frontRight.getTurnAngle());
     SmartDashboard.putNumber("Left Front Turn Speed", m_frontLeft.getTurnAngle());
     SmartDashboard.putNumber("Right Rear Turn Speed", m_rearRight.getTurnAngle());
@@ -150,13 +147,13 @@ public class DriveSubsystem extends SubsystemBase {
    *
    * @param xSpeed        Speed of the robot in the x direction (forward).
    * @param ySpeed        Speed of the robot in the y direction (sideways).
-   * @param rotRate           Angular rate of the robot.
+   * @param rotRate       Angular rate of the robot.
    * @param fieldRelative Whether the provided x and y speeds are relative to the
    *                      field.
    * @param rateLimit     Whether to enable rate limiting for smoother control.
    */
   public void drive(double xSpeed, double ySpeed, double rotRate, boolean fieldRelative, boolean rateLimit) {
-    
+
     double newRotRate = 0;
     double xSpeedCommanded;
     double ySpeedCommanded;
@@ -166,14 +163,13 @@ public class DriveSubsystem extends SubsystemBase {
       desiredAngle = 0;
     }
 
-    else if(rotRate == 0) {
+    else if (rotRate == 0) {
       newRotRate = 0;
-      
-      if(Math.abs(desiredAngle - currentAngle) > Math.toRadians(0.1)) {
+
+      if (Math.abs(desiredAngle - currentAngle) > Math.toRadians(0.1)) {
         newRotRate = 3 * (desiredAngle - currentAngle) / (2 * Math.PI);
       }
-    } 
-    else {
+    } else {
       newRotRate = rotRate;
       desiredAngle = currentAngle;
     }
@@ -187,42 +183,40 @@ public class DriveSubsystem extends SubsystemBase {
       double inputTranslationDir = Math.atan2(ySpeed, xSpeed);
       double inputTranslationMag = Math.sqrt(Math.pow(xSpeed, 2) + Math.pow(ySpeed, 2));
 
-      // Calculate the direction slew rate based on an estimate of the lateral acceleration
+      // Calculate the direction slew rate based on an estimate of the lateral
+      // acceleration
       double directionSlewRate;
       if (m_currentTranslationMag != 0.0) {
         directionSlewRate = Math.abs(DriveConstants.kDirectionSlewRate / m_currentTranslationMag);
       } else {
-        directionSlewRate = 500.0; //some high number that means the slew rate is effectively instantaneous
+        directionSlewRate = 500.0; // some high number that means the slew rate is effectively instantaneous
       }
-      
 
       double currentTime = WPIUtilJNI.now() * 1e-6;
       double elapsedTime = currentTime - m_prevTime;
       double angleDif = SwerveUtils.AngleDifference(inputTranslationDir, m_currentTranslationDir);
-      if (angleDif < 0.45*Math.PI) {
-        m_currentTranslationDir = SwerveUtils.StepTowardsCircular(m_currentTranslationDir, inputTranslationDir, directionSlewRate * elapsedTime);
+      if (angleDif < 0.45 * Math.PI) {
+        m_currentTranslationDir = SwerveUtils.StepTowardsCircular(m_currentTranslationDir, inputTranslationDir,
+            directionSlewRate * elapsedTime);
         m_currentTranslationMag = m_magLimiter.calculate(inputTranslationMag);
-      }
-      else if (angleDif > 0.85*Math.PI) {
-        if (m_currentTranslationMag > 1e-4) { //some small number to avoid floating-point errors with equality checking
+      } else if (angleDif > 0.85 * Math.PI) {
+        if (m_currentTranslationMag > 1e-4) { // some small number to avoid floating-point errors with equality checking
           // keep currentTranslationDir unchanged
           m_currentTranslationMag = m_magLimiter.calculate(0.0);
-        }
-        else {
+        } else {
           m_currentTranslationDir = SwerveUtils.WrapAngle(m_currentTranslationDir + Math.PI);
           m_currentTranslationMag = m_magLimiter.calculate(inputTranslationMag);
         }
-      }
-      else {
-        m_currentTranslationDir = SwerveUtils.StepTowardsCircular(m_currentTranslationDir, inputTranslationDir, directionSlewRate * elapsedTime);
+      } else {
+        m_currentTranslationDir = SwerveUtils.StepTowardsCircular(m_currentTranslationDir, inputTranslationDir,
+            directionSlewRate * elapsedTime);
         m_currentTranslationMag = m_magLimiter.calculate(0.0);
       }
       m_prevTime = currentTime;
-      
+
       xSpeedCommanded = m_currentTranslationMag * Math.cos(m_currentTranslationDir);
       ySpeedCommanded = m_currentTranslationMag * Math.sin(m_currentTranslationDir);
       m_currentRotationRate = m_rotRateLimiter.calculate(newRotRate);
-
 
     } else {
       xSpeedCommanded = xSpeed;
@@ -237,7 +231,8 @@ public class DriveSubsystem extends SubsystemBase {
 
     var swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(
         fieldRelative
-            ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotRateDelivered, Rotation2d.fromDegrees(Gyro.yaw))
+            ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotRateDelivered,
+                Rotation2d.fromDegrees(Gyro.yaw))
             : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotRateDelivered));
     SwerveDriveKinematics.desaturateWheelSpeeds(
         swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
@@ -286,7 +281,6 @@ public class DriveSubsystem extends SubsystemBase {
     m_rearRight.resetEncoders();
   }
 
-
   /**
    * Returns the heading of the robot.
    *
@@ -302,20 +296,18 @@ public class DriveSubsystem extends SubsystemBase {
    * @return The turn rate of the robot, in degrees per second
    */
   // public double getTurnRate() {
-  //   return ahrs.getRate() * (DriveConstants.kGyroReversed ? -1.0 : 1.0);
+  // return ahrs.getRate() * (DriveConstants.kGyroReversed ? -1.0 : 1.0);
   // }
 
   public double getGyroPitch() {
     return -Gyro.pitch;
   }
 
-  public double getGyroPitchRate()
-  {
-      return pitchRate;
+  public double getGyroPitchRate() {
+    return pitchRate;
   }
 
-  public void setMotorSpeeds(double speed)
-  {
+  public void setMotorSpeeds(double speed) {
     m_frontLeft.m_drivingSparkMax.set(speed);
     m_frontRight.m_drivingSparkMax.set(speed);
     m_rearLeft.m_drivingSparkMax.set(speed);

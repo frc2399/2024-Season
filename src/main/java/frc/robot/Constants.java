@@ -50,16 +50,19 @@ public final class Constants {
         new Translation2d(-kWheelBase / 2, -kTrackWidth / 2));
 
     // Angular offsets of the modules relative to the chassis in radians
-    // public static final double kFrontLeftChassisAngularOffset = -Math.PI / 2 + 3.6128315516282616;
-    // public static final double kFrontRightChassisAngularOffset = 0 + 5.855928706291374;
-    // public static final double kBackLeftChassisAngularOffset = Math.PI + 3.248406803811846;
-    // public static final double kBackRightChassisAngularOffset = Math.PI / 2 + 2.2556635252774715;
+    // public static final double kFrontLeftChassisAngularOffset = -Math.PI / 2 +
+    // 3.6128315516282616;
+    // public static final double kFrontRightChassisAngularOffset = 0 +
+    // 5.855928706291374;
+    // public static final double kBackLeftChassisAngularOffset = Math.PI +
+    // 3.248406803811846;
+    // public static final double kBackRightChassisAngularOffset = Math.PI / 2 +
+    // 2.2556635252774715;
 
     public static final double kFrontLeftChassisAngularOffset = -Math.PI / 2;
     public static final double kFrontRightChassisAngularOffset = 0;
     public static final double kBackLeftChassisAngularOffset = Math.PI;
     public static final double kBackRightChassisAngularOffset = Math.PI / 2;
-
 
     // SPARK MAX CAN IDs
     public static final int kFrontLeftDrivingCanId = 11;
@@ -76,23 +79,27 @@ public final class Constants {
   }
 
   public static final class ModuleConstants {
-    // The MAXSwerve module can be configured with one of three pinion gears: 12T, 13T, or 14T.
-    // This changes the drive speed of the module (a pinion gear with more teeth will result in a
+    // The MAXSwerve module can be configured with one of three pinion gears: 12T,
+    // 13T, or 14T.
+    // This changes the drive speed of the module (a pinion gear with more teeth
+    // will result in a
     // robot that drives faster).
     public static final int kDrivingMotorPinionTeeth = 14;
 
-    // Invert the turning encoder, since the output shaft rotates in the opposite direction of
+    // Invert the turning encoder, since the output shaft rotates in the opposite
+    // direction of
     // the steering motor in the MAXSwerve Module.
     public static final boolean kTurningEncoderInverted = true;
-    //testing lol
+    // testing lol
     public static final boolean kDrivingEncoderInverted = false;
 
     // Calculations required for driving motor conversion factors and feed forward
     public static final double kDrivingMotorFreeSpeedRps = NeoMotorConstants.kFreeSpeedRpm / 60;
     public static final double kWheelDiameterMeters = Units.inchesToMeters(3.0);
     public static final double kWheelCircumferenceMeters = kWheelDiameterMeters * Math.PI;
-    // 45 teeth on the wheel's bevel gear, 22 teeth on the first-stage spur gear, 15 teeth on the bevel pinion
-    //This is also the gear ratio (14T)
+    // 45 teeth on the wheel's bevel gear, 22 teeth on the first-stage spur gear, 15
+    // teeth on the bevel pinion
+    // This is also the gear ratio (14T)
     public static final double kDrivingMotorReduction = (45.0 * 22) / (kDrivingMotorPinionTeeth * 15);
     public static final double kDriveWheelFreeSpeedRps = (kDrivingMotorFreeSpeedRps * kWheelCircumferenceMeters)
         / kDrivingMotorReduction;
@@ -139,7 +146,7 @@ public final class Constants {
     public static final int CONE_IN_CURRENT = 30;
     public static final int CUBE_IN_CURRENT = 25;
     public static final int OUT_CURRENT = 30;
-}
+  }
 
   public static final class ShooterConstants {
 
@@ -152,38 +159,40 @@ public final class Constants {
     public static final int CONE_IN_CURRENT = 30;
     public static final int CUBE_IN_CURRENT = 25;
     public static final int OUT_CURRENT = 30;
-}
+  }
 
-public static final class ArmConstants {
+  public static final class ArmConstants {
 
     public static final int ARM_MOTOR_ID = 8;
 
-    //arm min and max angles in radians
-    public static final double MAX_ARM_ANGLE = Math.PI/4;
-    public static final double MIN_ARM_ANGLE = -Math.PI/4 * 3;
-    //arm mass in kg
+    // arm min and max angles in radians
+    public static final double MAX_ARM_ANGLE = Math.PI / 4;
+    public static final double MIN_ARM_ANGLE = -Math.PI / 4 * 3;
+    // arm mass in kg
     public static final double ARM_MASS = 2.72155;
-    //arm length in meters
+    // arm length in meters
     public static final double ARM_LENGTH = 0.65;
 
-    //arm angles for intaking and shooting in different positions
+    // arm angles for intaking and shooting in different positions
     public static final double INTAKE_ANGLE = 0.03;
     public static final double SPEAKER_SUBWOOFER_ANGLE = -0.66;
     public static final double SPEAKER_PODIUM_ANGLE = -0.06;
     public static final double AMP_ANGLE = -0.25;
     public static final double TURTLE_ANGLE = 0.3;
 
-    //2 5-1 gearboxes, then a 3-1 reduction from the sprocket/chain; 5*5*3 = 75
-    public static final double RADIANS_PER_REVOLUTION = 2 * Math.PI/75.0;
+    // 2 5-1 gearboxes, then a 3-1 reduction from the sprocket/chain; 5*5*3 = 75
+    public static final double RADIANS_PER_REVOLUTION = 2 * Math.PI / 75.0;
     // initial offset is 0.711 + (0.287) - (0.308)
     public static final double INITIAL_OFFSET = 0.558505;
 
-    //can be 2 degrees off from goal setpoints and still considered at goal; made higher so arm.atGoal() in placeConeOnNode cmd will execute in auton
+    // can be 2 degrees off from goal setpoints and still considered at goal; made
+    // higher so arm.atGoal() in placeConeOnNode cmd will execute in auton
     public static final double ANGLE_TOLERANCE_AUTON = Units.degreesToRadians(2);
 
     public static final double GRAVITY_COMPENSATION = 0.0559;
 
   }
+
   public static final class OIConstants {
     public static final int kDriverControllerPort = 0;
     public static final double kDriveDeadband = 0.1;

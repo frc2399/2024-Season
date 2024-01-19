@@ -16,11 +16,13 @@ public class RealArm implements ArmIO {
 
     public RealArm() {
         // armAbsoluteEncoder = new DutyCycleEncoder(0);
-        //Higher slew rate of .75 seconds from 0 to 100% (sparkmax thinks we use this) translates to .2 seconds from 0 to 20% (what we actually use)
-        armMotorController = MotorUtil.createSparkMAX(ArmConstants.ARM_MOTOR_ID, MotorType.kBrushless, Constants.NEO_CURRENT_LIMIT, 
-            true, true, 0.75);
+        // Higher slew rate of .75 seconds from 0 to 100% (sparkmax thinks we use this)
+        // translates to .2 seconds from 0 to 20% (what we actually use)
+        armMotorController = MotorUtil.createSparkMAX(ArmConstants.ARM_MOTOR_ID, MotorType.kBrushless,
+                Constants.NEO_CURRENT_LIMIT,
+                true, true, 0.75);
         armEncoder = armMotorController.getEncoder();
-        
+
         armEncoder.setPositionConversionFactor(ArmConstants.RADIANS_PER_REVOLUTION);
         armEncoder.setVelocityConversionFactor(ArmConstants.RADIANS_PER_REVOLUTION / 60);
 
@@ -38,7 +40,7 @@ public class RealArm implements ArmIO {
 
     @Override
     public double getEncoderPosition() {
-       //return getAbsoluteEncoderPosition();
+        // return getAbsoluteEncoderPosition();
         return armEncoder.getPosition();
     }
 
@@ -61,5 +63,5 @@ public class RealArm implements ArmIO {
     public double getArmCurrent() {
         return armMotorController.getOutputCurrent();
     }
-    
+
 }

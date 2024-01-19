@@ -17,13 +17,13 @@ public class RealShooter implements ShooterIO {
     public static RelativeEncoder shooterHighEncoder;
     private double slewRate = 0.2;
 
-    public RealShooter()
-    {
-        shooterMotorControllerLow = MotorUtil.createSparkMAX(ShooterConstants.SHOOT_LOW_MOTOR_ID, MotorType.kBrushless, 
-            Constants.NEO_CURRENT_LIMIT, false, true, slewRate);
-        
-        shooterMotorControllerHigh = MotorUtil.createSparkMAX(ShooterConstants.SHOOT_HIGH_MOTOR_ID, MotorType.kBrushless, 
-            Constants.NEO_CURRENT_LIMIT, false, true, slewRate);
+    public RealShooter() {
+        shooterMotorControllerLow = MotorUtil.createSparkMAX(ShooterConstants.SHOOT_LOW_MOTOR_ID, MotorType.kBrushless,
+                Constants.NEO_CURRENT_LIMIT, false, true, slewRate);
+
+        shooterMotorControllerHigh = MotorUtil.createSparkMAX(ShooterConstants.SHOOT_HIGH_MOTOR_ID,
+                MotorType.kBrushless,
+                Constants.NEO_CURRENT_LIMIT, false, true, slewRate);
 
         // initialize motor encoder
         shooterLowEncoder = shooterMotorControllerLow.getEncoder();
@@ -36,8 +36,7 @@ public class RealShooter implements ShooterIO {
         shooterMotorControllerHigh.set(-shootSpeed);
     }
 
-    public double getCurrent()
-    {
+    public double getCurrent() {
         return shooterMotorControllerLow.getOutputCurrent();
     }
 
@@ -58,13 +57,13 @@ public class RealShooter implements ShooterIO {
 
     @Override
     public void setCurrentLimit(int current) {
-        shooterMotorControllerLow.setSmartCurrentLimit(current);        
+        shooterMotorControllerLow.setSmartCurrentLimit(current);
     }
 
     @Override
     public void periodicUpdate() {
         SmartDashboard.putNumber("intake/current (A)", getCurrent());
-        SmartDashboard.putNumber("intake/temp (C)", shooterMotorControllerLow.getMotorTemperature());        
+        SmartDashboard.putNumber("intake/temp (C)", shooterMotorControllerLow.getMotorTemperature());
     }
 
 }

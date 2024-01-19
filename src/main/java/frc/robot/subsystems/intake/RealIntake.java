@@ -15,10 +15,9 @@ public class RealIntake implements IntakeIO {
     public static RelativeEncoder intakeEncoder;
     private double slewRate = 0.2;
 
-    public RealIntake()
-    {
-        intakeMotorController = MotorUtil.createSparkMAX(IntakeConstants.INTAKE_MOTOR_ID, MotorType.kBrushless, 
-            Constants.NEO550_CURRENT_LIMIT, false, true, slewRate);
+    public RealIntake() {
+        intakeMotorController = MotorUtil.createSparkMAX(IntakeConstants.INTAKE_MOTOR_ID, MotorType.kBrushless,
+                Constants.NEO550_CURRENT_LIMIT, false, true, slewRate);
 
         // initialize motor encoder
         intakeEncoder = intakeMotorController.getEncoder();
@@ -29,8 +28,7 @@ public class RealIntake implements IntakeIO {
         intakeMotorController.set(intakeSpeed);
     }
 
-    public double getCurrent()
-    {
+    public double getCurrent() {
         return intakeMotorController.getOutputCurrent();
     }
 
@@ -51,13 +49,13 @@ public class RealIntake implements IntakeIO {
 
     @Override
     public void setCurrentLimit(int current) {
-        intakeMotorController.setSmartCurrentLimit(current);        
+        intakeMotorController.setSmartCurrentLimit(current);
     }
 
     @Override
     public void periodicUpdate() {
         SmartDashboard.putNumber("intake/current (A)", getCurrent());
-        SmartDashboard.putNumber("intake/temp (C)", intakeMotorController.getMotorTemperature());        
+        SmartDashboard.putNumber("intake/temp (C)", intakeMotorController.getMotorTemperature());
     }
 
 }
