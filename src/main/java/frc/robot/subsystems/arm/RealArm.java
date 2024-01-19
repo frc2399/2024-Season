@@ -2,26 +2,17 @@ package frc.robot.subsystems.arm;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
-import com.revrobotics.SparkPIDController.ArbFFUnits;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkPIDController;
-import com.revrobotics.CANSparkBase.ControlType;
-
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.TrapezoidProfileSubsystem;
 import frc.robot.Constants;
 import frc.robot.Constants.ArmConstants;
 import frc.utils.MotorUtil;
 
 public class RealArm implements ArmIO {
-    public static CANSparkMax armMotorController;
+    private static CANSparkMax armMotorController;
     public static RelativeEncoder armEncoder;
     public static DutyCycleEncoder armAbsoluteEncoder;
-    public static SparkPIDController armPidController;
 
     public RealArm() {
         // armAbsoluteEncoder = new DutyCycleEncoder(0);
@@ -29,13 +20,6 @@ public class RealArm implements ArmIO {
         armMotorController = MotorUtil.createSparkMAX(ArmConstants.ARM_MOTOR_ID, MotorType.kBrushless, Constants.NEO_CURRENT_LIMIT, 
             true, true, 0.75);
         armEncoder = armMotorController.getEncoder();
-        armPidController = armMotorController.getPIDController();
-
-        //TODO: set gains for armPidController.
-        armPidController.setP(1.6); //0.4
-        armPidController.setD(0);
-        armPidController.setI(0);
-        armPidController.setFF(0);
         
         armEncoder.setPositionConversionFactor(ArmConstants.RADIANS_PER_REVOLUTION);
         armEncoder.setVelocityConversionFactor(ArmConstants.RADIANS_PER_REVOLUTION / 60);
@@ -77,23 +61,5 @@ public class RealArm implements ArmIO {
     public double getArmCurrent() {
         return armMotorController.getOutputCurrent();
     }
-
-    @Override
-    public void setSetpoint(State setpoint, double feedforward) {
-        // Set the setpoint
-        armPidController.setReference(
-            setpoint.position, 
-            ControlType.kPosition, 
-            0, 
-            feedforward, 
-            ArbFFUnits.kPercentOut);
-        
-    }
-
-    @Override
-    public double getMotorDutyCycle()
-    {
-        return armMotorController.getAppliedOutput();
-    };
-
+    
 }

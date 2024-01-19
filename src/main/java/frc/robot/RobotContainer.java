@@ -21,14 +21,21 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ProfiledPIDSubsystem;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
+import edu.wpi.first.wpilibj2.command.TrapezoidProfileSubsystem;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import java.util.List;
 import frc.robot.subsystems.*;
+import frc.robot.subsystems.arm.Arm;
+import frc.robot.subsystems.arm.ArmIO;
+import frc.robot.subsystems.arm.RealArm;
 import frc.robot.subsystems.shooter.RealShooter;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterIO;
@@ -46,6 +53,7 @@ public class RobotContainer {
   public boolean fieldOrientedDrive = false;
 
   public static Shooter shooter;
+  public static Arm arm;
  
 
   // The driver's controller
@@ -57,7 +65,7 @@ public class RobotContainer {
   public RobotContainer() {
     // Configure the button bindings
     SmartDashboard.putNumber("Shoot speed", SmartDashboard.getNumber("Shoot speed", 0));
-    setUpShooter();
+    setUpSubsystems();
     configureButtonBindings();
 
     shooter.setDefaultCommand(
@@ -120,14 +128,28 @@ public class RobotContainer {
         () -> shooter.setMotor(0)));
   }
 
-  private void setUpShooter () {
+  private Command makeSetSpeedGravityCompensationCommand(Arm a, double speed) {
+        return new SequentialCommandGroup(
+            new InstantCommand(() -> a.disable()),
+            new RunCommand(() -> a.setSpeedGravityCompensation(speed), a)
+        );
+  }
+  
+  public static Command makeSetPositionCommand(ProfiledPIDSubsystem base, double target) {
+        return new SequentialCommandGroup(
+            new ConditionalCommand(new InstantCommand(() -> {}), new InstantCommand(() -> base.enable()), () -> base.isEnabled()),    
+            new InstantCommand(() -> base.setGoal(target), base)
+        );
+  }
+
+  private void setUpSubsystems () {
 
   
-    ShooterIO shooterIO;
+    ArmIO armIO;
        
-        shooterIO = new RealShooter();
+        armIO = new RealArm();
 
-    shooter = new Shooter(shooterIO);
+    arm = new Arm(armIO);
 }
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
