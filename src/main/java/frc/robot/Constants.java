@@ -153,6 +153,37 @@ public final class Constants {
     public static final int CUBE_IN_CURRENT = 25;
     public static final int OUT_CURRENT = 30;
 }
+
+public static final class ArmConstants {
+
+    public static final int ARM_MOTOR_ID = 8;
+
+    //arm min and max angles in radians
+    public static final double MAX_ARM_ANGLE = Math.PI/4;
+    public static final double MIN_ARM_ANGLE = -Math.PI/4 * 3;
+    //arm mass in kg
+    public static final double ARM_MASS = 2.72155;
+    //arm length in meters
+    public static final double ARM_LENGTH = 0.65;
+
+    //arm angles for intaking and shooting in different positions
+    public static final double INTAKE_ANGLE = 0.03;
+    public static final double SPEAKER_SUBWOOFER_ANGLE = -0.66;
+    public static final double SPEAKER_PODIUM_ANGLE = -0.06;
+    public static final double AMP_ANGLE = -0.25;
+    public static final double TURTLE_ANGLE = 0.3;
+
+    //2 5-1 gearboxes, then a 3-1 reduction from the sprocket/chain; 5*5*3 = 75
+    public static final double RADIANS_PER_REVOLUTION = 2 * Math.PI/75.0;
+    // initial offset is 0.711 + (0.287) - (0.308)
+    public static final double INITIAL_OFFSET = 0.558505;
+
+    //can be 2 degrees off from goal setpoints and still considered at goal; made higher so arm.atGoal() in placeConeOnNode cmd will execute in auton
+    public static final double ANGLE_TOLERANCE_AUTON = Units.degreesToRadians(2);
+
+    public static final double GRAVITY_COMPENSATION = 0.0559;
+
+  }
   public static final class OIConstants {
     public static final int kDriverControllerPort = 0;
     public static final double kDriveDeadband = 0.1;
