@@ -170,7 +170,7 @@ public class DriveSubsystem extends SubsystemBase {
       newRotRate = 0;
       
       if(Math.abs(desiredAngle - currentAngle) > Math.toRadians(0.1)) {
-        newRotRate = 3 * (desiredAngle - currentAngle) / (2 * Math.PI);
+        newRotRate = (3.0 * (desiredAngle - currentAngle)) % (2 * Math.PI) / (2 * Math.PI);
       }
     } 
     else {

@@ -104,7 +104,7 @@ public class RobotContainer {
     //default command for the shooter: setting speed to number input from the smart dashboard
     m_shooter.setDefaultCommand(
         new InstantCommand(
-            () -> m_shooter.setSpeed(SmartDashboard.getNumber("Shoot speed", 0)),
+            () -> m_shooter.setMotor(SmartDashboard.getNumber("Shoot speed", 0)),
             m_shooter));
 
     //default command for intake: do nothing
