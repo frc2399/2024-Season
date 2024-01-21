@@ -165,7 +165,7 @@ public class RobotContainer {
     
     new JoystickButton(m_driverController, XboxController.Button.kLeftBumper.value)
         .whileTrue(new InstantCommand(
-        () -> m_shooter.setMotor(0)));
+        () -> m_shooter.setMotor(0.8)));
     
     //Left trigger to intake
     // new Trigger(() -> m_driverController.getRawAxis(Axis.kLeftTrigger.value) > 0.1)
