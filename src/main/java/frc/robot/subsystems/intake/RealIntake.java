@@ -26,7 +26,9 @@ public class RealIntake implements IntakeIO {
         // initialize motor encoder
         intakeEncoder = intakeMotorController.getEncoder();
         intakeController = intakeMotorController.getPIDController();
-        intakeController.setP(1);
+        intakeController.setFeedbackDevice(intakeEncoder);
+        intakeController.setFF(0.0001);
+        //intakeController.setP(1);
     }
 
     @Override
