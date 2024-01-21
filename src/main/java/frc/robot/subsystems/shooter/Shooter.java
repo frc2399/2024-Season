@@ -33,14 +33,6 @@ public class Shooter extends SubsystemBase {
     return shooterIO.getEncoderSpeed();
   }
 
-  public double getEncoderPosition() {
-    return shooterIO.getEncoderPosition();
-  }
-
-  public void setPosition(double position) {
-    shooterIO.setPosition(position);
-  }
-
   public void setCurrentLimit(int current) {
     shooterIO.setCurrentLimit(current);
   }
