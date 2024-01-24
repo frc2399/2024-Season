@@ -22,22 +22,22 @@ public class RealShooter implements ShooterIO {
 
     public RealShooter()
     {
-        // shooterMotorControllerLow = MotorUtil.createSparkMAX(ShooterConstants.SHOOT_LOW_MOTOR_ID, MotorType.kBrushless, 
-        //     Constants.NEO_CURRENT_LIMIT, true, true, slewRate);
+        shooterMotorControllerLow = MotorUtil.createSparkMAX(ShooterConstants.SHOOT_LOW_MOTOR_ID, MotorType.kBrushless, 
+            Constants.NEO_CURRENT_LIMIT, true, true, slewRate);
         
         shooterMotorControllerHigh = MotorUtil.createSparkMAX(ShooterConstants.SHOOT_HIGH_MOTOR_ID, MotorType.kBrushless, 
-            Constants.NEO_CURRENT_LIMIT, false, true, slewRate);
+            Constants.NEO_CURRENT_LIMIT, true, true, slewRate);
 
         // initialize motor encoder
-        // shooterLowEncoder = shooterMotorControllerLow.getEncoder();
+        shooterLowEncoder = shooterMotorControllerLow.getEncoder();
         shooterHighEncoder = shooterMotorControllerHigh.getEncoder();
 
         //initialize PID controllers, set gains
         shooterHighController = shooterMotorControllerHigh.getPIDController();
-        // shooterLowController = shooterMotorControllerLow.getPIDController();
+        shooterLowController = shooterMotorControllerLow.getPIDController();
         shooterHighController.setFeedbackDevice(shooterHighEncoder);
-        // shooterLowController.setFeedbackDevice(shooterLowEncoder);
-        // shooterLowController.setFF(.0001);
+        shooterLowController.setFeedbackDevice(shooterLowEncoder);
+        shooterLowController.setFF(.0001);
         shooterHighController.setFF(.0001);
         // shooterHighController.setP(.00045);
         // shooterLowController.setP(.00045);
@@ -49,7 +49,7 @@ public class RealShooter implements ShooterIO {
     //Basic shooting command
     @Override
     public void setMotor(double shootSpeed) {
-        // shooterMotorControllerLow.set(shootSpeed);
+        shooterMotorControllerLow.set(shootSpeed);
         shooterMotorControllerHigh.set(shootSpeed);
     }
 
@@ -57,7 +57,7 @@ public class RealShooter implements ShooterIO {
     @Override
     public void setSpeed(double speedPercent) {
         shooterHighController.setReference(speedPercent * Constants.NEO_MAX_SPEED_RPM, ControlType.kVelocity);
-        // shooterLowController.setReference(speedPercent * Constants.NEO_MAX_SPEED_RPM, ControlType.kVelocity);    
+        shooterLowController.setReference(speedPercent * Constants.NEO_MAX_SPEED_RPM, ControlType.kVelocity);    
         SmartDashboard.putNumber("shooter reference", speedPercent);
         SmartDashboard.putNumber("shooter speed (RPM)", getEncoderSpeed() / Constants.NEO_MAX_SPEED_RPM);
 
