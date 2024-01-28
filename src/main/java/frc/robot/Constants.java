@@ -151,7 +151,7 @@ public final class Constants {
   public static final class ShooterConstants {
 
     public static final int SHOOT_LOW_MOTOR_ID = 4;
-    public static final int SHOOT_HIGH_MOTOR_ID = 3;
+    public static final int SHOOT_HIGH_MOTOR_ID = 5;
     public static final double INTAKE_SLEW_RATE = 10;
     public static final double CONE_OUT_SPEED = 1.0;
     public static final double CUBE_IN_SPEED = 0.6;
@@ -163,8 +163,8 @@ public final class Constants {
 
   public static final class ArmConstants {
 
-    public static final int ARM_MOTOR_ID_LEFT = 8;
-    public static final int ARM_MOTOR_ID_RIGHT = 9;
+    public static final int ARM_MOTOR_ID_LEFT = 6;
+    public static final int ARM_MOTOR_ID_RIGHT = 7;
 
     // arm min and max angles in radians
     public static final double MAX_ARM_ANGLE = Math.PI / 4 * 3;
