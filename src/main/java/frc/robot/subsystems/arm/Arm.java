@@ -20,15 +20,16 @@ public class Arm extends ProfiledPIDSubsystem {
   private ArmIO armIO;
   private double targetAngle = -Math.PI / 2;
   // private static final double feedForward = 0.133;
-  private static final double feedForward = 0.14285;
-
-  private static final double kpPos = 0.8;
+  // private static final double feedForward = 0.14285;
+  private static final double feedForward = 0;
+  // private static final double kpPos = 0.8;
+  private static final double kpPos = 0;
 
   // Trapezoidal profile constants and variables
   private static final double max_vel = 1.5; // rad/s
   private static final double max_accel = 2.7; // rad/s/s
   private static final Constraints constraints = new Constraints(max_vel, max_accel);
-  private static double gravityCompensation = 0.04;
+  private static double gravityCompensation = SmartDashboard.getNumber("gravity compensation", 0);
 
   public Arm(ArmIO io) {
     super(new ProfiledPIDController(kpPos, 0, 0, constraints));
