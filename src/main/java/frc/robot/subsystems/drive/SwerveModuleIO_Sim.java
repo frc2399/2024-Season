@@ -1,5 +1,5 @@
 package frc.robot.subsystems.drive;
 
-public class MAXSwerveModuleIO_Sim {
+public class SwerveModuleIO_Sim {
     
 }
