@@ -121,8 +121,8 @@ public class RobotContainer {
     // new JoystickButton(m_driverController, XboxController.Button.kA.value).onTrue(
     //     new InstantCommand(
     //         () -> fieldOrientedDrive = !fieldOrientedDrive));
-    new Trigger(() -> m_driverController.getRawAxis(Axis.kRightY.value) < -0.1).whileTrue(makeSetSpeedGravityCompensationCommand(arm, 0.2)).onFalse(makeSetSpeedGravityCompensationCommand(arm, 0));
-    new Trigger(() -> m_driverController.getRawAxis(Axis.kRightY.value) > 0.1).whileTrue(makeSetSpeedGravityCompensationCommand(arm, -0.2)).onFalse(makeSetSpeedGravityCompensationCommand(arm, 0));
+    new Trigger(() -> m_driverController.getRawAxis(Axis.kRightY.value) < -0.1).whileTrue(makeSetSpeedGravityCompensationCommand(arm, 0.1)).onFalse(makeSetSpeedGravityCompensationCommand(arm, 0));
+    new Trigger(() -> m_driverController.getRawAxis(Axis.kRightY.value) > 0.1).whileTrue(makeSetSpeedGravityCompensationCommand(arm, -0.1)).onFalse(makeSetSpeedGravityCompensationCommand(arm, 0));
 
     // new JoystickButton(m_driverController, XboxController.Button.kB.value)
     // .onTrue(new InstantCommand(

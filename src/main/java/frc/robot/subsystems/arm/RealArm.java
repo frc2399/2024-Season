@@ -22,15 +22,15 @@ public class RealArm implements ArmIO {
         // translates to .2 seconds from 0 to 20% (what we actually use)
         armMotorControllerLeft = MotorUtil.createSparkMAX(ArmConstants.ARM_MOTOR_ID_LEFT, MotorType.kBrushless,
                 Constants.NEO_CURRENT_LIMIT,
-                true, true, 0.75);
+                false, true, 0.75);
         armEncoderLeft = armMotorControllerLeft.getEncoder();
 
         armEncoderLeft.setPositionConversionFactor(ArmConstants.RADIANS_PER_REVOLUTION);
         armEncoderLeft.setVelocityConversionFactor(ArmConstants.RADIANS_PER_REVOLUTION / 60);
 
-        armEncoderLeft.setPosition(ArmConstants.INITIAL_OFFSET);
+        // armEncoderLeft.setPosition(ArmConstants.INITIAL_OFFSET);
 
-        armMotorControllerRight = MotorUtil.createSparkMAX(ArmConstants.ARM_MOTOR_ID_LEFT, MotorType.kBrushless,
+        armMotorControllerRight = MotorUtil.createSparkMAX(ArmConstants.ARM_MOTOR_ID_RIGHT, MotorType.kBrushless,
                 Constants.NEO_CURRENT_LIMIT,
                 true, true, 0.75);
         armEncoderRight = armMotorControllerRight.getEncoder();
@@ -38,7 +38,7 @@ public class RealArm implements ArmIO {
         armEncoderRight.setPositionConversionFactor(ArmConstants.RADIANS_PER_REVOLUTION);
         armEncoderRight.setVelocityConversionFactor(ArmConstants.RADIANS_PER_REVOLUTION / 60);
 
-        armEncoderRight.setPosition(ArmConstants.INITIAL_OFFSET);
+        // armEncoderRight.setPosition(ArmConstants.INITIAL_OFFSET);
     }
 
     public double getAbsoluteEncoderPosition() {
