@@ -39,9 +39,9 @@ public final class Constants {
     public static final double kRotationalSlewRate = 2.0; // percent per second (1 = 100%)
 
     // Chassis configuration
-    public static final double kTrackWidth = Units.inchesToMeters(23);
+    public static final double kTrackWidth = Units.inchesToMeters(22.5);
     // Distance between centers of right and left wheels on robot
-    public static final double kWheelBase = Units.inchesToMeters(23);
+    public static final double kWheelBase = Units.inchesToMeters(22.5);
     // Distance between front and back wheels on robot
     public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(
         new Translation2d(kWheelBase / 2, kTrackWidth / 2),
@@ -166,30 +166,30 @@ public final class Constants {
     public static final int ARM_MOTOR_ID = 8;
 
     // arm min and max angles in radians
-    public static final double MAX_ARM_ANGLE = Math.PI / 4;
-    public static final double MIN_ARM_ANGLE = -Math.PI / 4 * 3;
+    public static final double MAX_ARM_ANGLE = Math.PI / 4 * 3;
+    //initial offset -5 degrees
+    public static final double MIN_ARM_ANGLE = 0;
     // arm mass in kg
     public static final double ARM_MASS = 2.72155;
     // arm length in meters
     public static final double ARM_LENGTH = 0.65;
 
-    // arm angles for intaking and shooting in different positions
-    public static final double INTAKE_ANGLE = 0.03;
+    // arm angles for intaking and shooting in different positions, in radians
+    //intake angle same as initial offset
+    public static final double INTAKE_ANGLE = 0;
     public static final double SPEAKER_SUBWOOFER_ANGLE = -0.66;
     public static final double SPEAKER_PODIUM_ANGLE = -0.06;
     public static final double AMP_ANGLE = -0.25;
-    public static final double TURTLE_ANGLE = 0.3;
 
-    // 2 5-1 gearboxes, then a 3-1 reduction from the sprocket/chain; 5*5*3 = 75
-    public static final double RADIANS_PER_REVOLUTION = 2 * Math.PI / 75.0;
+    // 2 4-1 gearboxes, 1 3-1 gearbox, then a 4-1 reduction from the sprocket/chain; 4^3 * 3 = 192
+    public static final double RADIANS_PER_REVOLUTION = 2 * Math.PI / 192;
     // initial offset is 0.711 + (0.287) - (0.308)
+    //for later: height between top of arm and drivetrain, then use that, length of arm, and trig to get the offset
     public static final double INITIAL_OFFSET = 0.558505;
 
     // can be 2 degrees off from goal setpoints and still considered at goal; made
     // higher so arm.atGoal() in placeConeOnNode cmd will execute in auton
     public static final double ANGLE_TOLERANCE_AUTON = Units.degreesToRadians(2);
-
-    public static final double GRAVITY_COMPENSATION = 0.0559;
 
   }
 

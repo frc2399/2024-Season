@@ -52,7 +52,7 @@ public class RobotContainer {
   // private static Gyro m_gyro = new Gyro();
   public boolean fieldOrientedDrive = false;
 
-  public static Shooter shooter;
+  // public static Shooter shooter;
   public static Arm arm;
 
   // The driver's controller
@@ -67,9 +67,11 @@ public class RobotContainer {
     setUpSubsystems();
     configureButtonBindings();
 
-    shooter.setDefaultCommand(
-        new InstantCommand(
-            () -> shooter.setMotor(SmartDashboard.getNumber("Shoot speed", 0)), shooter));
+    // shooter.setDefaultCommand(
+    //     new InstantCommand(
+    //         () -> shooter.setMotor(SmartDashboard.getNumber("Shoot speed", 0)), shooter));
+
+    arm.setDefaultCommand(new InstantCommand( () -> arm.setSpeedGravityCompensation(0)));
 
     // Configure default commands
     // m_robotDrive.setDefaultCommand(
@@ -116,17 +118,19 @@ public class RobotContainer {
     // () -> m_robotDrive.setZero(),
     // m_robotDrive));
 
-    new JoystickButton(m_driverController, XboxController.Button.kA.value).onTrue(
-        new InstantCommand(
-            () -> fieldOrientedDrive = !fieldOrientedDrive));
+    // new JoystickButton(m_driverController, XboxController.Button.kA.value).onTrue(
+    //     new InstantCommand(
+    //         () -> fieldOrientedDrive = !fieldOrientedDrive));
+    new Trigger(() -> m_driverController.getRawAxis(Axis.kRightY.value) < -0.1).whileTrue(makeSetSpeedGravityCompensationCommand(arm, 0.2)).onFalse(makeSetSpeedGravityCompensationCommand(arm, 0));
+    new Trigger(() -> m_driverController.getRawAxis(Axis.kRightY.value) > 0.1).whileTrue(makeSetSpeedGravityCompensationCommand(arm, -0.2)).onFalse(makeSetSpeedGravityCompensationCommand(arm, 0));
 
     // new JoystickButton(m_driverController, XboxController.Button.kB.value)
     // .onTrue(new InstantCommand(
     // () -> m_gyro.resetYaw(), m_gyro));
 
-    new JoystickButton(m_driverController, XboxController.Button.kLeftBumper.value)
-        .whileTrue(new InstantCommand(
-            () -> shooter.setMotor(0)));
+    // new JoystickButton(m_driverController, XboxController.Button.kLeftBumper.value)
+    //     .whileTrue(new InstantCommand(
+    //         () -> shooter.setMotor(0)));
   }
 
   private Command makeSetSpeedGravityCompensationCommand(Arm a, double speed) {
