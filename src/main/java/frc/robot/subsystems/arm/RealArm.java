@@ -10,23 +10,35 @@ import frc.robot.Constants.ArmConstants;
 import frc.utils.MotorUtil;
 
 public class RealArm implements ArmIO {
-    private static CANSparkMax armMotorController;
-    public static RelativeEncoder armEncoder;
+    private static CANSparkMax armMotorControllerLeft;
+    private static CANSparkMax armMotorControllerRight;
+    public static RelativeEncoder armEncoderLeft;
+    public static RelativeEncoder armEncoderRight;
     public static DutyCycleEncoder armAbsoluteEncoder;
 
     public RealArm() {
         // armAbsoluteEncoder = new DutyCycleEncoder(0);
         // Higher slew rate of .75 seconds from 0 to 100% (sparkmax thinks we use this)
         // translates to .2 seconds from 0 to 20% (what we actually use)
-        armMotorController = MotorUtil.createSparkMAX(ArmConstants.ARM_MOTOR_ID, MotorType.kBrushless,
+        armMotorControllerLeft = MotorUtil.createSparkMAX(ArmConstants.ARM_MOTOR_ID_LEFT, MotorType.kBrushless,
                 Constants.NEO_CURRENT_LIMIT,
                 true, true, 0.75);
-        armEncoder = armMotorController.getEncoder();
+        armEncoderLeft = armMotorControllerLeft.getEncoder();
 
-        armEncoder.setPositionConversionFactor(ArmConstants.RADIANS_PER_REVOLUTION);
-        armEncoder.setVelocityConversionFactor(ArmConstants.RADIANS_PER_REVOLUTION / 60);
+        armEncoderLeft.setPositionConversionFactor(ArmConstants.RADIANS_PER_REVOLUTION);
+        armEncoderLeft.setVelocityConversionFactor(ArmConstants.RADIANS_PER_REVOLUTION / 60);
 
-        armEncoder.setPosition(ArmConstants.INITIAL_OFFSET);
+        armEncoderLeft.setPosition(ArmConstants.INITIAL_OFFSET);
+
+        armMotorControllerRight = MotorUtil.createSparkMAX(ArmConstants.ARM_MOTOR_ID_LEFT, MotorType.kBrushless,
+                Constants.NEO_CURRENT_LIMIT,
+                true, true, 0.75);
+        armEncoderRight = armMotorControllerRight.getEncoder();
+
+        armEncoderRight.setPositionConversionFactor(ArmConstants.RADIANS_PER_REVOLUTION);
+        armEncoderRight.setVelocityConversionFactor(ArmConstants.RADIANS_PER_REVOLUTION / 60);
+
+        armEncoderRight.setPosition(ArmConstants.INITIAL_OFFSET);
     }
 
     public double getAbsoluteEncoderPosition() {
@@ -35,33 +47,33 @@ public class RealArm implements ArmIO {
 
     @Override
     public void periodicUpdate() {
-        SmartDashboard.putNumber("arm/temp (C)", armMotorController.getMotorTemperature());
+        SmartDashboard.putNumber("arm/temp (C)", armMotorControllerLeft.getMotorTemperature());
     }
 
     @Override
     public double getEncoderPosition() {
         // return getAbsoluteEncoderPosition();
-        return armEncoder.getPosition();
+        return armEncoderLeft.getPosition();
     }
 
     @Override
     public double getEncoderSpeed() {
-        return armEncoder.getVelocity();
+        return armEncoderLeft.getVelocity();
     }
 
     @Override
     public void setSpeed(double speed) {
-        armMotorController.set(speed);
+        armMotorControllerLeft.set(speed);
     }
 
     @Override
     public void setPosition(double position) {
-        armEncoder.setPosition(position);
+        armEncoderLeft.setPosition(position);
     }
 
     @Override
     public double getArmCurrent() {
-        return armMotorController.getOutputCurrent();
+        return armMotorControllerLeft.getOutputCurrent();
     }
 
 }

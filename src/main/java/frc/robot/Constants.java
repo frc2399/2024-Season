@@ -163,7 +163,8 @@ public final class Constants {
 
   public static final class ArmConstants {
 
-    public static final int ARM_MOTOR_ID = 8;
+    public static final int ARM_MOTOR_ID_LEFT = 8;
+    public static final int ARM_MOTOR_ID_RIGHT = 9;
 
     // arm min and max angles in radians
     public static final double MAX_ARM_ANGLE = Math.PI / 4 * 3;
