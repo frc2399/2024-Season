@@ -53,8 +53,8 @@ public final class Constants {
 
     public static final double kFrontLeftChassisAngularOffset = -Math.PI / 2;
     public static final double kFrontRightChassisAngularOffset = 0;
-    public static final double kBackLeftChassisAngularOffset = Math.PI;
-    public static final double kBackRightChassisAngularOffset = Math.PI / 2;
+    public static final double kRearLeftChassisAngularOffset = Math.PI;
+    public static final double kRearRightChassisAngularOffset = Math.PI / 2;
 
 
     // SPARK MAX CAN IDs
@@ -90,6 +90,7 @@ public final class Constants {
     // 45 teeth on the wheel's bevel gear, 22 teeth on the first-stage spur gear, 15 teeth on the bevel pinion
     //This is also the gear ratio (14T)
     public static final double kDrivingMotorReduction = (45.0 * 22) / (kDrivingMotorPinionTeeth * 15);
+    public static final double kTurningMotorReduction = 9424d / 203;
     public static final double kDriveWheelFreeSpeedRps = (kDrivingMotorFreeSpeedRps * kWheelCircumferenceMeters)
         / kDrivingMotorReduction;
 

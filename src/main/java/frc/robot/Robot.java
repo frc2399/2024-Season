@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -18,6 +19,13 @@ public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
   private RobotContainer m_robotContainer;
+  public enum RobotType{
+    SIMULATION,
+    KORG,
+    COMP_BOT
+  }
+  public static RobotType robotType;
+
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -27,7 +35,17 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
+    if (RobotBase.isSimulation())
+    {
+      robotType = RobotType.SIMULATION;
+    }
+    else
+    {
+      robotType = RobotType.KORG;
+    }
+
     m_robotContainer = new RobotContainer();
+
   }
 
   /**

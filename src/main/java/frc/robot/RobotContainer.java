@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import java.util.List;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -13,19 +15,22 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
-import frc.robot.Constants.AutoConstants;
-import frc.robot.Constants.DriveConstants;
-import frc.robot.Constants.OIConstants;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import java.util.List;
-import frc.robot.subsystems.*;
+import frc.robot.Constants.AutoConstants;
+import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.OIConstants;
+import frc.robot.Robot.RobotType;
+import frc.robot.subsystems.Gyro;
 import frc.robot.subsystems.drive.DriveSubsystem;
+import frc.robot.subsystems.drive.SwerveModule;
+import frc.robot.subsystems.drive.SwerveModuleIO;
+import frc.robot.subsystems.drive.SwerveModuleIO_Real;
+import frc.robot.subsystems.drive.SwerveModuleIO_Sim;
 
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -35,9 +40,15 @@ import frc.robot.subsystems.drive.DriveSubsystem;
  */
 public class RobotContainer {
   // The robot's subsystems
-  private final DriveSubsystem m_robotDrive = new DriveSubsystem();
+  private DriveSubsystem m_robotDrive;
   private static Gyro m_gyro = new Gyro(); 
   public boolean fieldOrientedDrive = false;
+
+  private SwerveModuleIO m_frontLeftIO;
+  private SwerveModuleIO m_frontRightIO;
+  private SwerveModuleIO m_rearLeftIO;
+  private SwerveModuleIO m_rearRightIO;
+
  
 
   // The driver's controller
@@ -47,6 +58,7 @@ public class RobotContainer {
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
+    setUpSubsystems();
     // Configure the button bindings
     configureButtonBindings();
 
@@ -147,4 +159,30 @@ public class RobotContainer {
     // Run path following command, then stop at the end.
     return swerveControllerCommand.andThen(() -> m_robotDrive.drive(0, 0, 0, false, false));
   }
+
+  private void setUpSubsystems(){
+    if(Robot.robotType == RobotType.SIMULATION){
+      m_frontLeftIO = new SwerveModuleIO_Sim();
+      m_frontRightIO = new SwerveModuleIO_Sim();
+      m_rearLeftIO = new SwerveModuleIO_Sim();
+      m_rearRightIO = new SwerveModuleIO_Sim();
+
+    }
+    else
+    {
+      m_frontLeftIO = new SwerveModuleIO_Real(DriveConstants.kFrontLeftDrivingCanId, DriveConstants.kFrontLeftTurningCanId, DriveConstants.kFrontLeftChassisAngularOffset);
+      m_frontRightIO = new SwerveModuleIO_Real(DriveConstants.kFrontRightDrivingCanId, DriveConstants.kFrontRightTurningCanId, DriveConstants.kFrontRightChassisAngularOffset);
+      m_rearLeftIO = new SwerveModuleIO_Real(DriveConstants.kRearLeftDrivingCanId, DriveConstants.kRearLeftTurningCanId, DriveConstants.kRearLeftChassisAngularOffset);
+      m_rearRightIO = new SwerveModuleIO_Real(DriveConstants.kRearRightDrivingCanId, DriveConstants.kRearRightTurningCanId,DriveConstants.kRearRightChassisAngularOffset);
+    }
+    m_robotDrive = new DriveSubsystem(
+        new SwerveModule(m_frontLeftIO),
+        new SwerveModule(m_frontRightIO),
+        new SwerveModule(m_rearLeftIO),
+        new SwerveModule(m_rearRightIO)
+    );
+    
+  }
+
+
 }

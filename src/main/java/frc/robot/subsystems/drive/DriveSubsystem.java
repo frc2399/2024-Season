@@ -14,44 +14,26 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.WPIUtilJNI;
-import frc.robot.RobotContainer;
-import frc.robot.Constants.DriveConstants;
-import frc.utils.SwerveUtils;
-import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.utils.NavX.AHRS;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.Gyro;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import edu.wpi.first.wpilibj.XboxController;
+import frc.utils.SwerveUtils;
 
 
 
 
 public class DriveSubsystem extends SubsystemBase {
-  // Create MAXSwerveModules
-  private final SwerveModule m_frontLeft = new SwerveModule(
-      DriveConstants.kFrontLeftDrivingCanId,
-      DriveConstants.kFrontLeftTurningCanId,
-      DriveConstants.kFrontLeftChassisAngularOffset);
 
-  private final SwerveModule m_frontRight = new SwerveModule(
-      DriveConstants.kFrontRightDrivingCanId,
-      DriveConstants.kFrontRightTurningCanId,
-      DriveConstants.kFrontRightChassisAngularOffset);
-
-  private final SwerveModule m_rearLeft = new SwerveModule(
-      DriveConstants.kRearLeftDrivingCanId,
-      DriveConstants.kRearLeftTurningCanId,
-      DriveConstants.kBackLeftChassisAngularOffset);
-
-  private final SwerveModule m_rearRight = new SwerveModule(
-      DriveConstants.kRearRightDrivingCanId,
-      DriveConstants.kRearRightTurningCanId,
-      DriveConstants.kBackRightChassisAngularOffset);
 
   // The gyro sensor
   // private final AHRS ahrs = new AHRS(SPI.Port.kMXP, (byte) 66);
+
+  //swerve modules
+  private SwerveModule m_frontLeft; 
+  private SwerveModule m_frontRight; 
+  private SwerveModule m_rearLeft; 
+  private SwerveModule m_rearRight; 
 
   // Slew rate filter variables for controlling lateral acceleration
   private double m_currentRotationRate = 0.0;
@@ -65,7 +47,19 @@ public class DriveSubsystem extends SubsystemBase {
   private double m_prevTime = WPIUtilJNI.now() * 1e-6;
 
   // Odometry class for tracking robot pose
-  SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(
+  SwerveDriveOdometry m_odometry;
+
+  private LinearFilter derivativeCalculator = LinearFilter.backwardFiniteDifference(1, 2, 0.02);
+  private double pitchRate;
+
+  /** Creates a new DriveSubsystem. */
+  public DriveSubsystem(SwerveModule m_frontLeft, SwerveModule m_frontRight, SwerveModule m_rearLeft, SwerveModule m_rearRight) {
+    this.m_frontLeft = m_frontLeft;
+    this.m_frontRight = m_frontRight;
+    this.m_rearLeft = m_rearLeft;
+    this.m_rearRight = m_rearRight;
+
+    m_odometry = new SwerveDriveOdometry(
       DriveConstants.kDriveKinematics,
       Rotation2d.fromDegrees(Gyro.yaw),
       new SwerveModulePosition[] {
@@ -74,12 +68,6 @@ public class DriveSubsystem extends SubsystemBase {
           m_rearLeft.getPosition(),
           m_rearRight.getPosition()
       });
-
-  private LinearFilter derivativeCalculator = LinearFilter.backwardFiniteDifference(1, 2, 0.02);
-  private double pitchRate;
-
-  /** Creates a new DriveSubsystem. */
-  public DriveSubsystem() {
     
   }
 
@@ -107,16 +95,12 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Left Front Drive Output", m_frontLeft.getDriveOutput());
     SmartDashboard.putNumber("Right Rear Drive Output", m_rearRight.getDriveOutput());
     SmartDashboard.putNumber("Left Rear Drive Output", m_rearLeft.getDriveOutput());
-    //Drive speed log
-    SmartDashboard.putNumber("Right Front Drive Speed", m_frontRight.getDriveSpeed());
-    SmartDashboard.putNumber("Left Front Drive Speed", m_frontLeft.getDriveSpeed());
-    SmartDashboard.putNumber("Right Rear Drive Speed", m_rearRight.getDriveSpeed());
-    SmartDashboard.putNumber("Left Rear Drive Speed", m_rearLeft.getDriveSpeed());
-    //Turn speed log
-    SmartDashboard.putNumber("Right Front Turn Speed", m_frontRight.getTurnAngle());
-    SmartDashboard.putNumber("Left Front Turn Speed", m_frontLeft.getTurnAngle());
-    SmartDashboard.putNumber("Right Rear Turn Speed", m_rearRight.getTurnAngle());
-    SmartDashboard.putNumber("Left Rear Turn Speed", m_rearLeft.getTurnAngle());
+
+    //updates inputs for each module
+    m_frontLeft.updateInputs();
+    m_rearLeft.updateInputs();
+    m_frontRight.updateInputs();
+    m_rearLeft.updateInputs();
   }
 
   /**
@@ -312,13 +296,5 @@ public class DriveSubsystem extends SubsystemBase {
   public double getGyroPitchRate()
   {
       return pitchRate;
-  }
-
-  public void setMotorSpeeds(double speed)
-  {
-    m_frontLeft.m_drivingSparkMax.set(speed);
-    m_frontRight.m_drivingSparkMax.set(speed);
-    m_rearLeft.m_drivingSparkMax.set(speed);
-    m_rearRight.m_drivingSparkMax.set(speed);
   }
 }

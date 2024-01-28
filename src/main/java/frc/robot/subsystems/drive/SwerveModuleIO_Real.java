@@ -4,6 +4,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkAbsoluteEncoder.Type;
 import com.revrobotics.SparkPIDController;
+import com.revrobotics.CANSparkBase.ControlType;
 
 import frc.robot.Constants.ModuleConstants;
 
@@ -19,6 +20,8 @@ public class SwerveModuleIO_Real implements SwerveModuleIO {
 
     private final SparkPIDController m_drivingPIDController;
     private final SparkPIDController m_turningPIDController;
+
+    private double chassisAngularOffset;
 
     public SwerveModuleIO_Real(int drivingCANId, int turningCANId, double chassisAngularOffset){
 
@@ -99,7 +102,51 @@ public class SwerveModuleIO_Real implements SwerveModuleIO {
 
 
     public void updateInputs(SwerveModuleIOInputs inputs){
+        inputs.driveAppliedVolts = getDriveVolts();
+        inputs.drivePositionMeters = getDriveEncoderPosition();
+        inputs.driveVelocityMPS = getDriveEncoderSpeedMPS();
+        inputs.turnAppliedVolts = getTurnVolts();
+        inputs.turnPositionRad = getTurnEncoderPosition();
         
     }
+    
+    //TODO: check units on these methods 
+    public void setDriveEncoderPosition(double position){
+        m_drivingEncoder.setPosition(position);
+    };
+        
+     public double getDriveEncoderPosition(){
+        return m_drivingEncoder.getPosition();
+     };
+      
+     public void setDesiredDriveSpeedMPS(double speed){
+        m_drivingPIDController.setReference(speed, ControlType.kVelocity);
+     };
+
+     public double getDriveEncoderSpeedMPS(){
+        return m_drivingEncoder.getVelocity();
+     };
+        
+     public double getTurnEncoderPosition(){
+        return m_turningEncoder.getPosition();
+     };
+     
+
+     public void setDesiredTurnAngle(double angle){
+        m_turningPIDController.setReference(angle, ControlType.kPosition);
+     };
+
+     //TODO: CHECK THIS!! what is busVoltage? 
+     public double getDriveVolts(){
+        return m_drivingSparkMax.getBusVoltage();
+     }
+
+     public double getDriveOutput(){
+        return m_drivingSparkMax.getAppliedOutput();
+     }
+
+     public double getTurnVolts(){
+        return m_turningSparkMax.getBusVoltage();
+     }
 }
 

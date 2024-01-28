@@ -1,32 +1,28 @@
-
-import com.ctre.phoenix6.mechanisms.swerve.SwerveModule;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.SparkPIDController;
+package frc.robot.subsystems.drive;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
-import com.revrobotics.CANSparkLowLevel.MotorType;
+import frc.robot.subsystems.drive.SwerveModuleIO.SwerveModuleIOInputs;
 
 
 
 public class SwerveModule{
    
-    private SwerveModuleState m_desiredState;
+    private SwerveModuleState m_desiredState = new SwerveModuleState(0.0, new Rotation2d());
 
     double chassisAngularOffset;
     
     SwerveModuleIO io;
 
+    private final SwerveModuleIOInputs inputs = new SwerveModuleIOInputs();
 
-    public SwerveModule(int drivingCANId, int turningCANId, double chassisAngularOffset, SwerveModule io){
+
+    public SwerveModule(SwerveModuleIO io){
     
-
+    this.io = io;
     io.setDriveEncoderPosition(0);
     m_desiredState.angle = new Rotation2d(getTurnEncoderPosition());
-    this.io = io;
 
 
     }
@@ -34,26 +30,31 @@ public class SwerveModule{
         io.setDriveEncoderPosition(position);
     }
     public double getDriveEncoderPosition(){
-        io.getDriveEncoderPosition();
+        return io.getDriveEncoderPosition();
     }
     public double getDriveEncoderSpeedMPS(){
-        io.getDriveEncoderSpeedMPS();
+        return io.getDriveEncoderSpeedMPS();
     }
-    public void setDriveMotorSpeedMPS(double speed){
-        io.setDriveMotorSpeed(speed);
-    }
-    public void setTurnEncoderPosition(double position){
-        io.setTurnEncoderPosition(position);
-    }
+
     public double getTurnEncoderPosition(){
-        io.getTurnEncoderPosition();
+        return io.getTurnEncoderPosition();
     }
-    
-    public void setDesiredState(SwerveModuleState desiredState) {
-    
+    public void resetEncoders(){
+        io.setDriveEncoderPosition(0);
     }
-  public void periodic() {
-    io.periodicUpdate();
+    public double getDriveVolts() {
+        return io.getDriveVolts();
+    }
+    public double getDriveOutput() {
+        return io.getDriveOutput();
+    }
+    public double getTurnVolts(){
+        return io.getTurnVolts();
+    }
+
+    
+  public void updateInputs() {
+    io.updateInputs(inputs);
   }
 
   /**
