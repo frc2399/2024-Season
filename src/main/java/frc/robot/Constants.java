@@ -144,6 +144,8 @@ public final class Constants {
 
     public static final int SHOOT_LOW_MOTOR_ID = 4;
     public static final int SHOOT_HIGH_MOTOR_ID = 3;
+    public static final double speakerSpeed = 0.8;
+    public static final double ampSpeed = 0.3;
   }
 
   public static final class ArmConstants {
@@ -181,6 +183,7 @@ public final class Constants {
 
   public static final class OIConstants {
     public static final int kDriverControllerPort = 0;
+    public static final int kOperatorControllerPort = 1;
     public static final double kDriveDeadband = 0.1;
   }
 

@@ -15,6 +15,7 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Axis;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -25,11 +26,13 @@ import frc.robot.Constants.OIConstants;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDSubsystem;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
@@ -55,18 +58,21 @@ import frc.robot.subsystems.shooter.ShooterIO;
  */
 public class RobotContainer {
   // The robot's subsystems
-//   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
-//   private static Gyro m_gyro = new Gyro(); 
+  // private final DriveSubsystem m_robotDrive = new DriveSubsystem();
+  // private static Gyro m_gyro = new Gyro();
   public boolean fieldOrientedDrive = false;
   public static CommandSelector angleHeight = CommandSelector.INTAKE;
 
   public static Shooter m_shooter;
+  ShooterIO shooterIO;
+  IntakeIO intakeIO;
+
   // public static Intake m_intake;
   // public static Arm m_arm;
- 
 
   // The driver's controller
   XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
+  XboxController m_operatorController = new XboxController(OIConstants.kOperatorControllerPort);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -79,59 +85,61 @@ public class RobotContainer {
     configureButtonBindings();
   }
 
-  //construct subsystems
+  // construct subsystems
   private void setUpSubsystems() {
-    //m_robotDrive = new DriveSubsystem();
-    //m_gyro = new Gyro(); 
-    //set up IOs
-    ShooterIO shooterIO;
+    // m_robotDrive = new DriveSubsystem();
+    // m_gyro = new Gyro();
+    // set up IOs
     // ArmIO armIO;
-    // IntakeIO intakeIO;
-   
-    //IOs currently always real
-    // intakeIO = new RealIntake();
+    // IOs currently always real
+    intakeIO = new RealIntake();
     // armIO = new RealArm();
     shooterIO = new RealShooter();
 
-    //initialize subsystems
-    // m_intake = new Intake(intakeIO);  
+    // initialize subsystems
+    // m_intake = new Intake(intakeIO);
     // m_arm = new Arm(armIO);
     m_shooter = new Shooter(shooterIO);
   }
 
   // Configure default commands
   private void configureDefaultCommands() {
-    //default command for the shooter: setting speed to number input from the smart dashboard
+    // default command for the shooter: setting speed to number input from the smart
+    // dashboard
     m_shooter.setDefaultCommand(
         new InstantCommand(
             () -> m_shooter.setMotor(SmartDashboard.getNumber("Shoot speed", 0)),
             m_shooter));
 
-    //default command for intake: do nothing
+    // default command for intake: do nothing
     // m_intake.setDefaultCommand(
-    //     new InstantCommand(
-    //         () -> m_intake.setMotor(0),
-    //         m_intake));
-    
-    //default command for drivetrain: drive based on controller inputs
+    // new InstantCommand(
+    // () -> m_intake.setMotor(0),
+    // m_intake));
+
+    // default command for drivetrain: drive based on controller inputs
     // m_robotDrive.setDefaultCommand(
-    //     // The left stick controls translation of the robot.
-    //     // Turning is controlled by the X axis of the right stick.
-    //     new RunCommand(
-    //         () -> m_robotDrive.drive(
-    //             -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
-    //             -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),
-    //             -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband),
-    //             fieldOrientedDrive, false),
-    //         m_robotDrive));
-        //this version only goes straight (for testing)
-        // new RunCommand(
-        //     () -> m_robotDrive.drive(
-        //         -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
-        //         0,
-        //         0,
-        //         fieldOrientedDrive, false),
-        //     m_robotDrive));
+    // // The left stick controls translation of the robot.
+    // // Turning is controlled by the X axis of the right stick.
+    // new RunCommand(
+    // () -> m_robotDrive.drive(
+    // -MathUtil.applyDeadband(m_driverController.getLeftY(),
+    // OIConstants.kDriveDeadband),
+    // -MathUtil.applyDeadband(m_driverController.getLeftX(),
+    // OIConstants.kDriveDeadband),
+    // -MathUtil.applyDeadband(m_driverController.getRightX(),
+    // OIConstants.kDriveDeadband),
+    // fieldOrientedDrive, false),
+    // m_robotDrive));
+    // this version only goes straight (for testing)
+    // new RunCommand(
+    // () -> m_robotDrive.drive(
+    // -MathUtil.applyDeadband(m_driverController.getLeftY(),
+    // OIConstants.kDriveDeadband),
+    // 0,
+    // 0,
+    // fieldOrientedDrive, false),
+    // m_robotDrive));
   }
 
   /**
@@ -144,135 +152,158 @@ public class RobotContainer {
    * {@link JoystickButton}.
    */
   private void configureButtonBindings() {
-    //right bumper?
+    // right bumper?
     // new JoystickButton(m_driverController, XboxController.Button.kX.value)
-    //     .whileTrue(new RunCommand(
-    //         () -> m_robotDrive.setX(),
-    //         m_robotDrive));
-    
+    // .whileTrue(new RunCommand(
+    // () -> m_robotDrive.setX(),
+    // m_robotDrive));
+
     // new JoystickButton(m_driverController, XboxController.Button.kY.value)
-    //     .whileTrue(new RunCommand(
-    //         () -> m_robotDrive.setZero(),
-    //         m_robotDrive));
+    // .whileTrue(new RunCommand(
+    // () -> m_robotDrive.setZero(),
+    // m_robotDrive));
 
     new JoystickButton(m_driverController, XboxController.Button.kA.value)
         .onTrue(new InstantCommand(
-        () -> fieldOrientedDrive = !fieldOrientedDrive));
+            () -> fieldOrientedDrive = !fieldOrientedDrive));
 
     // new JoystickButton(m_driverController, XboxController.Button.kB.value)
-    //     .onTrue(new InstantCommand(
-    //         () -> m_gyro.resetYaw(), m_gyro));  
-    
+    // .onTrue(new InstantCommand(
+    // () -> m_gyro.resetYaw(), m_gyro));
+
     new JoystickButton(m_driverController, XboxController.Button.kLeftBumper.value)
         .whileTrue(new InstantCommand(
-        () -> m_shooter.setMotor(0.8)));
-    
-    //Left trigger to intake
-    // new Trigger(() -> m_driverController.getRawAxis(Axis.kLeftTrigger.value) > 0.1)
-    //     .whileTrue(new InstantCommand(
-    //     () -> m_intake.setMotor(1)));
+            () -> m_shooter.setMotor(0.8)));
+
+    //run shooter, wait until shooter reaches set speed, run intake to feed shooter
+    new JoystickButton(m_operatorController, XboxController.Button.kRightBumper.value)
+        .onTrue(new ParallelCommandGroup(
+            new SequentialCommandGroup(
+                new WaitUntilCommand(() -> m_shooter.getEncoderSpeed() == Constants.ShooterConstants.speakerSpeed),
+                new InstantCommand(() -> intakeIO.setMotor(0.8))),
+            new InstantCommand(() -> m_shooter.setMotor(Constants.ShooterConstants.speakerSpeed))
+        ));
+
+    // Left trigger to intake
+    // new Trigger(() -> m_driverController.getRawAxis(Axis.kLeftTrigger.value) >
+    // 0.1)
+    // .whileTrue(new InstantCommand(
+    // () -> m_intake.setMotor(1)));
 
     // //Right trigger to outtake
-    // new Trigger(() -> m_driverController.getRawAxis(Axis.kRightTrigger.value) > 0.1)
-    //     .whileTrue(new InstantCommand(
-    //     () -> m_intake.setMotor(-1)));
-    
+    // new Trigger(() -> m_driverController.getRawAxis(Axis.kRightTrigger.value) >
+    // 0.1)
+    // .whileTrue(new InstantCommand(
+    // () -> m_intake.setMotor(-1)));
+
     // //Right stick up to move arm up
     // new Trigger(() -> m_driverController.getRawAxis(Axis.kRightY.value) < -0.1)
-    //     .whileTrue(makeSetSpeedGravityCompensationCommand(m_arm, 0.2))
-    //     .onFalse(makeSetSpeedGravityCompensationCommand(m_arm, 0));
-    
-    //  //Right stick down to move arm down
+    // .whileTrue(makeSetSpeedGravityCompensationCommand(m_arm, 0.2))
+    // .onFalse(makeSetSpeedGravityCompensationCommand(m_arm, 0));
+
+    // //Right stick down to move arm down
     // new Trigger(() -> m_driverController.getRawAxis(Axis.kRightY.value) > 0.1)
-    //     .whileTrue(makeSetSpeedGravityCompensationCommand(m_arm, -0.2))
-    //     .onFalse(makeSetSpeedGravityCompensationCommand(m_arm, 0));
+    // .whileTrue(makeSetSpeedGravityCompensationCommand(m_arm, -0.2))
+    // .onFalse(makeSetSpeedGravityCompensationCommand(m_arm, 0));
   }
 
   public static Command makeSetPositionCommand(ProfiledPIDSubsystem base, double target) {
-      return new SequentialCommandGroup(
-          new ConditionalCommand(new InstantCommand(() -> {}), new InstantCommand(() -> base.enable()), () -> base.isEnabled()),
-          new InstantCommand(() -> base.setGoal(target), base)
-      );
+    return new SequentialCommandGroup(
+        new ConditionalCommand(new InstantCommand(() -> {
+        }), new InstantCommand(() -> base.enable()), () -> base.isEnabled()),
+        new InstantCommand(() -> base.setGoal(target), base));
   }
 
   private Command makeSetSpeedGravityCompensationCommand(Arm a, double speed) {
     return new SequentialCommandGroup(
         new InstantCommand(() -> a.disable()),
-        new RunCommand(() -> a.setSpeedGravityCompensation(speed), a)
-    );
+        new RunCommand(() -> a.setSpeedGravityCompensation(speed), a));
   }
 
+  static final double DELAY_OVERHEAD_SECONDS = 0.5;
+  static final double correctSpeed = 0.8;
+
+  // set motor to speed, if statement to check if shooter is at correct speed and
+  // set indexer to speed
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
    * @return the command to run in autonomous
    */
-//   public Command getAutonomousCommand() {
-//     // Create config for trajectory
-//     TrajectoryConfig config = new TrajectoryConfig(
-//         AutoConstants.kMaxSpeedMetersPerSecond,
-//         AutoConstants.kMaxAccelerationMetersPerSecondSquared)
-//         // Add kinematics to ensure max speed is actually obeyed
-//         .setKinematics(DriveConstants.kDriveKinematics);
+  // public Command getAutonomousCommand() {
+  // // Create config for trajectory
+  // TrajectoryConfig config = new TrajectoryConfig(
+  // AutoConstants.kMaxSpeedMetersPerSecond,
+  // AutoConstants.kMaxAccelerationMetersPerSecondSquared)
+  // // Add kinematics to ensure max speed is actually obeyed
+  // .setKinematics(DriveConstants.kDriveKinematics);
 
-//     // An example trajectory to follow. All units in meters.
-//     Trajectory exampleTrajectory = TrajectoryGenerator.generateTrajectory(
-//         // Start at the origin facing the +X direction
-//         new Pose2d(0, 0, new Rotation2d(0)),
-//         // Pass through these two interior waypoints, making an 's' curve path
-//         List.of(new Translation2d(1, 1), new Translation2d(2, -1)),
-//         // End 3 meters straight ahead of where we started, facing forward
-//         new Pose2d(3, 0, new Rotation2d(0)),
-//         config);
+  // // An example trajectory to follow. All units in meters.
+  // Trajectory exampleTrajectory = TrajectoryGenerator.generateTrajectory(
+  // // Start at the origin facing the +X direction
+  // new Pose2d(0, 0, new Rotation2d(0)),
+  // // Pass through these two interior waypoints, making an 's' curve path
+  // List.of(new Translation2d(1, 1), new Translation2d(2, -1)),
+  // // End 3 meters straight ahead of where we started, facing forward
+  // new Pose2d(3, 0, new Rotation2d(0)),
+  // config);
 
-//     var thetaController = new ProfiledPIDController(
-//         AutoConstants.kPThetaController, 0, 0, AutoConstants.kThetaControllerConstraints);
-//     thetaController.enableContinuousInput(-Math.PI, Math.PI);
+  // var thetaController = new ProfiledPIDController(
+  // AutoConstants.kPThetaController, 0, 0,
+  // AutoConstants.kThetaControllerConstraints);
+  // thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
-//     SwerveControllerCommand swerveControllerCommand = new SwerveControllerCommand(
-//         exampleTrajectory,
-//         m_robotDrive::getPose, // Functional interface to feed supplier
-//         DriveConstants.kDriveKinematics,
+  // SwerveControllerCommand swerveControllerCommand = new
+  // SwerveControllerCommand(
+  // exampleTrajectory,
+  // m_robotDrive::getPose, // Functional interface to feed supplier
+  // DriveConstants.kDriveKinematics,
 
-//         // Position controllers
-//         new PIDController(AutoConstants.kPXController, 0, 0),
-//         new PIDController(AutoConstants.kPYController, 0, 0),
-//         thetaController,
-//         m_robotDrive::setModuleStates,
-//         m_robotDrive);
+  // // Position controllers
+  // new PIDController(AutoConstants.kPXController, 0, 0),
+  // new PIDController(AutoConstants.kPYController, 0, 0),
+  // thetaController,
+  // m_robotDrive::setModuleStates,
+  // m_robotDrive);
 
-//     // Reset odometry to the starting pose of the trajectory.
-//     m_robotDrive.resetOdometry(exampleTrajectory.getInitialPose());
+  // // Reset odometry to the starting pose of the trajectory.
+  // m_robotDrive.resetOdometry(exampleTrajectory.getInitialPose());
 
-//     // Run path following command, then stop at the end.
-//     return swerveControllerCommand.andThen(() -> m_robotDrive.drive(0, 0, 0, false, false));
-//   }
+  // // Run path following command, then stop at the end.
+  // return swerveControllerCommand.andThen(() -> m_robotDrive.drive(0, 0, 0,
+  // false, false));
+  // }
 
   public enum CommandSelector {
-        INTAKE,    
-        AMP,
-        SPEAKER_SUBWOOFER_STRAIGHT,
-        SPEAKER_SUBWOOFER_SIDE,
-        SPEAKER_PODIUM
+    INTAKE,
+    AMP,
+    SPEAKER_SUBWOOFER_STRAIGHT,
+    SPEAKER_SUBWOOFER_SIDE,
+    SPEAKER_PODIUM
   }
 
   private CommandSelector select() {
-       return angleHeight;
+    return angleHeight;
   }
 
   public static String toString(CommandSelector node) {
-        return "Node: " + node;
+    return "Node: " + node;
   }
 
   // private Command selectPositionCommand() {
-  //       return new SelectCommand(
-  //           Map.ofEntries(
-  //               Map.entry(CommandSelector.INTAKE, makeSetPositionCommand(m_arm, ArmConstants.INTAKE_ANGLE)),
-  //               Map.entry(CommandSelector.AMP, makeSetPositionCommand(m_arm, ArmConstants.AMP_ANGLE)),
-  //               Map.entry(CommandSelector.SPEAKER_SUBWOOFER_STRAIGHT,makeSetPositionCommand(m_arm, ArmConstants.SPEAKER_SUBWOOFER_STRAIGHT_ANGLE)),
-  //               Map.entry(CommandSelector.SPEAKER_SUBWOOFER_SIDE, makeSetPositionCommand(m_arm, ArmConstants.SPEAKER_SUBWOOFER_SIDE_ANGLE)),
-  //               Map.entry(CommandSelector.SPEAKER_PODIUM, makeSetPositionCommand(m_arm, ArmConstants.SPEAKER_PODIUM_ANGLE))),
-  //           this::select);
+  // return new SelectCommand(
+  // Map.ofEntries(
+  // Map.entry(CommandSelector.INTAKE, makeSetPositionCommand(m_arm,
+  // ArmConstants.INTAKE_ANGLE)),
+  // Map.entry(CommandSelector.AMP, makeSetPositionCommand(m_arm,
+  // ArmConstants.AMP_ANGLE)),
+  // Map.entry(CommandSelector.SPEAKER_SUBWOOFER_STRAIGHT,makeSetPositionCommand(m_arm,
+  // ArmConstants.SPEAKER_SUBWOOFER_STRAIGHT_ANGLE)),
+  // Map.entry(CommandSelector.SPEAKER_SUBWOOFER_SIDE,
+  // makeSetPositionCommand(m_arm, ArmConstants.SPEAKER_SUBWOOFER_SIDE_ANGLE)),
+  // Map.entry(CommandSelector.SPEAKER_PODIUM, makeSetPositionCommand(m_arm,
+  // ArmConstants.SPEAKER_PODIUM_ANGLE))),
+  // this::select);
   // }
 }
