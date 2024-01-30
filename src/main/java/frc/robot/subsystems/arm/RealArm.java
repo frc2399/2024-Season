@@ -70,6 +70,7 @@ public class RealArm implements ArmIO {
     @Override
     public void setPosition(double position) {
         armEncoderLeft.setPosition(position);
+        armEncoderRight.setPosition(position);
     }
 
     @Override
