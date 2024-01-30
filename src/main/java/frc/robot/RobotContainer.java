@@ -71,7 +71,7 @@ public class RobotContainer {
     //     new InstantCommand(
     //         () -> shooter.setMotor(SmartDashboard.getNumber("Shoot speed", 0)), shooter));
 
-    arm.setDefaultCommand(new InstantCommand( () -> arm.setSpeedGravityCompensation(0)));
+    arm.setDefaultCommand(new InstantCommand( () -> arm.setSpeedGravityCompensation(0), arm));
 
     // Configure default commands
     // m_robotDrive.setDefaultCommand(
