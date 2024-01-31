@@ -35,20 +35,26 @@ import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj.RobotBase;
 
 import java.util.List;
 import java.util.Map;
 
 import frc.robot.subsystems.*;
+import frc.robot.subsystems.Indexer.IndexerIO;
+import frc.robot.subsystems.Indexer.RealIndexer;
+import frc.robot.subsystems.Indexer.SimIndexer;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.arm.ArmIO;
 import frc.robot.subsystems.arm.RealArm;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.RealIntake;
+import frc.robot.subsystems.intake.SimIntake;
 import frc.robot.subsystems.shooter.RealShooter;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterIO;
+import frc.robot.subsystems.shooter.SimShooter;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 /*
@@ -68,6 +74,9 @@ public class RobotContainer {
   public static Shooter m_shooter;
   ShooterIO shooterIO;
   IntakeIO intakeIO;
+  IndexerIO indexerIO;
+  ArmIO armIO;
+  
 
   // public static Intake m_intake;
   // public static Arm m_arm;
@@ -89,15 +98,23 @@ public class RobotContainer {
 
   // construct subsystems
   private void setUpSubsystems() {
-    // m_robotDrive = new DriveSubsystem();
     // m_gyro = new Gyro();
+    // m_robotDrive = new DriveSubsystem();
     // set up IOs
     // ArmIO armIO;
     // IOs currently always real
-    intakeIO = new RealIntake();
-    // armIO = new RealArm();
-    shooterIO = new RealShooter();
+    if (RobotBase.isSimulation()) {
+      indexerIO = new SimIndexer();
+      shooterIO = new SimShooter();
+      intakeIO = new SimIntake();
+    } else {
+      intakeIO = new RealIntake();
+      indexerIO = new RealIndexer();
+      shooterIO = new RealShooter();
+    }
 
+    
+    // armIO = new RealArm();
     // initialize subsystems
     // m_intake = new Intake(intakeIO);
     // m_arm = new Arm(armIO);

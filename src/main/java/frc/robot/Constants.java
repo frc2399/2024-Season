@@ -149,8 +149,8 @@ public final class Constants {
   }
 
   public static final class IndexerConstants {
-    
-    public static final int INDEXER_MOTOR_ID = 2;
+
+    public static final int INDEXER_MOTOR_ID = 5; //I put 5 at random. Find actual motor ID. 
     public static final double INDEXER_SLEW_RATE = 10;
   }
 
