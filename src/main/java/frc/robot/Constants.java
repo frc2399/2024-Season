@@ -148,6 +148,12 @@ public final class Constants {
     public static final double ampSpeed = 0.3;
   }
 
+  public static final class IndexerConstants {
+    
+    public static final int INDEXER_MOTOR_ID = 2;
+    public static final double INDEXER_SLEW_RATE = 10;
+  }
+
   public static final class ArmConstants {
 
     public static final int ARM_MOTOR_ID = 8;

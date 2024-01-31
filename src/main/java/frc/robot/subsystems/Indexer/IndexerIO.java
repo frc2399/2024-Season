@@ -1,11 +1,12 @@
-package frc.robot.subsystems.intake;
+package frc.robot.subsystems.Indexer;
 
-public interface IntakeIO {
+public interface IndexerIO {
     public void setMotor(double speed);
+    public void setSpeed(double speed);
     public double getCurrent();
     public double getEncoderSpeed();
     public double getEncoderPosition();
     public void setCurrentLimit(int current);
     public void periodicUpdate();
-    public void setSpeed(double speed);
+  
 }
