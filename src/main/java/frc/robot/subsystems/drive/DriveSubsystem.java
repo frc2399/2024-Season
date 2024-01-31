@@ -17,7 +17,8 @@ import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
-import frc.robot.subsystems.Gyro;
+
+import frc.robot.subsystems.gyro.GyroIO;
 import frc.utils.SwerveUtils;
 
 
@@ -51,9 +52,11 @@ public class DriveSubsystem extends SubsystemBase {
 
   private LinearFilter derivativeCalculator = LinearFilter.backwardFiniteDifference(1, 2, 0.02);
   private double pitchRate;
+  private GyroIO m_gyro;
 
   /** Creates a new DriveSubsystem. */
-  public DriveSubsystem(SwerveModule m_frontLeft, SwerveModule m_frontRight, SwerveModule m_rearLeft, SwerveModule m_rearRight) {
+  public DriveSubsystem(SwerveModule m_frontLeft, SwerveModule m_frontRight, SwerveModule m_rearLeft, SwerveModule m_rearRight, GyroIO m_gyro) {
+    this.m_gyro = m_gyro;
     this.m_frontLeft = m_frontLeft;
     this.m_frontRight = m_frontRight;
     this.m_rearLeft = m_rearLeft;
@@ -61,7 +64,7 @@ public class DriveSubsystem extends SubsystemBase {
 
     m_odometry = new SwerveDriveOdometry(
       DriveConstants.kDriveKinematics,
-      Rotation2d.fromDegrees(Gyro.yaw),
+      Rotation2d.fromRadians(m_gyro.getYaw()),
       new SwerveModulePosition[] {
           m_frontLeft.getPosition(),
           m_frontRight.getPosition(),
@@ -81,10 +84,10 @@ public class DriveSubsystem extends SubsystemBase {
     // m_rightEncoder.getDistance());
     // m_field.setRobotPose(m_odometry.getPoseMeters());
     //Gyro log (spain without the a followed by spain without the s)
-    SmartDashboard.putNumber("Gyro angle", Gyro.yaw % 360);
-    SmartDashboard.putNumber("Gyro pitch", Gyro.pitch % 360);
-    SmartDashboard.putNumber("Gyro roll", Gyro.roll % 360);
-    pitchRate = derivativeCalculator.calculate(getGyroPitch());
+    SmartDashboard.putNumber("Gyro angle", m_gyro.getYaw() % 360);
+    // SmartDashboard.putNumber("Gyro pitch", Gyro.pitch % 360);
+    // SmartDashboard.putNumber("Gyro roll", Gyro.roll % 360);
+    // pitchRate = derivativeCalculator.calculate(getGyroPitch());
     //Drive input log
     SmartDashboard.putNumber("Right Front Drive Input", m_frontRight.getDriveVolts());
     SmartDashboard.putNumber("Left Front Drive Input", m_frontLeft.getDriveVolts());
@@ -119,7 +122,7 @@ public class DriveSubsystem extends SubsystemBase {
    */
   public void resetOdometry(Pose2d pose) {
     m_odometry.resetPosition(
-        Rotation2d.fromDegrees(Gyro.yaw),
+        Rotation2d.fromDegrees(m_gyro.getYaw()),
         new SwerveModulePosition[] {
             m_frontLeft.getPosition(),
             m_frontRight.getPosition(),
@@ -144,7 +147,7 @@ public class DriveSubsystem extends SubsystemBase {
     double newRotRate = 0;
     double xSpeedCommanded;
     double ySpeedCommanded;
-    double currentAngle = Math.toRadians(Gyro.yaw);
+    double currentAngle =(m_gyro.getYaw());
 
     if (currentAngle == 0) {
       desiredAngle = 0;
@@ -221,7 +224,7 @@ public class DriveSubsystem extends SubsystemBase {
 
     var swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(
         fieldRelative
-            ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotRateDelivered, Rotation2d.fromDegrees(Gyro.yaw))
+            ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotRateDelivered, Rotation2d.fromRadians(m_gyro.getYaw()))
             : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotRateDelivered));
     SwerveDriveKinematics.desaturateWheelSpeeds(
         swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
@@ -277,7 +280,7 @@ public class DriveSubsystem extends SubsystemBase {
    * @return the robot's heading in degrees, from -180 to 180
    */
   public double getHeading() {
-    return Rotation2d.fromDegrees(Gyro.yaw).getDegrees();
+    return Rotation2d.fromRadians(m_gyro.getYaw()).getDegrees();
   }
 
   /**
@@ -289,12 +292,12 @@ public class DriveSubsystem extends SubsystemBase {
   //   return ahrs.getRate() * (DriveConstants.kGyroReversed ? -1.0 : 1.0);
   // }
 
-  public double getGyroPitch() {
-    return -Gyro.pitch;
-  }
+  // public double getGyroPitch() {
+  //   return -Gyro.pitch;
+  // }
 
-  public double getGyroPitchRate()
-  {
-      return pitchRate;
-  }
+  // public double getGyroPitchRate()
+  // {
+  //     return pitchRate;
+  // }
 }

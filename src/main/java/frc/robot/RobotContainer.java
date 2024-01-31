@@ -25,7 +25,9 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Robot.RobotType;
-import frc.robot.subsystems.Gyro;
+import frc.robot.subsystems.gyro.GyroIO;
+import frc.robot.subsystems.gyro.GyroIOPigeon2;
+import frc.robot.subsystems.gyro.GyroIOSim;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.drive.SwerveModule;
 import frc.robot.subsystems.drive.SwerveModuleIO;
@@ -39,150 +41,149 @@ import frc.robot.subsystems.drive.SwerveModuleIO_Sim;
  * (including subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-  // The robot's subsystems
-  private DriveSubsystem m_robotDrive;
-  private static Gyro m_gyro = new Gyro(); 
-  public boolean fieldOrientedDrive = false;
+    // The robot's subsystems
+    private DriveSubsystem m_robotDrive;
+    private GyroIO m_gyro;
+    public boolean fieldOrientedDrive = false;
 
-  private SwerveModuleIO m_frontLeftIO;
-  private SwerveModuleIO m_frontRightIO;
-  private SwerveModuleIO m_rearLeftIO;
-  private SwerveModuleIO m_rearRightIO;
+    private SwerveModuleIO m_frontLeftIO;
+    private SwerveModuleIO m_frontRightIO;
+    private SwerveModuleIO m_rearLeftIO;
+    private SwerveModuleIO m_rearRightIO;
 
- 
+    // The driver's controller
+    XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
 
-  // The driver's controller
-  XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
+    /**
+     * The container for the robot. Contains subsystems, OI devices, and commands.
+     */
+    public RobotContainer() {
+        setUpSubsystems();
+        // Configure the button bindings
+        configureButtonBindings();
 
-  /**
-   * The container for the robot. Contains subsystems, OI devices, and commands.
-   */
-  public RobotContainer() {
-    setUpSubsystems();
-    // Configure the button bindings
-    configureButtonBindings();
-
-    // Configure default commands
-    m_robotDrive.setDefaultCommand(
-        // The left stick controls translation of the robot.
-        // Turning is controlled by the X axis of the right stick.
-        new RunCommand(
-            () -> m_robotDrive.drive(
-                -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
-                -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),
-                -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband),
-                fieldOrientedDrive, false),
-            m_robotDrive));
+        // Configure default commands
+        m_robotDrive.setDefaultCommand(
+                // The left stick controls translation of the robot.
+                // Turning is controlled by the X axis of the right stick.
+                new RunCommand(
+                        () -> m_robotDrive.drive(
+                                -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
+                                -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),
+                                -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband),
+                                fieldOrientedDrive, false),
+                        m_robotDrive));
         // new RunCommand(
-        //     () -> m_robotDrive.drive(
-        //         -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
-        //         0,
-        //         0,
-        //         fieldOrientedDrive, false),
-        //     m_robotDrive));
-  }
+        // () -> m_robotDrive.drive(
+        // -MathUtil.applyDeadband(m_driverController.getLeftY(),
+        // OIConstants.kDriveDeadband),
+        // 0,
+        // 0,
+        // fieldOrientedDrive, false),
+        // m_robotDrive));
+    }
 
+    /**
+     * Use this method to define your button->command mappings. Buttons can be
+     * created by
+     * instantiating a {@link edu.wpi.first.wpilibj.GenericHID} or one of its
+     * subclasses ({@link
+     * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then calling
+     * passing it to a
+     * {@link JoystickButton}.
+     */
+    private void configureButtonBindings() {
+        // right bumper?
+        new JoystickButton(m_driverController, XboxController.Button.kX.value)
+                .whileTrue(new RunCommand(
+                        () -> m_robotDrive.setX(),
+                        m_robotDrive));
 
+        new JoystickButton(m_driverController, XboxController.Button.kY.value)
+                .whileTrue(new RunCommand(
+                        () -> m_robotDrive.setZero(),
+                        m_robotDrive));
 
-  /**
-   * Use this method to define your button->command mappings. Buttons can be
-   * created by
-   * instantiating a {@link edu.wpi.first.wpilibj.GenericHID} or one of its
-   * subclasses ({@link
-   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then calling
-   * passing it to a
-   * {@link JoystickButton}.
-   */
-  private void configureButtonBindings() {
-    //right bumper?
-    new JoystickButton(m_driverController, XboxController.Button.kX.value)
-        .whileTrue(new RunCommand(
-            () -> m_robotDrive.setX(),
-            m_robotDrive));
-    
-    new JoystickButton(m_driverController, XboxController.Button.kY.value)
-        .whileTrue(new RunCommand(
-            () -> m_robotDrive.setZero(),
-            m_robotDrive));
+        new JoystickButton(m_driverController, XboxController.Button.kA.value).onTrue(
+                new InstantCommand(
+                        () -> fieldOrientedDrive = !fieldOrientedDrive));
 
-    new JoystickButton(m_driverController, XboxController.Button.kA.value).onTrue(
-        new InstantCommand(
-        () -> fieldOrientedDrive = !fieldOrientedDrive));
+        new JoystickButton(m_driverController, XboxController.Button.kB.value)
+                .onTrue(new InstantCommand(
+                        () -> m_gyro.setYaw(0.0)));
+    }
 
-    new JoystickButton(m_driverController, XboxController.Button.kB.value)
-        .onTrue(new InstantCommand(
-            () -> m_gyro.resetYaw(), m_gyro));    
-  }
+    /**
+     * Use this to pass the autonomous command to the main {@link Robot} class.
+     *
+     * @return the command to run in autonomous
+     */
+    public Command getAutonomousCommand() {
+        // Create config for trajectory
+        TrajectoryConfig config = new TrajectoryConfig(
+                AutoConstants.kMaxSpeedMetersPerSecond,
+                AutoConstants.kMaxAccelerationMetersPerSecondSquared)
+                // Add kinematics to ensure max speed is actually obeyed
+                .setKinematics(DriveConstants.kDriveKinematics);
 
-  /**
-   * Use this to pass the autonomous command to the main {@link Robot} class.
-   *
-   * @return the command to run in autonomous
-   */
-  public Command getAutonomousCommand() {
-    // Create config for trajectory
-    TrajectoryConfig config = new TrajectoryConfig(
-        AutoConstants.kMaxSpeedMetersPerSecond,
-        AutoConstants.kMaxAccelerationMetersPerSecondSquared)
-        // Add kinematics to ensure max speed is actually obeyed
-        .setKinematics(DriveConstants.kDriveKinematics);
+        // An example trajectory to follow. All units in meters.
+        Trajectory exampleTrajectory = TrajectoryGenerator.generateTrajectory(
+                // Start at the origin facing the +X direction
+                new Pose2d(0, 0, new Rotation2d(0)),
+                // Pass through these two interior waypoints, making an 's' curve path
+                List.of(new Translation2d(1, 1), new Translation2d(2, -1)),
+                // End 3 meters straight ahead of where we started, facing forward
+                new Pose2d(3, 0, new Rotation2d(0)),
+                config);
 
-    // An example trajectory to follow. All units in meters.
-    Trajectory exampleTrajectory = TrajectoryGenerator.generateTrajectory(
-        // Start at the origin facing the +X direction
-        new Pose2d(0, 0, new Rotation2d(0)),
-        // Pass through these two interior waypoints, making an 's' curve path
-        List.of(new Translation2d(1, 1), new Translation2d(2, -1)),
-        // End 3 meters straight ahead of where we started, facing forward
-        new Pose2d(3, 0, new Rotation2d(0)),
-        config);
+        var thetaController = new ProfiledPIDController(
+                AutoConstants.kPThetaController, 0, 0, AutoConstants.kThetaControllerConstraints);
+        thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
-    var thetaController = new ProfiledPIDController(
-        AutoConstants.kPThetaController, 0, 0, AutoConstants.kThetaControllerConstraints);
-    thetaController.enableContinuousInput(-Math.PI, Math.PI);
+        SwerveControllerCommand swerveControllerCommand = new SwerveControllerCommand(
+                exampleTrajectory,
+                m_robotDrive::getPose, // Functional interface to feed supplier
+                DriveConstants.kDriveKinematics,
 
-    SwerveControllerCommand swerveControllerCommand = new SwerveControllerCommand(
-        exampleTrajectory,
-        m_robotDrive::getPose, // Functional interface to feed supplier
-        DriveConstants.kDriveKinematics,
+                // Position controllers
+                new PIDController(AutoConstants.kPXController, 0, 0),
+                new PIDController(AutoConstants.kPYController, 0, 0),
+                thetaController,
+                m_robotDrive::setModuleStates,
+                m_robotDrive);
 
-        // Position controllers
-        new PIDController(AutoConstants.kPXController, 0, 0),
-        new PIDController(AutoConstants.kPYController, 0, 0),
-        thetaController,
-        m_robotDrive::setModuleStates,
-        m_robotDrive);
+        // Reset odometry to the starting pose of the trajectory.
+        m_robotDrive.resetOdometry(exampleTrajectory.getInitialPose());
 
-    // Reset odometry to the starting pose of the trajectory.
-    m_robotDrive.resetOdometry(exampleTrajectory.getInitialPose());
+        // Run path following command, then stop at the end.
+        return swerveControllerCommand.andThen(() -> m_robotDrive.drive(0, 0, 0, false, false));
+    }
 
-    // Run path following command, then stop at the end.
-    return swerveControllerCommand.andThen(() -> m_robotDrive.drive(0, 0, 0, false, false));
-  }
+    private void setUpSubsystems() {
+        if (Robot.robotType == RobotType.SIMULATION) {
+            m_frontLeftIO = new SwerveModuleIO_Sim();
+            m_frontRightIO = new SwerveModuleIO_Sim();
+            m_rearLeftIO = new SwerveModuleIO_Sim();
+            m_rearRightIO = new SwerveModuleIO_Sim();
 
-  private void setUpSubsystems(){
-    if(Robot.robotType == RobotType.SIMULATION){
-      m_frontLeftIO = new SwerveModuleIO_Sim();
-      m_frontRightIO = new SwerveModuleIO_Sim();
-      m_rearLeftIO = new SwerveModuleIO_Sim();
-      m_rearRightIO = new SwerveModuleIO_Sim();
+            m_gyro = new GyroIOSim();
+        } else {
+            m_gyro = new GyroIOPigeon2();
+            m_frontLeftIO = new SwerveModuleIO_Real(DriveConstants.kFrontLeftDrivingCanId,
+                    DriveConstants.kFrontLeftTurningCanId, DriveConstants.kFrontLeftChassisAngularOffset);
+            m_frontRightIO = new SwerveModuleIO_Real(DriveConstants.kFrontRightDrivingCanId,
+                    DriveConstants.kFrontRightTurningCanId, DriveConstants.kFrontRightChassisAngularOffset);
+            m_rearLeftIO = new SwerveModuleIO_Real(DriveConstants.kRearLeftDrivingCanId,
+                    DriveConstants.kRearLeftTurningCanId, DriveConstants.kRearLeftChassisAngularOffset);
+            m_rearRightIO = new SwerveModuleIO_Real(DriveConstants.kRearRightDrivingCanId,
+                    DriveConstants.kRearRightTurningCanId, DriveConstants.kRearRightChassisAngularOffset);
+        }
+        m_robotDrive = new DriveSubsystem(
+                new SwerveModule(m_frontLeftIO),
+                new SwerveModule(m_frontRightIO),
+                new SwerveModule(m_rearLeftIO),
+                new SwerveModule(m_rearRightIO), m_gyro);
 
     }
-    else
-    {
-      m_frontLeftIO = new SwerveModuleIO_Real(DriveConstants.kFrontLeftDrivingCanId, DriveConstants.kFrontLeftTurningCanId, DriveConstants.kFrontLeftChassisAngularOffset);
-      m_frontRightIO = new SwerveModuleIO_Real(DriveConstants.kFrontRightDrivingCanId, DriveConstants.kFrontRightTurningCanId, DriveConstants.kFrontRightChassisAngularOffset);
-      m_rearLeftIO = new SwerveModuleIO_Real(DriveConstants.kRearLeftDrivingCanId, DriveConstants.kRearLeftTurningCanId, DriveConstants.kRearLeftChassisAngularOffset);
-      m_rearRightIO = new SwerveModuleIO_Real(DriveConstants.kRearRightDrivingCanId, DriveConstants.kRearRightTurningCanId,DriveConstants.kRearRightChassisAngularOffset);
-    }
-    m_robotDrive = new DriveSubsystem(
-        new SwerveModule(m_frontLeftIO),
-        new SwerveModule(m_frontRightIO),
-        new SwerveModule(m_rearLeftIO),
-        new SwerveModule(m_rearRightIO)
-    );
-    
-  }
-
 
 }
