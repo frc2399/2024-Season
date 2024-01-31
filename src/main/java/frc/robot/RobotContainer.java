@@ -49,6 +49,7 @@ import frc.robot.subsystems.intake.RealIntake;
 import frc.robot.subsystems.shooter.RealShooter;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterIO;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -61,6 +62,7 @@ public class RobotContainer {
   // private final DriveSubsystem m_robotDrive = new DriveSubsystem();
   // private static Gyro m_gyro = new Gyro();
   public boolean fieldOrientedDrive = false;
+  public static boolean isInClimberMode = false;
   public static CommandSelector angleHeight = CommandSelector.INTAKE;
 
   public static Shooter m_shooter;
@@ -71,8 +73,8 @@ public class RobotContainer {
   // public static Arm m_arm;
 
   // The driver's controller
-  XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
-  XboxController m_operatorController = new XboxController(OIConstants.kOperatorControllerPort);
+  CommandXboxController m_driverController = new CommandXboxController(OIConstants.kDriverControllerPort);
+  CommandXboxController m_operatorController = new CommandXboxController(OIConstants.kOperatorControllerPort);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -163,26 +165,41 @@ public class RobotContainer {
     // () -> m_robotDrive.setZero(),
     // m_robotDrive));
 
-    new JoystickButton(m_driverController, XboxController.Button.kA.value)
-        .onTrue(new InstantCommand(
-            () -> fieldOrientedDrive = !fieldOrientedDrive));
+    m_operatorController.a().onTrue(new InstantCommand(
+      () -> fieldOrientedDrive = !fieldOrientedDrive));
+    //below is old version of button binding
+    //new JoystickButton(m_driverController, XboxController.Button.kA.value)
+        //.onTrue(new InstantCommand(
+            //() -> fieldOrientedDrive = !fieldOrientedDrive));
 
     // new JoystickButton(m_driverController, XboxController.Button.kB.value)
     // .onTrue(new InstantCommand(
     // () -> m_gyro.resetYaw(), m_gyro));
 
-    new JoystickButton(m_driverController, XboxController.Button.kLeftBumper.value)
-        .whileTrue(new InstantCommand(
-            () -> m_shooter.setMotor(0.8)));
+    m_driverController.leftBumper().and(()->!isInClimberMode).whileTrue(new InstantCommand(
+      () -> m_shooter.setMotor(0.8)));
 
+    //below is old version of button binding
+    //new JoystickButton(m_driverController, XboxController.Button.kLeftBumper.value)
+        //.whileTrue(new InstantCommand(
+            //() -> m_shooter.setMotor(0.8)));
+
+    m_operatorController.rightBumper().and(()->!isInClimberMode).onTrue(new ParallelCommandGroup(
+      new SequentialCommandGroup(
+          new WaitUntilCommand(() -> m_shooter.getEncoderSpeed() == Constants.ShooterConstants.speakerSpeed),
+          new InstantCommand(() -> intakeIO.setMotor(0.8))),
+      new InstantCommand(() -> m_shooter.setMotor(Constants.ShooterConstants.speakerSpeed))
+  ));
+
+    //below is old version of button binding
     //run shooter, wait until shooter reaches set speed, run intake to feed shooter
-    new JoystickButton(m_operatorController, XboxController.Button.kRightBumper.value)
-        .onTrue(new ParallelCommandGroup(
-            new SequentialCommandGroup(
-                new WaitUntilCommand(() -> m_shooter.getEncoderSpeed() == Constants.ShooterConstants.speakerSpeed),
-                new InstantCommand(() -> intakeIO.setMotor(0.8))),
-            new InstantCommand(() -> m_shooter.setMotor(Constants.ShooterConstants.speakerSpeed))
-        ));
+    //new JoystickButton(m_operatorController, XboxController.Button.kRightBumper.value)
+        // .onTrue(new ParallelCommandGroup(
+        //     new SequentialCommandGroup(
+        //         new WaitUntilCommand(() -> m_shooter.getEncoderSpeed() == Constants.ShooterConstants.speakerSpeed),
+        //         new InstantCommand(() -> intakeIO.setMotor(0.8))),
+        //     new InstantCommand(() -> m_shooter.setMotor(Constants.ShooterConstants.speakerSpeed))
+        // ));
 
     // Left trigger to intake
     // new Trigger(() -> m_driverController.getRawAxis(Axis.kLeftTrigger.value) >
@@ -207,6 +224,7 @@ public class RobotContainer {
     // .onFalse(makeSetSpeedGravityCompensationCommand(m_arm, 0));
   }
 
+  
   public static Command makeSetPositionCommand(ProfiledPIDSubsystem base, double target) {
     return new SequentialCommandGroup(
         new ConditionalCommand(new InstantCommand(() -> {
