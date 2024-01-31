@@ -125,6 +125,7 @@ public class RobotContainer {
     new Trigger(() -> m_driverController.getRawAxis(Axis.kRightY.value) < -0.1).whileTrue(makeSetSpeedGravityCompensationCommand(arm, 0.1)).onFalse(makeSetSpeedGravityCompensationCommand(arm, 0));
     new Trigger(() -> m_driverController.getRawAxis(Axis.kRightY.value) > 0.1).whileTrue(makeSetSpeedGravityCompensationCommand(arm, -0.1)).onFalse(makeSetSpeedGravityCompensationCommand(arm, 0));
 
+    // m_driverController.a().onTrue(setkG(arm, SmartDashboard.getNumber("kG", 0)));
     // new JoystickButton(m_driverController, XboxController.Button.kB.value)
     // .onTrue(new InstantCommand(
     // () -> m_gyro.resetYaw(), m_gyro));
@@ -139,6 +140,10 @@ public class RobotContainer {
         new InstantCommand(() -> a.disable()),
         new RunCommand(() -> a.setSpeedGravityCompensation(speed), a));
   }
+
+  // private Command setkG(Arm a, double kG) {
+  //   return new InstantCommand(() -> a.setkG(kG));
+  // }
 
   public static Command makeSetPositionCommand(ProfiledPIDSubsystem base, double target) {
     return new SequentialCommandGroup(

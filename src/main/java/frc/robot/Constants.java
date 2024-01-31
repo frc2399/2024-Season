@@ -186,7 +186,8 @@ public final class Constants {
     public static final double RADIANS_PER_REVOLUTION = 2 * Math.PI / 192;
     // initial offset is 0.711 + (0.287) - (0.308)
     //for later: height between top of arm and drivetrain, then use that, length of arm, and trig to get the offset
-    public static final double INITIAL_OFFSET = 0.558505;
+    // public static final double INITIAL_OFFSET = 0.558505;
+     public static final double INITIAL_OFFSET = 0;
 
     // can be 2 degrees off from goal setpoints and still considered at goal; made
     // higher so arm.atGoal() in placeConeOnNode cmd will execute in auton
