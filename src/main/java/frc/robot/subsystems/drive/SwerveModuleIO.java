@@ -5,9 +5,11 @@ public interface SwerveModuleIO {
         public double drivePositionMeters = 0.0;
         public double driveVelocityMPS = 0.0;
         public double driveAppliedVolts = 0.0;
+        public double driveBusVoltage = 0.0;
     
         public double turnPositionRad = 0.0;
         public double turnAppliedVolts = 0.0;
+        public double turnBusVoltage = 0.0; 
     }
 
     public void updateInputs(SwerveModuleIOInputs inputs);
@@ -20,7 +22,8 @@ public interface SwerveModuleIO {
        
     public double getTurnEncoderPosition();
     public void setDesiredTurnAngle(double angle);
-    public double getDriveVolts();
+    public double getDriveBusVoltage();
     public double getDriveOutput();
-    public double getTurnVolts(); 
+    public double getTurnBusVoltage(); 
+    public double getTurnOutput();
 }

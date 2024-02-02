@@ -102,10 +102,12 @@ public class SwerveModuleIO_Real implements SwerveModuleIO {
 
 
     public void updateInputs(SwerveModuleIOInputs inputs){
-        inputs.driveAppliedVolts = getDriveVolts();
+        inputs.driveBusVoltage = getDriveBusVoltage();
+        inputs.driveAppliedVolts = getDriveBusVoltage() * getDriveOutput();
         inputs.drivePositionMeters = getDriveEncoderPosition();
         inputs.driveVelocityMPS = getDriveEncoderSpeedMPS();
-        inputs.turnAppliedVolts = getTurnVolts();
+        inputs.turnBusVoltage = getTurnBusVoltage();
+        inputs.turnAppliedVolts = getTurnBusVoltage() * getTurnOutput();
         inputs.turnPositionRad = getTurnEncoderPosition();
         
     }
@@ -136,8 +138,8 @@ public class SwerveModuleIO_Real implements SwerveModuleIO {
         m_turningPIDController.setReference(angle, ControlType.kPosition);
      };
 
-     //TODO: CHECK THIS!! what is busVoltage? 
-     public double getDriveVolts(){
+
+     public double getDriveBusVoltage(){
         return m_drivingSparkMax.getBusVoltage();
      }
 
@@ -145,8 +147,13 @@ public class SwerveModuleIO_Real implements SwerveModuleIO {
         return m_drivingSparkMax.getAppliedOutput();
      }
 
-     public double getTurnVolts(){
+     public double getTurnBusVoltage(){
         return m_turningSparkMax.getBusVoltage();
      }
+
+     public double getTurnOutput(){
+         return m_turningSparkMax.getAppliedOutput();
+     }
 }
+
 

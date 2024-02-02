@@ -20,8 +20,8 @@ public class SwerveModuleIO_Sim implements SwerveModuleIO{
     private DCMotorSim turnMotor =
       new DCMotorSim(DCMotor.getNeo550(1), Constants.ModuleConstants.kTurningMotorReduction, 0.025);
 
-   private SimEncoder m_turningEncoder = new SimEncoder("turn");
-    private SimEncoder m_drivingEncoder = new SimEncoder("drive");
+   private SimEncoder m_turningEncoder;
+    private SimEncoder m_drivingEncoder;
     // Random initial position to simulate arbitrary starting positions
     private final Rotation2d turnAbsoluteInitialPosition =
       new Rotation2d(Math.random() * 2 * Math.PI); // Random initial position
@@ -37,6 +37,11 @@ public class SwerveModuleIO_Sim implements SwerveModuleIO{
         new SimpleMotorFeedforward(0.0, Constants.ModuleConstants.kDrivingFF * 12);
 
     private SwerveModuleState setpoint = new SwerveModuleState();
+
+    public SwerveModuleIO_Sim(String name){
+      m_drivingEncoder = new SimEncoder(name + " drive encoder");
+      m_turningEncoder = new SimEncoder(name + " turn encoder");
+    }
     
     public void updateInputs(SwerveModuleIOInputs inputs){
 
@@ -64,7 +69,7 @@ public class SwerveModuleIO_Sim implements SwerveModuleIO{
      public void setDesiredTurnAngle(double angle){
         m_turningPIDController.setSetpoint(angle);
      };
-     public double getDriveVolts(){
+     public double getDriveBusVoltage(){
         return 0;
      };
 
@@ -72,7 +77,11 @@ public class SwerveModuleIO_Sim implements SwerveModuleIO{
         return 0;
      }
      
-     public double getTurnVolts(){
+     public double getTurnBusVoltage(){
         return 0;
+     }
+
+     public double getTurnOutput(){
+         return 0;
      }
 }

@@ -42,14 +42,14 @@ public class SwerveModule{
     public void resetEncoders(){
         io.setDriveEncoderPosition(0);
     }
-    public double getDriveVolts() {
-        return io.getDriveVolts();
+    public double getDriveBusVoltage() {
+        return io.getDriveBusVoltage();
     }
     public double getDriveOutput() {
         return io.getDriveOutput();
     }
-    public double getTurnVolts(){
-        return io.getTurnVolts();
+    public double getTurnBusVoltage(){
+        return io.getTurnBusVoltage();
     }
 
     

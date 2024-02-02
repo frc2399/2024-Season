@@ -40,11 +40,16 @@ public final class Constants {
     // Distance between centers of right and left wheels on robot
     public static final double kWheelBase = Units.inchesToMeters(23);
     // Distance between front and back wheels on robot
+    public static final Translation2d FRONT_LEFT_OFFSET = new Translation2d(kWheelBase / 2, kTrackWidth / 2); // front left
+    public static final Translation2d REAR_LEFT_OFFSET = new Translation2d(-kWheelBase / 2, kTrackWidth / 2); // rear left
+    public static final Translation2d FRONT_RIGHT_OFFSET = new Translation2d(kWheelBase / 2, -kTrackWidth / 2); // front right
+    public static final Translation2d REAR_RIGHT_OFFSET = new Translation2d(-kWheelBase / 2, -kTrackWidth / 2); // rear right
+
     public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(
-        new Translation2d(kWheelBase / 2, kTrackWidth / 2),
-        new Translation2d(kWheelBase / 2, -kTrackWidth / 2),
-        new Translation2d(-kWheelBase / 2, kTrackWidth / 2),
-        new Translation2d(-kWheelBase / 2, -kTrackWidth / 2));
+        FRONT_LEFT_OFFSET,
+        FRONT_RIGHT_OFFSET,
+        REAR_LEFT_OFFSET,
+        REAR_RIGHT_OFFSET);
 
     // Angular offsets of the modules relative to the chassis in radians
     // public static final double kFrontLeftChassisAngularOffset = -Math.PI / 2 + 3.6128315516282616;

@@ -8,14 +8,18 @@ import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.WPIUtilJNI;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 
 import frc.robot.subsystems.gyro.GyroIO;
@@ -54,6 +58,13 @@ public class DriveSubsystem extends SubsystemBase {
   private double pitchRate;
   private GyroIO m_gyro;
 
+  private final Field2d field2d = new Field2d();
+  private FieldObject2d frontLeftField2dModule = field2d.getObject("front left module");
+  private FieldObject2d rearLeftField2dModule = field2d.getObject("rear left module");
+  private FieldObject2d frontRightField2dModule = field2d.getObject("front right module");
+  private FieldObject2d rearRightField2dModule = field2d.getObject("rear right module");
+
+
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem(SwerveModule m_frontLeft, SwerveModule m_frontRight, SwerveModule m_rearLeft, SwerveModule m_rearRight, GyroIO m_gyro) {
     this.m_gyro = m_gyro;
@@ -72,6 +83,7 @@ public class DriveSubsystem extends SubsystemBase {
           m_rearRight.getPosition()
       });
     
+      SmartDashboard.putData(field2d);
   }
 
   @Override
@@ -89,10 +101,10 @@ public class DriveSubsystem extends SubsystemBase {
     // SmartDashboard.putNumber("Gyro roll", Gyro.roll % 360);
     // pitchRate = derivativeCalculator.calculate(getGyroPitch());
     //Drive input log
-    SmartDashboard.putNumber("Right Front Drive Input", m_frontRight.getDriveVolts());
-    SmartDashboard.putNumber("Left Front Drive Input", m_frontLeft.getDriveVolts());
-    SmartDashboard.putNumber("Right Rear Drive Input", m_rearRight.getDriveVolts());
-    SmartDashboard.putNumber("Left Rear Drive Input", m_rearLeft.getDriveVolts());
+    SmartDashboard.putNumber("Right Front Drive Input", m_frontRight.getDriveBusVoltage());
+    SmartDashboard.putNumber("Left Front Drive Input", m_frontLeft.getDriveBusVoltage());
+    SmartDashboard.putNumber("Right Rear Drive Input", m_rearRight.getDriveBusVoltage());
+    SmartDashboard.putNumber("Left Rear Drive Input", m_rearLeft.getDriveBusVoltage());
     //Drive output log
     SmartDashboard.putNumber("Right Front Drive Output", m_frontRight.getDriveOutput());
     SmartDashboard.putNumber("Left Front Drive Output", m_frontLeft.getDriveOutput());
@@ -103,8 +115,32 @@ public class DriveSubsystem extends SubsystemBase {
     m_frontLeft.updateInputs();
     m_rearLeft.updateInputs();
     m_frontRight.updateInputs();
-    m_rearLeft.updateInputs();
-  }
+    m_rearRight.updateInputs();
+
+    field2d.setRobotPose(getPose());
+
+    frontLeftField2dModule.setPose(getPose().transformBy(new Transform2d(
+      Constants.DriveConstants.FRONT_LEFT_OFFSET, 
+      new Rotation2d(m_frontLeft.getTurnEncoderPosition()))));
+
+    rearLeftField2dModule.setPose(getPose().transformBy(new Transform2d(
+      Constants.DriveConstants.REAR_LEFT_OFFSET, 
+      new Rotation2d(m_rearLeft.getTurnEncoderPosition()))));
+
+    frontRightField2dModule.setPose(getPose().transformBy(new Transform2d(
+      Constants.DriveConstants.FRONT_RIGHT_OFFSET, 
+      new Rotation2d(m_frontRight.getTurnEncoderPosition()))));
+
+    rearRightField2dModule.setPose(getPose().transformBy(new Transform2d(
+      Constants.DriveConstants.REAR_RIGHT_OFFSET, 
+      new Rotation2d(m_rearRight.getTurnEncoderPosition()))));
+
+    
+    }
+    // Log empty setpoint states when disabled
+    
+
+  
 
   /**
    * Returns the currently-estimated pose of the robot.

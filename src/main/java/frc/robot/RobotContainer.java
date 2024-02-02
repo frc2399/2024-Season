@@ -161,10 +161,10 @@ public class RobotContainer {
 
     private void setUpSubsystems() {
         if (Robot.robotType == RobotType.SIMULATION) {
-            m_frontLeftIO = new SwerveModuleIO_Sim();
-            m_frontRightIO = new SwerveModuleIO_Sim();
-            m_rearLeftIO = new SwerveModuleIO_Sim();
-            m_rearRightIO = new SwerveModuleIO_Sim();
+            m_frontLeftIO = new SwerveModuleIO_Sim("front left");
+            m_frontRightIO = new SwerveModuleIO_Sim("front right");
+            m_rearLeftIO = new SwerveModuleIO_Sim("rear left");
+            m_rearRightIO = new SwerveModuleIO_Sim("rear right");
 
             m_gyro = new GyroIOSim();
         } else {
