@@ -117,6 +117,12 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Left Front Turn Speed", m_frontLeft.getTurnAngle());
     SmartDashboard.putNumber("Right Rear Turn Speed", m_rearRight.getTurnAngle());
     SmartDashboard.putNumber("Left Rear Turn Speed", m_rearLeft.getTurnAngle());
+    //Drive motor currents
+    SmartDashboard.putNumber("Right Front Drive Current", m_frontRight.getDriveCurrent());
+    SmartDashboard.putNumber("Left Front Drive Current", m_frontLeft.getDriveCurrent());
+    SmartDashboard.putNumber("Right Rear Drive Current", m_rearRight.getDriveCurrent());
+    SmartDashboard.putNumber("Left Rear Drive Current", m_rearLeft.getDriveCurrent());
+    //Turn motor currents
   }
 
   /**
@@ -164,6 +170,7 @@ public class DriveSubsystem extends SubsystemBase {
 
     if (currentAngle == 0) {
       desiredAngle = 0;
+      newRotRate = rotRate;
     }
 
     else if(rotRate == 0) {

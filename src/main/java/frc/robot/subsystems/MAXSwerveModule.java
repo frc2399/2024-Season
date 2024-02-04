@@ -185,4 +185,14 @@ public class MAXSwerveModule {
   public double getTurnAngle() {
     return m_turningEncoder.getPosition();
   }
+
+  public double getDriveCurrent()
+  {
+    return m_drivingSparkMax.getOutputCurrent();
+  }
+
+   public double getTurnCurrent()
+  {
+    return m_turningSparkMax.getOutputCurrent();
+  }
 }
