@@ -95,12 +95,12 @@ public class RobotContainer {
     private void configureButtonBindings() {
         // right bumper?
         new JoystickButton(m_driverController, XboxController.Button.kX.value)
-                .whileTrue(new RunCommand(
+                .onTrue(new RunCommand(
                         () -> m_robotDrive.setX(),
                         m_robotDrive));
 
         new JoystickButton(m_driverController, XboxController.Button.kY.value)
-                .whileTrue(new RunCommand(
+                .onTrue(new RunCommand(
                         () -> m_robotDrive.setZero(),
                         m_robotDrive));
 

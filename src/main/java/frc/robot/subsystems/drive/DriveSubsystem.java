@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems.drive;
 
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -15,6 +16,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.WPIUtilJNI;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -33,6 +35,10 @@ public class DriveSubsystem extends SubsystemBase {
 
   // The gyro sensor
   // private final AHRS ahrs = new AHRS(SPI.Port.kMXP, (byte) 66);
+
+   // Odometry
+  private SwerveDrivePoseEstimator poseEstimator;
+
 
   //swerve modules
   private SwerveModule m_frontLeft; 
@@ -84,6 +90,10 @@ public class DriveSubsystem extends SubsystemBase {
       });
     
       SmartDashboard.putData(field2d);
+
+    poseEstimator =
+    new SwerveDrivePoseEstimator(
+        Constants.DriveConstants.kDriveKinematics, new Rotation2d(m_gyro.getYaw()), getModulePositions(), new Pose2d());
   }
 
   @Override
@@ -151,6 +161,21 @@ public class DriveSubsystem extends SubsystemBase {
     return m_odometry.getPoseMeters();
   }
 
+   /** Returns the current odometry rotation. */
+  public Rotation2d getRotation() {
+    return getPose().getRotation();
+
+  }
+
+  /** Resets the current odometry pose. */
+  public void setPose(Pose2d pose) {
+    if (RobotBase.isReal()) {
+      poseEstimator.resetPosition(new Rotation2d(m_gyro.getYaw()), getModulePositions(), pose);
+    } else {
+      poseEstimator.resetPosition(pose.getRotation(), getModulePositions(), pose);
+    }
+  }
+
   /**
    * Resets the odometry to the specified pose.
    *
@@ -187,6 +212,7 @@ public class DriveSubsystem extends SubsystemBase {
 
     if (currentAngle == 0) {
       desiredAngle = 0;
+      newRotRate = rotRate;
     }
 
     else if(rotRate == 0) {
@@ -336,4 +362,14 @@ public class DriveSubsystem extends SubsystemBase {
   // {
   //     return pitchRate;
   // }
+
+  // Returns the distance and angle of each module
+  private SwerveModulePosition[] getModulePositions() {
+    SwerveModulePosition[] positions = new SwerveModulePosition[4];
+    positions[0] = m_frontLeft.getPosition();
+    positions[1] = m_frontRight.getPosition();
+    positions[2] = m_rearLeft.getPosition();
+    positions[3] = m_rearRight.getPosition();
+    return positions;
+  }
 }

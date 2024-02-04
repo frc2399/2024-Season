@@ -48,15 +48,15 @@ public class SwerveModuleIO_Sim implements SwerveModuleIO{
     };
     
     public void setDriveEncoderPosition(double position){
-
+      m_drivingEncoder.setDistance(position);
     };
         
      public double getDriveEncoderPosition(){
-        return 0; 
+        return m_drivingEncoder.getDistance(); 
      };
       
      public double getDriveEncoderSpeedMPS(){
-        return 0; 
+        return m_drivingEncoder.getSpeed(); 
      };
         
      public double getTurnEncoderPosition(){
