@@ -28,14 +28,26 @@ public class Intake extends SubsystemBase {
   }
 
   //returns speed of the intake
-  public double getEncoderSpeed() {
-    return intakeIO.getEncoderSpeed();
+  public double getLeftEncoderSpeed() {
+    return intakeIO.getLeftEncoderSpeed();
   }
 
-  public void setCurrentLimit(int current) {
-    intakeIO.setCurrentLimit(current);
+  public double getRightEncoderSpeed() {
+    return intakeIO.getRightEncoderSpeed();
   }
 
+  public void setLeftCurrentLimit(int current) {
+    intakeIO.setLeftCurrentLimit(current);
+  }
+
+  public void setRightCurrentLimit(int current) {
+    intakeIO.setRightCurrentLimit(current);
+  }
+
+  public boolean isIntooked()
+{
+  return intakeIO.isIntooked();
+}
   @Override
   public void periodic() {
     // This method will be called once per scheduler run

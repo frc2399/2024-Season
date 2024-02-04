@@ -72,6 +72,7 @@ public class RobotContainer {
   public static CommandSelector angleHeight = CommandSelector.INTAKE;
 
   public static Shooter m_shooter;
+  public static Intake m_intake;
   ShooterIO shooterIO;
   IntakeIO intakeIO;
   IndexerIO indexerIO;
@@ -116,7 +117,7 @@ public class RobotContainer {
     
     // armIO = new RealArm();
     // initialize subsystems
-    // m_intake = new Intake(intakeIO);
+    m_intake = new Intake(intakeIO);
     // m_arm = new Arm(armIO);
     m_shooter = new Shooter(shooterIO);
   }
@@ -131,10 +132,10 @@ public class RobotContainer {
             m_shooter));
 
     // default command for intake: do nothing
-    // m_intake.setDefaultCommand(
-    // new InstantCommand(
-    // () -> m_intake.setMotor(0),
-    // m_intake));
+    m_intake.setDefaultCommand(
+      new InstantCommand(
+        () -> m_intake.setMotor(0),
+        m_intake));
 
     // default command for drivetrain: drive based on controller inputs
     // m_robotDrive.setDefaultCommand(
@@ -204,9 +205,15 @@ public class RobotContainer {
     m_operatorController.rightBumper().and(()->!isInClimberMode).onTrue(new ParallelCommandGroup(
       new SequentialCommandGroup(
           new WaitUntilCommand(() -> m_shooter.getEncoderSpeed() == Constants.ShooterConstants.speakerSpeed),
-          new InstantCommand(() -> intakeIO.setMotor(0.8))),
+          new InstantCommand(() -> m_intake.setMotor(0.8))),
       new InstantCommand(() -> m_shooter.setMotor(Constants.ShooterConstants.speakerSpeed))
   ));
+
+  //change the button binding and finish command
+  m_operatorController.rightTrigger().and(()->!isInClimberMode).onTrue(new SequentialCommandGroup(
+      new InstantCommand(() -> intakeIO.setMotor(0.8)),
+      new WaitUntilCommand(() -> m_intake.isIntooked()),
+      new InstantCommand(() -> intakeIO.setMotor(0))));
 
     //below is old version of button binding
     //run shooter, wait until shooter reaches set speed, run intake to feed shooter

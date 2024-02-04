@@ -136,7 +136,8 @@ public final class Constants {
 
   public static final class IntakeConstants {
 
-    public static final int INTAKE_MOTOR_ID = 2;
+    public static final int LEFT_INTAKE_MOTOR_ID = 1;
+    public static final int RIGHT_INTAKE_MOTOR_ID = 2;
     public static final double INTAKE_SLEW_RATE = 10;
   }
 
