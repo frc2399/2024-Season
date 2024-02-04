@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.Map;
 
 import frc.robot.subsystems.*;
+import frc.robot.subsystems.Indexer.Indexer;
 import frc.robot.subsystems.Indexer.IndexerIO;
 import frc.robot.subsystems.Indexer.RealIndexer;
 import frc.robot.subsystems.Indexer.SimIndexer;
@@ -73,6 +74,7 @@ public class RobotContainer {
 
   public static Shooter m_shooter;
   public static Intake m_intake;
+  public static Indexer m_indexer;
   ShooterIO shooterIO;
   IntakeIO intakeIO;
   IndexerIO indexerIO;
@@ -120,6 +122,7 @@ public class RobotContainer {
     m_intake = new Intake(intakeIO);
     // m_arm = new Arm(armIO);
     m_shooter = new Shooter(shooterIO);
+    m_indexer = new Indexer(indexerIO);
   }
 
   // Configure default commands
@@ -136,6 +139,11 @@ public class RobotContainer {
       new InstantCommand(
         () -> m_intake.setMotor(0),
         m_intake));
+    
+    m_indexer.setDefaultCommand(
+        new InstantCommand(
+          () -> m_indexer.setMotor(0),
+          m_indexer));
 
     // default command for drivetrain: drive based on controller inputs
     // m_robotDrive.setDefaultCommand(
