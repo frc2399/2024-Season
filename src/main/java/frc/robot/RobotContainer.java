@@ -239,19 +239,19 @@ public class RobotContainer {
     //     new InstantCommand(() -> intakeIO.setMotor(0))));
 
     m_operatorController.leftTrigger().and(() -> isInClimberMode).whileTrue(new RunCommand(
-        () -> m_climber.setLeftSpeed(0.1), m_climber)
+        () -> m_climber.setLeftSpeed(0.2), m_climber)
 
     );
     m_operatorController.rightTrigger().and(() -> isInClimberMode).whileTrue(new RunCommand(
-        () -> m_climber.setRightSpeed(0.1), m_climber)
+        () -> m_climber.setRightSpeed(0.2), m_climber)
 
     );
     m_operatorController.leftBumper().and(() -> isInClimberMode).whileTrue(new RunCommand(
-        () -> m_climber.setLeftSpeed(-0.1), m_climber)
+        () -> m_climber.setLeftSpeed(-0.2), m_climber)
 
     );
     m_operatorController.rightBumper().and(() -> isInClimberMode).whileTrue(new RunCommand(
-        () -> m_climber.setRightSpeed(-0.1), m_climber)
+        () -> m_climber.setRightSpeed(-0.2), m_climber)
 
     );
     m_operatorController.x().onTrue(new InstantCommand(() -> isInClimberMode = !isInClimberMode));

@@ -52,10 +52,10 @@ public class ClimberReal implements ClimberIO {
     public ClimberReal() {
 
         //initialize motor controllers
-        leftMotorController = MotorUtil.createSparkMAX(ClimberConstants.LEFT_CLIMBER_MOTOR_ID, MotorType.kBrushless, 20, true,
+        leftMotorController = MotorUtil.createSparkMAX(ClimberConstants.LEFT_CLIMBER_MOTOR_ID, MotorType.kBrushless, 50, true,
                 true, 0.5);
         rightMotorController = MotorUtil.createSparkMAX(ClimberConstants.RIGHT_CLIMBER_MOTOR_ID, MotorType.kBrushless,
-                20, false, true, 0.5);
+                50, false, true, 0.5);
 
 
 
@@ -94,13 +94,14 @@ public class ClimberReal implements ClimberIO {
         leftMotorController.setInverted(false);
         rightMotorController.setInverted(false);
 
-        // reset encoders to zero
-        leftEncoder.setPosition(0.2);
-        rightEncoder.setPosition(0.2);
 
         // set encoder velocity to meters/second
         leftEncoder.setPositionConversionFactor((2 * (Math.PI) * ClimberConstants.CLIMBER_RADIUS) / 60);
         rightEncoder.setPositionConversionFactor((2 * (Math.PI) * ClimberConstants.CLIMBER_RADIUS) / 60);
+
+        // reset encoders to zero
+        leftEncoder.setPosition(0.0);
+        rightEncoder.setPosition(0.0);
 
 
 
@@ -123,7 +124,7 @@ public class ClimberReal implements ClimberIO {
 
     // left basic climbing with just speed
     public void setLeftSpeed(double speed) {
-        if (isLeftRetracted()) {
+        if ((isLeftRetracted() && speed < 0)) {
             leftMotorController.set(0);
             leftClimberMotor.setDouble(0);
         } else {
@@ -136,7 +137,7 @@ public class ClimberReal implements ClimberIO {
 
     // left climbing with setpoint
     public void setLeftMotor(double setpoint) {
-        if (isLeftRetracted() || (isLeftSideStalling() && !isRightSideStalling())) {
+        if ((isLeftRetracted() && setpoint < 0) || (isLeftSideStalling() && !isRightSideStalling())) {
             leftMotorController.set(0);
             leftClimberMotor.setDouble(0);
         } else {
@@ -148,7 +149,7 @@ public class ClimberReal implements ClimberIO {
 
     // right basic climbing with just speed
     public void setRightSpeed(double speed) {
-        if (isRightRetracted()) {
+        if ((isRightRetracted()&& speed < 0)) {
             rightMotorController.set(0);
             rightClimberMotor.setDouble(0);
         } else {
@@ -161,7 +162,7 @@ public class ClimberReal implements ClimberIO {
 
     // right climing with setpoint
     public void setRightMotor(double setpoint) {
-        if (isRightRetracted() || (isRightSideStalling() && !isLeftSideStalling())) {
+        if ((isRightRetracted() && setpoint < 0) || (isRightSideStalling() && !isLeftSideStalling())) {
             rightMotorController.set(0);
             rightClimberMotor.setDouble(0);
         } else {

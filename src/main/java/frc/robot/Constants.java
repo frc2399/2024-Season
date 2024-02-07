@@ -202,7 +202,7 @@ public final class Constants {
     public static final int EXTEND_PISTON = 4;
     public static final int RETRACT_PISTON = 5;
 
-    public static final double VELOCITY_THRESHHOLD = 100;
+    public static final double VELOCITY_THRESHHOLD = 150;
 
     public static final double CLIMBER_RADIUS = 0.375; 
 
