@@ -9,6 +9,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.simulation.BatterySim;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.utils.SimEncoder;
 
@@ -29,6 +30,7 @@ public class SwerveModuleIO_Sim implements SwerveModuleIO{
     // Variables to track various module information
     private double driveVolts = 0.0;
     private double turnVolts = 0.0;
+    private String name;
 
     // Sim-Tuned PID Controllers
     private PIDController m_turningPIDController = new PIDController(15, 0.0, 0.0);
@@ -41,6 +43,7 @@ public class SwerveModuleIO_Sim implements SwerveModuleIO{
     public SwerveModuleIO_Sim(String name){
       m_drivingEncoder = new SimEncoder(name + " drive encoder");
       m_turningEncoder = new SimEncoder(name + " turn encoder");
+      this.name=name;
     }
     
     public void updateInputs(SwerveModuleIOInputs inputs){
@@ -63,18 +66,34 @@ public class SwerveModuleIO_Sim implements SwerveModuleIO{
       return m_turningEncoder.getDistance();
      };
  
+
      public void setDesiredDriveSpeedMPS(double speed){
-      m_drivingPIDController.setSetpoint(speed);
+      double pidOut = m_drivingPIDController.calculate(getDriveEncoderSpeedMPS(),speed);
+      SmartDashboard.putNumber(name + " desired drive speed", speed);
+      SmartDashboard.putNumber(name + " actual drive speed", getDriveEncoderSpeedMPS());
+      SmartDashboard.putNumber(name +  "motor speed", pidOut);
+      SmartDashboard.putNumber("motor velocity", driveMotor.getAngularVelocityRPM());
+
+      
+
+
+    // Apply PID output
+    driveMotor.setInput(pidOut);
+    driveMotor.getAngularVelocityRPM();
+    
      };
      public void setDesiredTurnAngle(double angle){
-        m_turningPIDController.setSetpoint(angle);
+      double pidOut = m_turningPIDController.calculate(getTurnEncoderPosition(), angle);
+
+      // Apply PID output
+      turnMotor.setInput(pidOut);
      };
      public double getDriveBusVoltage(){
         return 0;
      };
 
      public double getDriveOutput(){
-        return 0;
+        return driveMotor.getOutput(0);
      }
      
      public double getTurnBusVoltage(){

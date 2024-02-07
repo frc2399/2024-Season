@@ -17,6 +17,8 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -99,12 +101,17 @@ public class DriveSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This will get the simulated sensor readings that we set
-    // in the previous article while in simulation, but will use
+// in the previous article while in simulation, but will use
     // real values on the robot itself.
-    // m_odometry.update(m_gyro.getRotation2d(),
-    // m_leftEncoder.getDistance(),
-    // m_rightEncoder.getDistance());
-    // m_field.setRobotPose(m_odometry.getPoseMeters());
+    poseEstimator.updateWithTime(Timer.getFPGATimestamp(), Rotation2d.fromDegrees(m_gyro.getYaw()),
+        new SwerveModulePosition[] {
+            m_frontLeft.getPosition(),
+            m_frontRight.getPosition(),
+            m_rearLeft.getPosition(),
+            m_rearRight.getPosition()
+        });
+    SmartDashboard.putNumber("front left position", m_frontLeft.getPosition().distanceMeters);
+    SmartDashboard.putNumber("front left angle", m_frontLeft.getPosition().angle.getDegrees());
     //Gyro log (spain without the a followed by spain without the s)
     SmartDashboard.putNumber("Gyro angle", m_gyro.getYaw() % 360);
     // SmartDashboard.putNumber("Gyro pitch", Gyro.pitch % 360);
