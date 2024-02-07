@@ -52,10 +52,10 @@ public class ClimberReal implements ClimberIO {
     public ClimberReal() {
 
         //initialize motor controllers
-        leftMotorController = MotorUtil.createSparkMAX(ClimberConstants.LEFT_CLIMBER_MOTOR_ID, MotorType.kBrushless, 0, true,
-                true, 0.1);
+        leftMotorController = MotorUtil.createSparkMAX(ClimberConstants.LEFT_CLIMBER_MOTOR_ID, MotorType.kBrushless, 20, true,
+                true, 0.5);
         rightMotorController = MotorUtil.createSparkMAX(ClimberConstants.RIGHT_CLIMBER_MOTOR_ID, MotorType.kBrushless,
-                0, false, true, 0.1);
+                20, false, true, 0.5);
 
 
 
@@ -68,8 +68,8 @@ public class ClimberReal implements ClimberIO {
         rightDebouncer = new Debouncer(0.15);
 
         // converts encoder rotations to distance (meters)
-        leftEncoder.setPositionConversionFactor(1 / (2 * (Math.PI) * 0.375));
-        rightEncoder.setPositionConversionFactor(1 / (2 * (Math.PI) * 0.375));
+        leftEncoder.setPositionConversionFactor((2 * (Math.PI) * ClimberConstants.CLIMBER_RADIUS));
+        rightEncoder.setPositionConversionFactor((2 * (Math.PI) * ClimberConstants.CLIMBER_RADIUS));
 
         // initialize motor pid controllers
         leftPIDController = leftMotorController.getPIDController();
@@ -95,12 +95,12 @@ public class ClimberReal implements ClimberIO {
         rightMotorController.setInverted(false);
 
         // reset encoders to zero
-        leftEncoder.setPosition(0);
-        rightEncoder.setPosition(0);
+        leftEncoder.setPosition(0.2);
+        rightEncoder.setPosition(0.2);
 
         // set encoder velocity to meters/second
-        leftEncoder.setPositionConversionFactor(1 / (2 * (Math.PI) * 0.375) / 60);
-        rightEncoder.setPositionConversionFactor(1 / (2 * (Math.PI) * 0.375) / 60);
+        leftEncoder.setPositionConversionFactor((2 * (Math.PI) * ClimberConstants.CLIMBER_RADIUS) / 60);
+        rightEncoder.setPositionConversionFactor((2 * (Math.PI) * ClimberConstants.CLIMBER_RADIUS) / 60);
 
 
 
@@ -210,3 +210,4 @@ public class ClimberReal implements ClimberIO {
     }
 
 }
+
