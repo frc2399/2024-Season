@@ -68,8 +68,8 @@ public class ClimberReal implements ClimberIO {
         rightDebouncer = new Debouncer(0.15);
 
         // converts encoder rotations to distance (meters)
-        leftEncoder.setPositionConversionFactor(1 / (2 * (Math.PI) * 0.375));
-        rightEncoder.setPositionConversionFactor(1 / (2 * (Math.PI) * 0.375));
+        leftEncoder.setPositionConversionFactor(Constants.ENCODER_METERS);
+        rightEncoder.setPositionConversionFactor(Constants.ENCODER_METERS);
 
         // initialize motor pid controllers
         leftPIDController = leftMotorController.getPIDController();
@@ -99,8 +99,8 @@ public class ClimberReal implements ClimberIO {
         rightEncoder.setPosition(0);
 
         // set encoder velocity to meters/second
-        leftEncoder.setPositionConversionFactor(1 / (2 * (Math.PI) * 0.375) / 60);
-        rightEncoder.setPositionConversionFactor(1 / (2 * (Math.PI) * 0.375) / 60);
+        leftEncoder.setPositionConversionFactor(Constants.ENCODER_VELOCITY_MPS);
+        rightEncoder.setPositionConversionFactor(Constants.ENCODER_VELOCITY_MPS);
 
 
 

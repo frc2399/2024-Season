@@ -28,10 +28,11 @@ public final class Constants {
   public static final int NEO550_CURRENT_LIMIT = 20;
   public static final int NEO_CURRENT_LIMIT = 50;
   public static final int NEO_MAX_SPEED_RPM = 5676; 
-  //This is the correct RPM conversion to MPS that is waiting to be implemented into code
   //MPS = (GearRatio * 2πr * RPM) / 60
-  public static final double NEO_MAX_SPEED_MPS = 1 * 2 * Math.PI * 0.0508 * NEO_MAX_SPEED_RPM * (1 / 60); 
+  public static final double NEO_MAX_SPEED_MPS = 2 * Math.PI * 0.0508 * NEO_MAX_SPEED_RPM * (1 / 60); 
   public static final double NEO550_MAX_SPEED_RPM = 11000;
+  public static final double ENCODER_METERS = (2 * (Math.PI) * 0.375);
+  public static final double ENCODER_VELOCITY_MPS = (2 * (Math.PI) * 0.375) / 60;
 
   public static final class DriveConstants {
     // Driving Parameters - Note that these are not the maximum capable speeds of
@@ -203,6 +204,7 @@ public final class Constants {
     public static final int RETRACT_PISTON = 5;
 
     public static final double VELOCITY_THRESHHOLD = 100;
+
 
   }
 
