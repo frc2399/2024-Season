@@ -2,6 +2,7 @@ package frc.robot.subsystems.drive;
 
 import com.revrobotics.CANSparkBase.ControlType;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -50,11 +51,16 @@ public class SwerveModuleIO_Sim implements SwerveModuleIO {
    }
 
    public void updateInputs(SwerveModuleIOInputs inputs) {
-
+      driveMotor.update(1.0/Constants.CodeConstants.kMainLoopFrequency);
+      turnMotor.update(1.0/Constants.CodeConstants.kMainLoopFrequency);
+      m_drivingEncoder.setDistance(driveMotor.getAngularPositionRotations() );
+      m_drivingEncoder.setSpeed(driveMotor.getAngularVelocityRadPerSec() );
+      m_turningEncoder.setDistance(turnMotor.getAngularPositionRad() );
    };
 
    public void setDriveEncoderPosition(double position) {
       m_drivingEncoder.setDistance(position);
+      // TODO - do we need to set the driveMotor distance also?
    };
 
    public double getDriveEncoderPosition() {
@@ -76,9 +82,8 @@ public class SwerveModuleIO_Sim implements SwerveModuleIO {
       SmartDashboard.putNumber(name + "motor speed", driveMotorOutput);
 
       // Apply PID output
-      driveMotor.setInputVoltage(driveMotorOutput);
+      driveMotor.setInputVoltage(MathUtil.clamp(driveMotorOutput,-12, 12));
       driveMotor.getAngularVelocityRPM();
-      driveMotor.update(0.02);
       SmartDashboard.putNumber(name + "driveMotor.getAngularVelocityRPM", driveMotor.getAngularVelocityRPM());
 
    };
@@ -87,7 +92,7 @@ public class SwerveModuleIO_Sim implements SwerveModuleIO {
       turnMotorOutput = m_turningPIDController.calculate(getTurnEncoderPosition(), angle);
 
       // Apply PID output
-      turnMotor.setInputVoltage(turnMotorOutput);
+      turnMotor.setInputVoltage(MathUtil.clamp(turnMotorOutput, -12, 12));
    };
 
    public double getDriveBusVoltage() {
@@ -104,5 +109,9 @@ public class SwerveModuleIO_Sim implements SwerveModuleIO {
 
    public double getTurnOutput() {
       return turnMotorOutput;
+   }
+
+   public String getName(){
+      return name;
    }
 }

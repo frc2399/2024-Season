@@ -23,8 +23,13 @@ public class SwerveModuleIO_Real implements SwerveModuleIO {
 
     private double chassisAngularOffset;
 
-    public SwerveModuleIO_Real(int drivingCANId, int turningCANId, double chassisAngularOffset){
+    private String name;
 
+    public SwerveModuleIO_Real(int drivingCANId, int turningCANId, double chassisAngularOffset,
+      String name){
+
+      this.name = name;
+      
     m_drivingSparkMax = new CANSparkMax(drivingCANId, MotorType.kBrushless);
     m_turningSparkMax = new CANSparkMax(turningCANId, MotorType.kBrushless);
 
@@ -154,6 +159,11 @@ public class SwerveModuleIO_Real implements SwerveModuleIO {
      public double getTurnOutput(){
          return m_turningSparkMax.getAppliedOutput();
      }
+
+     public String getName(){
+      return name;
+   }
+
 }
 
 

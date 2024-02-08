@@ -170,13 +170,17 @@ public class RobotContainer {
         } else {
             m_gyro = new GyroIOPigeon2();
             m_frontLeftIO = new SwerveModuleIO_Real(DriveConstants.kFrontLeftDrivingCanId,
-                    DriveConstants.kFrontLeftTurningCanId, DriveConstants.kFrontLeftChassisAngularOffset);
+                    DriveConstants.kFrontLeftTurningCanId, DriveConstants.kFrontLeftChassisAngularOffset,
+                    "front left");
             m_frontRightIO = new SwerveModuleIO_Real(DriveConstants.kFrontRightDrivingCanId,
-                    DriveConstants.kFrontRightTurningCanId, DriveConstants.kFrontRightChassisAngularOffset);
+                    DriveConstants.kFrontRightTurningCanId, DriveConstants.kFrontRightChassisAngularOffset,
+                    "front right");
             m_rearLeftIO = new SwerveModuleIO_Real(DriveConstants.kRearLeftDrivingCanId,
-                    DriveConstants.kRearLeftTurningCanId, DriveConstants.kRearLeftChassisAngularOffset);
+                    DriveConstants.kRearLeftTurningCanId, DriveConstants.kRearLeftChassisAngularOffset,
+                    "rear left");
             m_rearRightIO = new SwerveModuleIO_Real(DriveConstants.kRearRightDrivingCanId,
-                    DriveConstants.kRearRightTurningCanId, DriveConstants.kRearRightChassisAngularOffset);
+                    DriveConstants.kRearRightTurningCanId, DriveConstants.kRearRightChassisAngularOffset,
+                    "rear right");
         }
         m_robotDrive = new DriveSubsystem(
                 new SwerveModule(m_frontLeftIO),

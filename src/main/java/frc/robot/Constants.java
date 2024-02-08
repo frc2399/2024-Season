@@ -24,6 +24,11 @@ import edu.wpi.first.math.util.Units;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+
+  public static final class CodeConstants {
+    public static final double kMainLoopFrequency = 50; // Hz
+  }
+
   public static final class DriveConstants {
     public static final int kGyroCanId = 3;
     // Driving Parameters - Note that these are not the maximum capable speeds of
@@ -40,10 +45,14 @@ public final class Constants {
     // Distance between centers of right and left wheels on robot
     public static final double kWheelBase = Units.inchesToMeters(23);
     // Distance between front and back wheels on robot
-    public static final Translation2d FRONT_LEFT_OFFSET = new Translation2d(kWheelBase / 2, kTrackWidth / 2); // front left
-    public static final Translation2d REAR_LEFT_OFFSET = new Translation2d(-kWheelBase / 2, kTrackWidth / 2); // rear left
-    public static final Translation2d FRONT_RIGHT_OFFSET = new Translation2d(kWheelBase / 2, -kTrackWidth / 2); // front right
-    public static final Translation2d REAR_RIGHT_OFFSET = new Translation2d(-kWheelBase / 2, -kTrackWidth / 2); // rear right
+    public static final Translation2d FRONT_LEFT_OFFSET = new Translation2d(kWheelBase / 2, kTrackWidth / 2); // front
+                                                                                                              // left
+    public static final Translation2d REAR_LEFT_OFFSET = new Translation2d(-kWheelBase / 2, kTrackWidth / 2); // rear
+                                                                                                              // left
+    public static final Translation2d FRONT_RIGHT_OFFSET = new Translation2d(kWheelBase / 2, -kTrackWidth / 2); // front
+                                                                                                                // right
+    public static final Translation2d REAR_RIGHT_OFFSET = new Translation2d(-kWheelBase / 2, -kTrackWidth / 2); // rear
+                                                                                                                // right
 
     public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(
         FRONT_LEFT_OFFSET,
@@ -52,16 +61,19 @@ public final class Constants {
         REAR_RIGHT_OFFSET);
 
     // Angular offsets of the modules relative to the chassis in radians
-    // public static final double kFrontLeftChassisAngularOffset = -Math.PI / 2 + 3.6128315516282616;
-    // public static final double kFrontRightChassisAngularOffset = 0 + 5.855928706291374;
-    // public static final double kBackLeftChassisAngularOffset = Math.PI + 3.248406803811846;
-    // public static final double kBackRightChassisAngularOffset = Math.PI / 2 + 2.2556635252774715;
+    // public static final double kFrontLeftChassisAngularOffset = -Math.PI / 2 +
+    // 3.6128315516282616;
+    // public static final double kFrontRightChassisAngularOffset = 0 +
+    // 5.855928706291374;
+    // public static final double kBackLeftChassisAngularOffset = Math.PI +
+    // 3.248406803811846;
+    // public static final double kBackRightChassisAngularOffset = Math.PI / 2 +
+    // 2.2556635252774715;
 
     public static final double kFrontLeftChassisAngularOffset = -Math.PI / 2;
     public static final double kFrontRightChassisAngularOffset = 0;
     public static final double kRearLeftChassisAngularOffset = Math.PI;
     public static final double kRearRightChassisAngularOffset = Math.PI / 2;
-
 
     // SPARK MAX CAN IDs
     public static final int kFrontLeftDrivingCanId = 11;
@@ -78,23 +90,27 @@ public final class Constants {
   }
 
   public static final class ModuleConstants {
-    // The MAXSwerve module can be configured with one of three pinion gears: 12T, 13T, or 14T.
-    // This changes the drive speed of the module (a pinion gear with more teeth will result in a
+    // The MAXSwerve module can be configured with one of three pinion gears: 12T,
+    // 13T, or 14T.
+    // This changes the drive speed of the module (a pinion gear with more teeth
+    // will result in a
     // robot that drives faster).
     public static final int kDrivingMotorPinionTeeth = 14;
 
-    // Invert the turning encoder, since the output shaft rotates in the opposite direction of
+    // Invert the turning encoder, since the output shaft rotates in the opposite
+    // direction of
     // the steering motor in the MAXSwerve Module.
     public static final boolean kTurningEncoderInverted = true;
-    //testing lol
+    // testing lol
     public static final boolean kDrivingEncoderInverted = false;
 
     // Calculations required for driving motor conversion factors and feed forward
     public static final double kDrivingMotorFreeSpeedRps = NeoMotorConstants.kFreeSpeedRpm / 60;
     public static final double kWheelDiameterMeters = Units.inchesToMeters(3.0);
     public static final double kWheelCircumferenceMeters = kWheelDiameterMeters * Math.PI;
-    // 45 teeth on the wheel's bevel gear, 22 teeth on the first-stage spur gear, 15 teeth on the bevel pinion
-    //This is also the gear ratio (14T)
+    // 45 teeth on the wheel's bevel gear, 22 teeth on the first-stage spur gear, 15
+    // teeth on the bevel pinion
+    // This is also the gear ratio (14T)
     public static final double kDrivingMotorReduction = (45.0 * 22) / (kDrivingMotorPinionTeeth * 15);
     public static final double kTurningMotorReduction = 9424d / 203;
     public static final double kDriveWheelFreeSpeedRps = (kDrivingMotorFreeSpeedRps * kWheelCircumferenceMeters)

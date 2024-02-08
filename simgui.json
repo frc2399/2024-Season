@@ -20,6 +20,15 @@
     }
   },
   "NetworkTables Info": {
+    "AdvantageScope@1": {
+      "Publishers": {
+        "open": true
+      },
+      "open": true
+    },
+    "Clients": {
+      "open": true
+    },
     "visible": true
   },
   "NetworkTables View": {

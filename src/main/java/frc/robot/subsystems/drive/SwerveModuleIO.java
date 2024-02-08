@@ -26,4 +26,6 @@ public interface SwerveModuleIO {
     public double getDriveOutput();
     public double getTurnBusVoltage(); 
     public double getTurnOutput();
+
+    public String getName();
 }
