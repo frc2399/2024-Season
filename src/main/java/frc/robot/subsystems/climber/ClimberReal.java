@@ -11,6 +11,7 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -22,6 +23,7 @@ import frc.utils.MotorUtil;
 import java.lang.Math;
 
 public class ClimberReal implements ClimberIO {
+
     private CANSparkMax leftMotorController;
     private CANSparkMax rightMotorController;
     private RelativeEncoder leftEncoder, rightEncoder;
@@ -51,13 +53,12 @@ public class ClimberReal implements ClimberIO {
 
     public ClimberReal() {
 
-        //initialize motor controllers
-        leftMotorController = MotorUtil.createSparkMAX(ClimberConstants.LEFT_CLIMBER_MOTOR_ID, MotorType.kBrushless, 50, true,
+        // initialize motor controllers
+        leftMotorController = MotorUtil.createSparkMAX(ClimberConstants.LEFT_CLIMBER_MOTOR_ID, MotorType.kBrushless, 50,
+                true,
                 true, 0.5);
         rightMotorController = MotorUtil.createSparkMAX(ClimberConstants.RIGHT_CLIMBER_MOTOR_ID, MotorType.kBrushless,
                 50, false, true, 0.5);
-
-
 
         // initialize motor encoder
         leftEncoder = leftMotorController.getEncoder();
@@ -94,7 +95,6 @@ public class ClimberReal implements ClimberIO {
         leftMotorController.setInverted(false);
         rightMotorController.setInverted(false);
 
-
         // set encoder velocity to meters/second
         leftEncoder.setPositionConversionFactor((2 * (Math.PI) * ClimberConstants.CLIMBER_RADIUS) / 60);
         rightEncoder.setPositionConversionFactor((2 * (Math.PI) * ClimberConstants.CLIMBER_RADIUS) / 60);
@@ -102,8 +102,6 @@ public class ClimberReal implements ClimberIO {
         // reset encoders to zero
         leftEncoder.setPosition(0.0);
         rightEncoder.setPosition(0.0);
-
-
 
         // get info on climber slew rate
         SmartDashboard.putNumber("Climber Slew Rate",
@@ -149,7 +147,7 @@ public class ClimberReal implements ClimberIO {
 
     // right basic climbing with just speed
     public void setRightSpeed(double speed) {
-        if ((isRightRetracted()&& speed < 0)) {
+        if ((isRightRetracted() && speed < 0)) {
             rightMotorController.set(0);
             rightClimberMotor.setDouble(0);
         } else {
@@ -200,15 +198,21 @@ public class ClimberReal implements ClimberIO {
         return distance;
     }
 
-    // if the left side is stalling, tell climber to stop 
+    // if the left side is stalling, tell climber to stop
     public boolean isLeftSideStalling() {
         return leftDebouncer.calculate(Math.abs(leftEncoder.getVelocity()) < ClimberConstants.VELOCITY_THRESHHOLD);
     }
-    
-    // if the right side is stalling, tell climber to stop 
+
+    // if the right side is stalling, tell climber to stop
     public boolean isRightSideStalling() {
         return rightDebouncer.calculate(Math.abs(rightEncoder.getVelocity()) < ClimberConstants.VELOCITY_THRESHHOLD);
     }
 
-}
+    // Called once the command ends or is interrupted.
+    // public void end(boolean interrupted) {
+    //     climber.setLeftSpeed();
+    //     climber.setRightSpeed(); 
+    //     // do something other than what we're interupting
+    // }
 
+}
