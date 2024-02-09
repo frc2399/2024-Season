@@ -124,6 +124,7 @@ public class RobotContainer {
     //         () -> fieldOrientedDrive = !fieldOrientedDrive))
 
     //Right Y axis to control the arm
+    //TODO: is this accurate? could totally be the wrong axis. 
     m_driverController.axisGreaterThan(5, 0.1).whileTrue(makeSetSpeedGravityCompensationCommand(arm, 0.1)).onFalse(makeSetSpeedGravityCompensationCommand(arm, 0));
     m_driverController.axisLessThan(5, -0.1).whileTrue(makeSetSpeedGravityCompensationCommand(arm, -0.1)).onFalse(makeSetSpeedGravityCompensationCommand(arm, 0));
     // m_driverController.a().onTrue(setkG(arm, SmartDashboard.getNumber("kG", 0)));
