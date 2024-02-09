@@ -75,6 +75,7 @@ public class RobotContainer {
   // private static Gyro m_gyro = new Gyro();
   public boolean fieldOrientedDrive = false;
   public static boolean isInClimberMode = false;
+  public static boolean isIntooked = false;
   public static CommandSelector angleHeight = CommandSelector.INTAKE;
 
   public static Shooter m_shooter;
@@ -225,6 +226,8 @@ public class RobotContainer {
     // XboxController.Button.kLeftBumper.value)
     // .whileTrue(new InstantCommand(
     // () -> m_shooter.setMotor(0.8)));
+
+    
 
     m_operatorController.rightBumper().and(() -> !isInClimberMode).onTrue(new ParallelCommandGroup(
         new SequentialCommandGroup(
