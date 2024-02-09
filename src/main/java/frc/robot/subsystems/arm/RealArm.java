@@ -1,8 +1,11 @@
 package frc.robot.subsystems.arm;
 
+import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
-import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkAbsoluteEncoder.Type;
+import com.revrobotics.SparkPIDController;
+import com.revrobotics.CANSparkBase.ControlType;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
@@ -12,9 +15,10 @@ import frc.utils.MotorUtil;
 public class RealArm implements ArmIO {
     private static CANSparkMax armMotorControllerLeft;
     private static CANSparkMax armMotorControllerRight;
-    public static RelativeEncoder armEncoderLeft;
-    public static RelativeEncoder armEncoderRight;
-    public static DutyCycleEncoder armAbsoluteEncoder;
+    public static AbsoluteEncoder armAbsoluteEncoderLeft;
+    public static AbsoluteEncoder armAbsoluteEncoderRight;
+    private final SparkPIDController armPIDControllerLeft;
+    private final SparkPIDController armPIDControllerRight;
 
     public RealArm() {
         // armAbsoluteEncoder = new DutyCycleEncoder(0);
@@ -23,26 +27,30 @@ public class RealArm implements ArmIO {
         armMotorControllerLeft = MotorUtil.createSparkMAX(ArmConstants.ARM_MOTOR_ID_LEFT, MotorType.kBrushless,
                 Constants.NEO_CURRENT_LIMIT,
                 false, true, 0.75);
-        armEncoderLeft = armMotorControllerLeft.getEncoder();
+        armAbsoluteEncoderLeft = armMotorControllerLeft.getAbsoluteEncoder(Type.kDutyCycle);
+        armPIDControllerLeft = armMotorControllerLeft.getPIDController();
+        armPIDControllerLeft.setFeedbackDevice(armAbsoluteEncoderLeft);
 
-        armEncoderLeft.setPositionConversionFactor(ArmConstants.RADIANS_PER_REVOLUTION);
-        armEncoderLeft.setVelocityConversionFactor(ArmConstants.RADIANS_PER_REVOLUTION / 60);
+        armAbsoluteEncoderLeft.setPositionConversionFactor(ArmConstants.RADIANS_PER_REVOLUTION);
+        armAbsoluteEncoderLeft.setVelocityConversionFactor(ArmConstants.RADIANS_PER_REVOLUTION / 60);
 
         // armEncoderLeft.setPosition(ArmConstants.INITIAL_OFFSET);
 
         armMotorControllerRight = MotorUtil.createSparkMAX(ArmConstants.ARM_MOTOR_ID_RIGHT, MotorType.kBrushless,
                 Constants.NEO_CURRENT_LIMIT,
                 true, true, 0.75);
-        armEncoderRight = armMotorControllerRight.getEncoder();
+        armAbsoluteEncoderRight = armMotorControllerRight.getAbsoluteEncoder(Type.kDutyCycle);
+        armPIDControllerRight = armMotorControllerRight.getPIDController();
+        armPIDControllerRight.setFeedbackDevice(armAbsoluteEncoderRight);
 
-        armEncoderRight.setPositionConversionFactor(ArmConstants.RADIANS_PER_REVOLUTION);
-        armEncoderRight.setVelocityConversionFactor(ArmConstants.RADIANS_PER_REVOLUTION / 60);
+        armAbsoluteEncoderRight.setPositionConversionFactor(ArmConstants.RADIANS_PER_REVOLUTION);
+        armAbsoluteEncoderRight.setVelocityConversionFactor(ArmConstants.RADIANS_PER_REVOLUTION / 60);
 
         // armEncoderRight.setPosition(ArmConstants.INITIAL_OFFSET);
     }
 
     public double getAbsoluteEncoderPosition() {
-        return -(armAbsoluteEncoder.getAbsolutePosition() - 0.88) * 2 * Math.PI / 3;
+        return -(armAbsoluteEncoderLeft.getPosition() - 0.88) * 2 * Math.PI / 3;
     }
 
     @Override
@@ -53,12 +61,12 @@ public class RealArm implements ArmIO {
     @Override
     public double getEncoderPosition() {
         // return getAbsoluteEncoderPosition();
-        return armEncoderLeft.getPosition();
+        return armAbsoluteEncoderLeft.getPosition();
     }
 
     @Override
     public double getEncoderSpeed() {
-        return armEncoderLeft.getVelocity();
+        return armAbsoluteEncoderLeft.getVelocity();
     }
 
     @Override
@@ -69,8 +77,8 @@ public class RealArm implements ArmIO {
 
     @Override
     public void setPosition(double position) {
-        armEncoderLeft.setPosition(position);
-        armEncoderRight.setPosition(position);
+        armPIDControllerLeft.setReference(position, ControlType.kPosition);
+        armPIDControllerRight.setReference(position, ControlType.kPosition);
     }
 
     @Override
