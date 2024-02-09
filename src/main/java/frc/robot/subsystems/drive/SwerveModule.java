@@ -100,7 +100,6 @@ public class SwerveModule {
      * @param desiredState Desired state with speed and angle.
      */
     public void setDesiredState(SwerveModuleState desiredState) {
-        System.out.println("setDesiredState " + name );
         // Apply chassis angular offset to the desired state.
         SwerveModuleState correctedDesiredState = new SwerveModuleState();
         correctedDesiredState.speedMetersPerSecond = desiredState.speedMetersPerSecond;
@@ -108,11 +107,9 @@ public class SwerveModule {
 
         // Optimize the reference state to avoid spinning further than 90 degrees.
 
-        // SwerveModuleState optimizedDesiredState =
-        // SwerveModuleState.optimize(correctedDesiredState,
-        // new Rotation2d(getTurnEncoderPosition()));
-
-        SwerveModuleState optimizedDesiredState = correctedDesiredState;
+        SwerveModuleState optimizedDesiredState =
+        SwerveModuleState.optimize(correctedDesiredState,
+        new Rotation2d(getTurnEncoderPosition()));
 
         if (name == "front left"){
             System.out.println("left front optimizedDesiredState.speedMetersPerSecond " + 

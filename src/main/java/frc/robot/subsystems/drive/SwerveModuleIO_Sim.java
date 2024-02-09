@@ -34,8 +34,8 @@ public class SwerveModuleIO_Sim implements SwerveModuleIO {
    private String name;
 
    // Sim-Tuned PID Controllers
-   private PIDController m_turningPIDController = new PIDController(15, 0.0, 0.0);
-   private PIDController m_drivingPIDController = new PIDController(5, 0.0, 0.0);
+   private PIDController m_turningPIDController = new PIDController(10, 0.0, 0.0);
+   private PIDController m_drivingPIDController = new PIDController(1, 0.0, 0.0);
    private SimpleMotorFeedforward driveFeedforward = new SimpleMotorFeedforward(0.0,
          Constants.ModuleConstants.kDrivingFF * 12);
 
@@ -55,12 +55,15 @@ public class SwerveModuleIO_Sim implements SwerveModuleIO {
       turnMotor.update(1.0/Constants.CodeConstants.kMainLoopFrequency);
       m_drivingEncoder.setDistance(driveMotor.getAngularPositionRotations() );
       m_drivingEncoder.setSpeed(driveMotor.getAngularVelocityRadPerSec() );
+      System.out.println(name + " " +driveMotor.getAngularVelocityRadPerSec() );
+      System.out.println(name + getDriveOutput());
       m_turningEncoder.setDistance(turnMotor.getAngularPositionRad() );
    };
 
    public void setDriveEncoderPosition(double position) {
       m_drivingEncoder.setDistance(position);
       // TODO - do we need to set the driveMotor distance also?
+      
    };
 
    public double getDriveEncoderPosition() {
@@ -85,6 +88,7 @@ public class SwerveModuleIO_Sim implements SwerveModuleIO {
       driveMotor.setInputVoltage(MathUtil.clamp(driveMotorOutput,-12, 12));
       driveMotor.getAngularVelocityRPM();
       SmartDashboard.putNumber(name + "driveMotor.getAngularVelocityRPM", driveMotor.getAngularVelocityRPM());
+      SmartDashboard.putNumber(name + " drive output (-12 to 12) ", driveMotorOutput);
 
    };
 
@@ -93,6 +97,8 @@ public class SwerveModuleIO_Sim implements SwerveModuleIO {
 
       // Apply PID output
       turnMotor.setInputVoltage(MathUtil.clamp(turnMotorOutput, -12, 12));
+      SmartDashboard.putNumber(name + " desired turn angle", angle);
+      SmartDashboard.putNumber(name + " actual turn angle", getTurnEncoderPosition());
    };
 
    public double getDriveBusVoltage() {
