@@ -21,9 +21,10 @@ public class Arm extends ProfiledPIDSubsystem {
   private double targetAngle = -Math.PI / 2;
   // private static final double feedForward = 0.133;
   // private static final double feedForward = 0.14285;
-  private static final double feedForward = 0;
+  private static double feedForward = 0;
   // private static final double kpPos = 0.8;
-  private static final double kpPos = 0;
+  private static double kpPos = 0;
+  private static double kd = 0;
 
   // Trapezoidal profile constants and variables
   private static final double max_vel = 1.5; // rad/s
@@ -32,7 +33,7 @@ public class Arm extends ProfiledPIDSubsystem {
   private static double gravityCompensation = 0.02;
 
   public Arm(ArmIO io) {
-    super(new ProfiledPIDController(kpPos, 0, 0, constraints));
+    super(new ProfiledPIDController(kpPos, 0, kd, constraints));
     armIO = io;
   }
 
@@ -42,6 +43,10 @@ public class Arm extends ProfiledPIDSubsystem {
     super.periodic();
     armIO.periodicUpdate();
 
+    gravityCompensation = SmartDashboard.getNumber("kG", 0);
+    kpPos = SmartDashboard.getNumber("kP", 0);
+    kd = SmartDashboard.getNumber("kd", 0);
+    feedForward = SmartDashboard.getNumber("arm ff", 0);
     SmartDashboard.putNumber("arm/goal position", getGoal());
     SmartDashboard.putNumber("arm/velocity", getEncoderSpeed());
     SmartDashboard.putNumber("arm/postion", getEncoderPosition());
@@ -83,8 +88,8 @@ public class Arm extends ProfiledPIDSubsystem {
 
   @Override
   protected void useOutput(double output, State setpoint) {
-    SmartDashboard.putNumber("arm/setpoint pos", setpoint.position);
-    SmartDashboard.putNumber("arm/setpoint vel", setpoint.velocity);
+    // SmartDashboard.putNumber("arm/setpoint pos", setpoint.position);
+    // SmartDashboard.putNumber("arm/setpoint vel", setpoint.velocity);
 
     // Calculate the feedforward from the setpoint
     double speed = feedForward * setpoint.velocity;

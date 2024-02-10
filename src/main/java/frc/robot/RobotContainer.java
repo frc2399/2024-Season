@@ -14,6 +14,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
@@ -164,8 +165,10 @@ public class RobotContainer {
         new InstantCommand(
             () -> m_climber.setMotors(0),
             m_climber));
+    
     m_arm.setDefaultCommand(new InstantCommand(() -> m_arm.setSpeedGravityCompensation(0), m_arm));
-
+    //Arm setpoint must be in RADIANS
+    //m_arm.setDefaultCommand(makeSetPositionCommand(m_arm, Units.degreesToRadians(SmartDashboard.getNumber("arm setpoint", 0))));
     // default command for drivetrain: drive based on controller inputs
     // m_robotDrive.setDefaultCommand(
     // // The left stick controls translation of the robot.
