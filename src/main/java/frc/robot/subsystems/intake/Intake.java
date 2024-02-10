@@ -14,9 +14,9 @@ public class Intake extends SubsystemBase {
 
   /** Creates a new Intake. */
   public Intake(IntakeIO io) {
-
+    
     intakeIO = io;
-
+        
   }
 
   public void setMotor(double intakeSpeed) {
