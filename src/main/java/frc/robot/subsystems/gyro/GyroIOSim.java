@@ -1,11 +1,13 @@
 package frc.robot.subsystems.gyro;
 
 public class GyroIOSim implements GyroIO {
+    private double yaw = 0; 
+
     public double getYaw(){
-        return 0.0;
+        return yaw;
     }
     public void setYaw(double yaw) {
-        return ; 
+        this.yaw = yaw;
     }
     public void updateInputs(GyroIOInputs inputs){
         return ;

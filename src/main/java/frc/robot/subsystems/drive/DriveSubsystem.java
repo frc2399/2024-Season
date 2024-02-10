@@ -75,6 +75,8 @@ public class DriveSubsystem extends SubsystemBase {
 
   private ChassisSpeeds relativeRobotSpeeds; 
 
+  public Rotation2d lastAngle = new Rotation2d();
+
   StructArrayPublisher<SwerveModuleState> swerveModuleStatePublisher = NetworkTableInstance.getDefault().getStructArrayTopic("/SmartDashboard/Swerve/Current Modules States", SwerveModuleState.struct).publish(); 
 
   /** Creates a new DriveSubsystem. */
@@ -125,7 +127,7 @@ public class DriveSubsystem extends SubsystemBase {
     // This will get the simulated sensor readings that we set
     // in the previous article while in simulation, but will use
     // real values on the robot itself.
-    poseEstimator.updateWithTime(Timer.getFPGATimestamp(), Rotation2d.fromDegrees(m_gyro.getYaw()),
+    poseEstimator.updateWithTime(Timer.getFPGATimestamp(), Rotation2d.fromRadians(m_gyro.getYaw()),
         new SwerveModulePosition[] {
             m_frontLeft.getPosition(),
             m_frontRight.getPosition(),
@@ -189,6 +191,12 @@ public class DriveSubsystem extends SubsystemBase {
     };
     swerveModuleStatePublisher.set(swerveModuleStates);
 
+    if (DriverStation.isAutonomous()){
+      System.out.println("Mahee is annoying");
+    } 
+    double angleChange = Constants.DriveConstants.kDriveKinematics.toChassisSpeeds(swerveModuleStates).omegaRadiansPerSecond * (1/Constants.CodeConstants.kMainLoopFrequency);
+    lastAngle = lastAngle.plus(Rotation2d.fromRadians(angleChange));
+    m_gyro.setYaw(lastAngle.getRadians());
   }
   // Log empty setpoint states when disabled
 
