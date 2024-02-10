@@ -21,39 +21,36 @@ public class Intake extends SubsystemBase {
 
   public void setMotor(double intakeSpeed) {
     intakeIO.setMotor(intakeSpeed);
-    SmartDashboard.putNumber("intake/motor input (%)", intakeSpeed);
   }
 
-  public double getCurrent() {
-    return intakeIO.getCurrent();
+  public void setSpeed(double speed) {
+    intakeIO.setSpeed(speed);
   }
 
-  // returns speed of the intake
-  public double getEncoderSpeed() {
-    return intakeIO.getEncoderSpeed();
+  //returns speed of the intake
+  public double getLeftEncoderSpeed() {
+    return intakeIO.getLeftEncoderSpeed();
   }
 
-  public double getEncoderPosition() {
-    return intakeIO.getEncoderPosition();
+  public double getRightEncoderSpeed() {
+    return intakeIO.getRightEncoderSpeed();
   }
 
-  public void setPosition(double position) {
-    intakeIO.setPosition(position);
+  public void setLeftCurrentLimit(int current) {
+    intakeIO.setLeftCurrentLimit(current);
   }
 
-  public void setCurrentLimit(int current) {
-    intakeIO.setCurrentLimit(current);
+  public void setRightCurrentLimit(int current) {
+    intakeIO.setRightCurrentLimit(current);
   }
 
+  public boolean isIntooked()
+{
+  return intakeIO.isIntooked();
+}
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("intake/current (A)", getCurrent());
-    // SmartDashboard.putNumber("intake/motor output (%)",
-    // RealIntake.intakeMotorController.get());
-    // SmartDashboard.putNumber("intake/MOTOR OUTPUT",
-    // RealIntake.intakeMotorController.getAppliedOutput());
-
     intakeIO.periodicUpdate();
   }
 }

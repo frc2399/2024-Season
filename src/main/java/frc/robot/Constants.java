@@ -27,6 +27,12 @@ public final class Constants {
 
   public static final int NEO550_CURRENT_LIMIT = 20;
   public static final int NEO_CURRENT_LIMIT = 50;
+  public static final int NEO_MAX_SPEED_RPM = 5676; 
+  //MPS = (GearRatio * 2πr * RPM) / 60
+  public static final double NEO_MAX_SPEED_MPS = 2 * Math.PI * 0.0508 * NEO_MAX_SPEED_RPM * (1 / 60); 
+  public static final double NEO550_MAX_SPEED_RPM = 11000;
+  public static final double ENCODER_METERS = (2 * (Math.PI) * 0.375);
+  public static final double ENCODER_VELOCITY_MPS = (2 * (Math.PI) * 0.375) / 60;
 
   public static final class DriveConstants {
     // Driving Parameters - Note that these are not the maximum capable speeds of
@@ -138,27 +144,23 @@ public final class Constants {
 
   public static final class IntakeConstants {
 
-    public static final int INTAKE_MOTOR_ID = 2;
+    public static final int LEFT_INTAKE_MOTOR_ID = 1;
+    public static final int RIGHT_INTAKE_MOTOR_ID = 2;
     public static final double INTAKE_SLEW_RATE = 10;
-    public static final double CONE_OUT_SPEED = 1.0;
-    public static final double CUBE_IN_SPEED = 0.6;
-    public static final double CUBE_OUT_SPEED = -1.0;
-    public static final int CONE_IN_CURRENT = 30;
-    public static final int CUBE_IN_CURRENT = 25;
-    public static final int OUT_CURRENT = 30;
   }
 
   public static final class ShooterConstants {
 
     public static final int SHOOT_LOW_MOTOR_ID = 4;
-    public static final int SHOOT_HIGH_MOTOR_ID = 5;
-    public static final double INTAKE_SLEW_RATE = 10;
-    public static final double CONE_OUT_SPEED = 1.0;
-    public static final double CUBE_IN_SPEED = 0.6;
-    public static final double CUBE_OUT_SPEED = -1.0;
-    public static final int CONE_IN_CURRENT = 30;
-    public static final int CUBE_IN_CURRENT = 25;
-    public static final int OUT_CURRENT = 30;
+    public static final int SHOOT_HIGH_MOTOR_ID = 3;
+    public static final double speakerSpeed = 0.8;
+    public static final double ampSpeed = 0.3;
+  }
+
+  public static final class IndexerConstants {
+
+    public static final int INDEXER_MOTOR_ID = 5; //I put 5 at random. Find actual motor ID. 
+    public static final double INDEXER_SLEW_RATE = 10;
   }
 
   public static final class ArmConstants {
@@ -197,6 +199,7 @@ public final class Constants {
 
   public static final class OIConstants {
     public static final int kDriverControllerPort = 0;
+    public static final int kOperatorControllerPort = 1;
     public static final double kDriveDeadband = 0.1;
   }
 
@@ -217,5 +220,24 @@ public final class Constants {
 
   public static final class NeoMotorConstants {
     public static final double kFreeSpeedRpm = 5676;
+  }
+  
+  public static final class ClimberConstants {
+
+    public static final int LEFT_CLIMBER_MOTOR_ID = 2;
+    public static final int RIGHT_CLIMBER_MOTOR_ID = 1;
+    public static final double CLIMBER_SPEED = 0.5;
+
+    public static final double MAX_HEIGHT = 24;
+    public static final double MIN_HEIGHT = 0;
+
+    public static final int CLIMBER_SLEW = 5;
+
+    public static final int EXTEND_PISTON = 4;
+    public static final int RETRACT_PISTON = 5;
+
+    public static final double VELOCITY_THRESHHOLD = 100;
+
+
   }
 }
