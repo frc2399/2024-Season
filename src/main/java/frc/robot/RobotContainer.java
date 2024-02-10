@@ -82,7 +82,7 @@ public class RobotContainer {
   // private static Gyro m_gyro = new Gyro();
   public boolean fieldOrientedDrive = false;
   public static boolean isInClimberMode = false;
-  public static CommandSelector angleHeight = CommandSelector.INTAKE;
+  //public static CommandSelector angleHeight = CommandSelector.INTAKE;
 
   public static Shooter m_shooter;
   public static Intake m_intake;
@@ -199,41 +199,54 @@ public class RobotContainer {
     m_operatorController.povCenter().onTrue(new InstantCommand(
         () -> fieldOrientedDrive = !fieldOrientedDrive));
 
+    //driver left bumper: manual shoot
     m_driverController.leftBumper().and(() -> !isInClimberMode).whileTrue(new InstantCommand(
         () -> m_shooter.setMotor(0.8)));
 
+    //driver right bumper: auto-shoot
     m_driverController.rightBumper().and(() -> !isInClimberMode).onTrue(new ParallelCommandGroup(
         new SequentialCommandGroup(
             new WaitUntilCommand(() -> m_shooter.getEncoderSpeed() == Constants.ShooterConstants.speakerSpeed),
             new InstantCommand(() -> m_intake.setMotor(0.8))),
         new InstantCommand(() -> m_shooter.setMotor(Constants.ShooterConstants.speakerSpeed))));
 
+    //driver right trigger: intake
     m_driverController.rightTrigger().whileTrue(new ParallelCommandGroup(
       new RunCommand(() -> m_intake.setMotor(0.5), m_intake), 
       new RunCommand(() -> m_indexer.setMotor(0.5), m_indexer))
     );
 
+    //driver left trigger: outtake
     m_driverController.leftTrigger().whileTrue(new ParallelCommandGroup(
       new RunCommand(() -> m_intake.setMotor(-0.5), m_intake), 
       new RunCommand(() -> m_indexer.setMotor(-0.5), m_indexer))
     );
 
+    //operater left trigger: climber mode: left climber up
     m_operatorController.leftTrigger().and(() -> isInClimberMode).whileTrue(new RunCommand(
         () -> m_climber.setLeftSpeed(0.2), m_climber)
 
     );
+
+    //operater right trigger: climber mode: right climber up
     m_operatorController.rightTrigger().and(() -> isInClimberMode).whileTrue(new RunCommand(
         () -> m_climber.setRightSpeed(0.2), m_climber)
 
     );
+
+    //operater left bumper: climber mode: left climber down
     m_operatorController.leftBumper().and(() -> isInClimberMode).whileTrue(new RunCommand(
         () -> m_climber.setLeftSpeed(-0.2), m_climber)
 
     );
+
+    //operater right bumper: climber mode: right climber down
     m_operatorController.rightBumper().and(() -> isInClimberMode).whileTrue(new RunCommand(
         () -> m_climber.setRightSpeed(-0.2), m_climber)
 
     );
+
+    //operator x: switch operator controller modes
     m_operatorController.x().onTrue(new InstantCommand(() -> isInClimberMode = !isInClimberMode, m_climber));
 
     // Right Y axis to control the arm
@@ -264,22 +277,22 @@ public class RobotContainer {
         new RunCommand(() -> a.setSpeedGravityCompensation(speed), a));
   }
 
-  static final double DELAY_OVERHEAD_SECONDS = 0.5;
-  static final double correctSpeed = 0.8;
+  // static final double DELAY_OVERHEAD_SECONDS = 0.5;
+  // static final double correctSpeed = 0.8;
 
-  public enum CommandSelector {
-    INTAKE,
-    AMP,
-    SPEAKER_SUBWOOFER_STRAIGHT,
-    SPEAKER_SUBWOOFER_SIDE,
-    SPEAKER_PODIUM
-  }
+  // public enum CommandSelector {
+  //   INTAKE,
+  //   AMP,
+  //   SPEAKER_SUBWOOFER_STRAIGHT,
+  //   SPEAKER_SUBWOOFER_SIDE,
+  //   SPEAKER_PODIUM
+  // }
 
-  private CommandSelector select() {
-    return angleHeight;
-  }
+  // private CommandSelector select() {
+  //   return angleHeight;
+  // }
 
-  public static String toString(CommandSelector node) {
-    return "Node: " + node;
-  }
+  // public static String toString(CommandSelector node) {
+  //   return "Node: " + node;
+  // }
 }
