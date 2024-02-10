@@ -9,6 +9,7 @@ public class automaticIntakeAndIndexer extends Command {
     private final Indexer indexer;
     private final Intake intake;
     public static boolean isIntooked = false;
+    public boolean pieceIntooked = false;
     public static boolean beam = false; //add an actual laser beam code here
 
     public automaticIntakeAndIndexer(Indexer indexer, Intake intake) {
@@ -23,7 +24,7 @@ public class automaticIntakeAndIndexer extends Command {
         while (isIntooked == false) {
             if (beam) {
                 isIntooked = true;
-                //call robot container setup
+                pieceIntooked.setPieceIntooked();
             }
             intake.setMotor(5);
             indexer.setMotor(5);

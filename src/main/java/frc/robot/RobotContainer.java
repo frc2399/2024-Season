@@ -82,6 +82,7 @@ public class RobotContainer {
   public static Intake m_intake;
   public static Indexer m_indexer;
   public static Climber m_climber;
+  public boolean pieceIntooked = false;
   ShooterIO shooterIO;
   IntakeIO intakeIO;
   IndexerIO indexerIO;
@@ -268,6 +269,11 @@ public class RobotContainer {
         new InstantCommand(() -> m_climber.setRightMotor(ClimberConstants.MIN_HEIGHT + 0.1)))
 
     );
+    //randomly assigned button, change as necessary
+    m_operatorController.y().and(() -> !isInClimberMode).onTrue(new InstantCommand(
+    () -> m_shooter.setMotor(Constants.ShooterConstants.speakerSpeed))
+    
+    );
 
     // below is old version of button binding
     // run shooter, wait until shooter reaches set speed, run intake to feed shooter
@@ -372,6 +378,9 @@ public class RobotContainer {
   // return swerveControllerCommand.andThen(() -> m_robotDrive.drive(0, 0, 0,
   // false, false));
   // }
+public void setPieceIntooked (boolean isIntooked) {
+  this.pieceIntooked = isIntooked;
+  }
 
   public enum CommandSelector {
     INTAKE,
