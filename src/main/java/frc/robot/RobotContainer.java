@@ -112,37 +112,8 @@ public class RobotContainer {
     configureButtonBindings();
   }
 
-  // shooter.setDefaultCommand(
-  // new InstantCommand(
-  // () -> shooter.setMotor(SmartDashboard.getNumber("Shoot speed", 0)),
-  // shooter));
-
-  // Configure default commands
-  // m_robotDrive.setDefaultCommand(
-  // // The left stick controls translation of the robot.
-  // // Turning is controlled by the X axis of the right stick.
-  // new RunCommand(
-  // () -> m_robotDrive.drive(
-  // -MathUtil.applyDeadband(m_driverController.getLeftY(),
-  // OIConstants.kDriveDeadband),
-  // -MathUtil.applyDeadband(m_driverController.getLeftX(),
-  // OIConstants.kDriveDeadband),
-  // -MathUtil.applyDeadband(m_driverController.getRightX(),
-  // OIConstants.kDriveDeadband),
-  // fieldOrientedDrive, false),
-  // m_robotDrive));
-  // new RunCommand(
-  // () -> m_robotDrive.drive(
-  // -MathUtil.applyDeadband(m_driverController.getLeftY(),
-  // OIConstants.kDriveDeadband),
-  // 0,
-  // 0,
-  // fieldOrientedDrive, false),
-  // m_robotDrive));
-
   // construct subsystems
   private void setUpSubsystems() {
-    // m_gyro = new Gyro();
     // m_robotDrive = new DriveSubsystem();
     // set up IOs
     if (RobotBase.isSimulation()) {
@@ -209,15 +180,7 @@ public class RobotContainer {
     // OIConstants.kDriveDeadband),
     // fieldOrientedDrive, false),
     // m_robotDrive));
-    // this version only goes straight (for testing)
-    // new RunCommand(
-    // () -> m_robotDrive.drive(
-    // -MathUtil.applyDeadband(m_driverController.getLeftY(),
-    // OIConstants.kDriveDeadband),
-    // 0,
-    // 0,
-    // fieldOrientedDrive, false),
-    // m_robotDrive));
+    
   }
 
   /**
@@ -230,37 +193,28 @@ public class RobotContainer {
    * {@link JoystickButton}.
    */
   private void configureButtonBindings() {
-    m_operatorController.a().onTrue(new InstantCommand(
+    m_operatorController.povCenter().onTrue(new InstantCommand(
         () -> fieldOrientedDrive = !fieldOrientedDrive));
-    // below is old version of button binding
-    // new JoystickButton(m_driverController, XboxController.Button.kA.value)
-    // .onTrue(new InstantCommand(
-    // () -> fieldOrientedDrive = !fieldOrientedDrive));
-
-    // new JoystickButton(m_driverController, XboxController.Button.kB.value)
-    // .onTrue(new InstantCommand(
-    // () -> m_gyro.resetYaw(), m_gyro));
 
     m_driverController.leftBumper().and(() -> !isInClimberMode).whileTrue(new InstantCommand(
         () -> m_shooter.setMotor(0.8)));
 
-    // below is old version of button binding
-    // new JoystickButton(m_driverController,
-    // XboxController.Button.kLeftBumper.value)
-    // .whileTrue(new InstantCommand(
-    // () -> m_shooter.setMotor(0.8)));
-
-    m_operatorController.rightBumper().and(() -> !isInClimberMode).onTrue(new ParallelCommandGroup(
+    m_driverController.rightBumper().and(() -> !isInClimberMode).onTrue(new ParallelCommandGroup(
         new SequentialCommandGroup(
             new WaitUntilCommand(() -> m_shooter.getEncoderSpeed() == Constants.ShooterConstants.speakerSpeed),
             new InstantCommand(() -> m_intake.setMotor(0.8))),
         new InstantCommand(() -> m_shooter.setMotor(Constants.ShooterConstants.speakerSpeed))));
 
-    // change the button binding and finish command
-    m_operatorController.rightTrigger().and(() -> !isInClimberMode).onTrue(new SequentialCommandGroup(
-        new InstantCommand(() -> intakeIO.setMotor(0.8)),
-        new WaitUntilCommand(() -> m_intake.isIntooked()),
-        new InstantCommand(() -> intakeIO.setMotor(0))));
+    m_driverController.rightTrigger().whileTrue(new ParallelCommandGroup(
+      new RunCommand(() -> m_intake.setMotor(0.5), m_intake), 
+      new RunCommand(() -> m_indexer.setMotor(0.5), m_indexer))
+    );
+
+    m_driverController.leftTrigger().whileTrue(new ParallelCommandGroup(
+      new RunCommand(() -> m_intake.setMotor(-0.5), m_intake), 
+      new RunCommand(() -> m_indexer.setMotor(-0.5), m_indexer))
+    );
+
     m_operatorController.leftTrigger().and(() -> isInClimberMode).whileTrue(new RunCommand(
         () -> m_climber.setLeftSpeed(0.2), m_climber)
 
@@ -279,58 +233,20 @@ public class RobotContainer {
     );
     m_operatorController.x().onTrue(new InstantCommand(() -> isInClimberMode = !isInClimberMode, m_climber));
 
-    m_operatorController.b().and(() -> isInClimberMode).onTrue(new ParallelCommandGroup(
-        new InstantCommand(() -> m_climber.setLeftMotor(ClimberConstants.MAX_HEIGHT - 0.1), m_climber),
-        new InstantCommand(() -> m_climber.setRightMotor(ClimberConstants.MAX_HEIGHT - 0.1)))
-
-    );
-    m_operatorController.a().and(() -> isInClimberMode).onTrue(new ParallelCommandGroup(
-        new InstantCommand(() -> m_climber.setLeftMotor(ClimberConstants.MIN_HEIGHT + 0.1), m_climber),
-        new InstantCommand(() -> m_climber.setRightMotor(ClimberConstants.MIN_HEIGHT + 0.1)))
-
-    );
-    // right bumper?
-    // new JoystickButton(m_driverController, XboxController.Button.kX.value)
-    // .whileTrue(new RunCommand(
-    // () -> m_robotDrive.setX(),
-    // m_robotDrive));
-
-    // new JoystickButton(m_driverController, XboxController.Button.kY.value)
-    // .whileTrue(new RunCommand(
-    // () -> m_robotDrive.setZero(),
-    // m_robotDrive));
-
-    // new JoystickButton(m_driverController,
-    // XboxController.Button.kA.value).onTrue(
-    // new InstantCommand(
-    // () -> fieldOrientedDrive = !fieldOrientedDrive))
-
     // Right Y axis to control the arm
     // TODO: is this accurate? could totally be the wrong axis.
-    m_driverController.axisGreaterThan(5, 0.1).whileTrue(makeSetSpeedGravityCompensationCommand(m_arm, 0.1))
+    m_operatorController.axisGreaterThan(5, 0.1).and(() -> !isInClimberMode).whileTrue(makeSetSpeedGravityCompensationCommand(m_arm, 0.1))
         .onFalse(makeSetSpeedGravityCompensationCommand(m_arm, 0));
-    m_driverController.axisLessThan(5, -0.1).whileTrue(makeSetSpeedGravityCompensationCommand(m_arm, -0.1))
+    m_operatorController.axisLessThan(5, -0.1).and(() -> !isInClimberMode).whileTrue(makeSetSpeedGravityCompensationCommand(m_arm, -0.1))
         .onFalse(makeSetSpeedGravityCompensationCommand(m_arm, 0));
+    
+    
     // m_driverController.a().onTrue(setkG(arm, SmartDashboard.getNumber("kG", 0)));
     // new JoystickButton(m_driverController, XboxController.Button.kB.value)
     // .onTrue(new InstantCommand(
     // () -> m_gyro.resetYaw(), m_gyro));
 
-    // new JoystickButton(m_driverController,
-    // XboxController.Button.kLeftBumper.value)
-    // .whileTrue(new InstantCommand(
-    // () -> shooter.setMotor(0)));
   }
-
-  private Command makeSetSpeedGravityCompensationCommand(Arm a, double speed) {
-    return new SequentialCommandGroup(
-        new InstantCommand(() -> a.disable()),
-        new RunCommand(() -> a.setSpeedGravityCompensation(speed), a));
-  }
-
-  // private Command setkG(Arm a, double kG) {
-  // return new InstantCommand(() -> a.setkG(kG));
-  // }
 
   public static Command makeSetPositionCommand(ProfiledPIDSubsystem base, double target) {
     return new SequentialCommandGroup(
@@ -339,95 +255,14 @@ public class RobotContainer {
         new InstantCommand(() -> base.setGoal(target), base));
   }
 
-  // below is old version of button binding
-  // run shooter, wait until shooter reaches set speed, run intake to feed shooter
-  // new JoystickButton(m_operatorController,
-  // XboxController.Button.kRightBumper.value)
-  // .onTrue(new ParallelCommandGroup(
-  // new SequentialCommandGroup(
-  // new WaitUntilCommand(() -> m_shooter.getEncoderSpeed() ==
-  // Constants.ShooterConstants.speakerSpeed),
-  // new InstantCommand(() -> intakeIO.setMotor(0.8))),
-  // new InstantCommand(() ->
-  // m_shooter.setMotor(Constants.ShooterConstants.speakerSpeed))
-  // ));
-
-  // Left trigger to intake
-  // new Trigger(() -> m_driverController.getRawAxis(Axis.kLeftTrigger.value) >
-  // 0.1)
-  // .whileTrue(new InstantCommand(
-  // () -> m_intake.setMotor(1)));
-
-  // //Right trigger to outtake
-  // new Trigger(() -> m_driverController.getRawAxis(Axis.kRightTrigger.value) >
-  // 0.1)
-  // .whileTrue(new InstantCommand(
-  // () -> m_intake.setMotor(-1)));
-
-  // //Right stick up to move arm up
-  // new Trigger(() -> m_driverController.getRawAxis(Axis.kRightY.value) < -0.1)
-  // .whileTrue(makeSetSpeedGravityCompensationCommand(m_arm, 0.2))
-  // .onFalse(makeSetSpeedGravityCompensationCommand(m_arm, 0));
-
-  // //Right stick down to move arm down
-  // new Trigger(() -> m_driverController.getRawAxis(Axis.kRightY.value) > 0.1)
-  // .whileTrue(makeSetSpeedGravityCompensationCommand(m_arm, -0.2))
-  // .onFalse(makeSetSpeedGravityCompensationCommand(m_arm, 0));
+  private Command makeSetSpeedGravityCompensationCommand(Arm a, double speed) {
+    return new SequentialCommandGroup(
+        new InstantCommand(() -> a.disable()),
+        new RunCommand(() -> a.setSpeedGravityCompensation(speed), a));
+  }
 
   static final double DELAY_OVERHEAD_SECONDS = 0.5;
   static final double correctSpeed = 0.8;
-
-  // set motor to speed, if statement to check if shooter is at correct speed and
-  // set indexer to speed
-
-  /**
-   * Use this to pass the autonomous command to the main {@link Robot} class.
-   *
-   * @return the command to run in autonomous
-   */
-  // public Command getAutonomousCommand() {
-  // // Create config for trajectory
-  // TrajectoryConfig config = new TrajectoryConfig(
-  // AutoConstants.kMaxSpeedMetersPerSecond,
-  // AutoConstants.kMaxAccelerationMetersPerSecondSquared)
-  // // Add kinematics to ensure max speed is actually obeyed
-  // .setKinematics(DriveConstants.kDriveKinematics);
-
-  // // An example trajectory to follow. All units in meters.
-  // Trajectory exampleTrajectory = TrajectoryGenerator.generateTrajectory(
-  // // Start at the origin facing the +X direction
-  // new Pose2d(0, 0, new Rotation2d(0)),
-  // // Pass through these two interior waypoints, making an 's' curve path
-  // List.of(new Translation2d(1, 1), new Translation2d(2, -1)),
-  // // End 3 meters straight ahead of where we started, facing forward
-  // new Pose2d(3, 0, new Rotation2d(0)),
-  // config);
-
-  // var thetaController = new ProfiledPIDController(
-  // AutoConstants.kPThetaController, 0, 0,
-  // AutoConstants.kThetaControllerConstraints);
-  // thetaController.enableContinuousInput(-Math.PI, Math.PI);
-
-  // SwerveControllerCommand swerveControllerCommand = new
-  // SwerveControllerCommand(
-  // exampleTrajectory,
-  // m_robotDrive::getPose, // Functional interface to feed supplier
-  // DriveConstants.kDriveKinematics,
-
-  // // Position controllers
-  // new PIDController(AutoConstants.kPXController, 0, 0),
-  // new PIDController(AutoConstants.kPYController, 0, 0),
-  // thetaController,
-  // m_robotDrive::setModuleStates,
-  // m_robotDrive);
-
-  // // Reset odometry to the starting pose of the trajectory.
-  // m_robotDrive.resetOdometry(exampleTrajectory.getInitialPose());
-
-  // // Run path following command, then stop at the end.
-  // return swerveControllerCommand.andThen(() -> m_robotDrive.drive(0, 0, 0,
-  // false, false));
-  // }
 
   public enum CommandSelector {
     INTAKE,
@@ -444,20 +279,4 @@ public class RobotContainer {
   public static String toString(CommandSelector node) {
     return "Node: " + node;
   }
-
-  // private Command selectPositionCommand() {
-  // return new SelectCommand(
-  // Map.ofEntries(
-  // Map.entry(CommandSelector.INTAKE, makeSetPositionCommand(m_arm,
-  // ArmConstants.INTAKE_ANGLE)),
-  // Map.entry(CommandSelector.AMP, makeSetPositionCommand(m_arm,
-  // ArmConstants.AMP_ANGLE)),
-  // Map.entry(CommandSelector.SPEAKER_SUBWOOFER_STRAIGHT,makeSetPositionCommand(m_arm,
-  // ArmConstants.SPEAKER_SUBWOOFER_STRAIGHT_ANGLE)),
-  // Map.entry(CommandSelector.SPEAKER_SUBWOOFER_SIDE,
-  // makeSetPositionCommand(m_arm, ArmConstants.SPEAKER_SUBWOOFER_SIDE_ANGLE)),
-  // Map.entry(CommandSelector.SPEAKER_PODIUM, makeSetPositionCommand(m_arm,
-  // ArmConstants.SPEAKER_PODIUM_ANGLE))),
-  // this::select);
-  // }
 }
