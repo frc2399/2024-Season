@@ -38,6 +38,7 @@ public class RealArm implements ArmIO {
         armMotorControllerRight = MotorUtil.createSparkMAX(ArmConstants.ARM_MOTOR_ID_RIGHT, MotorType.kBrushless,
                 Constants.NEO_CURRENT_LIMIT,
                 true, true, 0.75);
+        //armMotorControllerRight.follow(armMotorControllerLeft);
         armAbsoluteEncoderRight = armMotorControllerRight.getAbsoluteEncoder(Type.kDutyCycle);
         armPIDControllerRight = armMotorControllerRight.getPIDController();
         armPIDControllerRight.setFeedbackDevice(armAbsoluteEncoderRight);
