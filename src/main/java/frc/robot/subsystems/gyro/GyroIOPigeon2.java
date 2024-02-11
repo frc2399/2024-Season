@@ -34,7 +34,7 @@ public class GyroIOPigeon2 implements GyroIO {
   }
 
   public double getYaw(){
-    return Units.degreesToRadians(pigeon.getAngle());
+    return pigeon.getYaw().getValue();
   }
   public void setYaw(double yaw){
     pigeon.setYaw(Units.radiansToDegrees(yaw));
@@ -42,7 +42,7 @@ public class GyroIOPigeon2 implements GyroIO {
   public void updateInputs(GyroIOInputs inputs) {
     // inputs.connected = pigeon.getLastError().equals(ErrorCode.OK);
     
-    inputs.yawPositionRad = Units.degreesToRadians(pigeon.getAngle());
+    inputs.yawPositionRad = pigeon.getYaw().getValue();
     
   }
 }

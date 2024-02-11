@@ -329,11 +329,13 @@ public class DriveSubsystem extends SubsystemBase {
     double ySpeedDelivered = ySpeedCommanded * DriveConstants.kMaxSpeedMetersPerSecond;
     double rotRateDelivered = m_currentRotationRate * DriveConstants.kMaxAngularSpeed;
 
+
     relativeRobotSpeeds = fieldRelative
             ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotRateDelivered,
                 Rotation2d.fromRadians(m_gyro.getYaw()))
             : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotRateDelivered);
 
+    
     var swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(relativeRobotSpeeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(
         swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
@@ -419,9 +421,11 @@ public class DriveSubsystem extends SubsystemBase {
     return positions;
   }
 
-  private ChassisSpeeds getRobotRelativeSpeeds(){
-    return relativeRobotSpeeds;
+  public ChassisSpeeds getRobotRelativeSpeeds() {
+    return DriveConstants.kDriveKinematics.toChassisSpeeds(m_frontLeft.getState(), m_frontRight.getState(),
+        m_rearLeft.getState(), m_rearRight.getState());
   }
+
 
   public void setRobotRelativeSpeeds(ChassisSpeeds speeds) {
     this.drive(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, speeds.omegaRadiansPerSecond, false, false);
