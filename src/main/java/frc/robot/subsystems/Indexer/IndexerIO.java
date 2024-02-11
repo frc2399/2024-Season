@@ -1,5 +1,7 @@
 package frc.robot.subsystems.Indexer;
 
+import edu.wpi.first.wpilibj.DigitalInput;
+
 public interface IndexerIO {
     public void setMotor(double speed);
     public void setSpeed(double speed);
@@ -8,5 +10,6 @@ public interface IndexerIO {
     public double getEncoderPosition();
     public void setCurrentLimit(int current);
     public void periodicUpdate();
-  
+    public void setIsIntooked(boolean intooked);
+    public boolean getIsBeamBroken();
 }

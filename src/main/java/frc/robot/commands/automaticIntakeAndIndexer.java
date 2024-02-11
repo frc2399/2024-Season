@@ -1,4 +1,5 @@
 package frc.robot.commands;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Indexer.Indexer;
 import frc.robot.subsystems.Indexer.IndexerIO;
@@ -10,7 +11,6 @@ public class automaticIntakeAndIndexer extends Command {
     private final Intake intake;
     public static boolean isIntooked = false;
     public boolean pieceIntooked = false;
-    public static boolean beam = false; //add an actual laser beam code here
 
     public automaticIntakeAndIndexer(Indexer indexer, Intake intake) {
         this.indexer = indexer;
@@ -22,9 +22,9 @@ public class automaticIntakeAndIndexer extends Command {
     @Override
     public void execute() {
         while (isIntooked == false) {
-            if (beam) {
+            if (indexer.getIsBeamBroken()) {
                 isIntooked = true;
-                pieceIntooked.setPieceIntooked();
+                indexer.setIsIntooked(true);
             }
             intake.setMotor(5);
             indexer.setMotor(5);

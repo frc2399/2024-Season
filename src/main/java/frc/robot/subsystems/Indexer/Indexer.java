@@ -4,19 +4,24 @@
 
 package frc.robot.subsystems.Indexer;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
+import frc.robot.Constants.IntakeConstants;
 
 public class Indexer extends SubsystemBase {
 
   private IndexerIO indexerIO;
-  public static boolean isIntooked = false;
+  public boolean isIntooked = false;
 
   /** Creates a new Indexer. */
   public Indexer(IndexerIO io) {
-    
     indexerIO = io;
-        
+  }
+
+  public void setIsIntooked(boolean intooked) {
+    indexerIO.setIsIntooked(intooked);
   }
 
   public void setMotor(double indexerSpeed) {
@@ -34,6 +39,10 @@ public class Indexer extends SubsystemBase {
 
   public void setCurrentLimit(int current) {
     indexerIO.setCurrentLimit(current);
+  }
+
+  public boolean getIsBeamBroken() {
+    return indexerIO.getIsBeamBroken();
   }
 
   @Override

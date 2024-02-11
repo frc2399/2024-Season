@@ -75,7 +75,6 @@ public class RobotContainer {
   // private static Gyro m_gyro = new Gyro();
   public boolean fieldOrientedDrive = false;
   public static boolean isInClimberMode = false;
-  public static boolean isIntooked = false;
   public static CommandSelector angleHeight = CommandSelector.INTAKE;
 
   public static Shooter m_shooter;
@@ -236,11 +235,6 @@ public class RobotContainer {
             new InstantCommand(() -> m_intake.setMotor(0.8))),
         new InstantCommand(() -> m_shooter.setMotor(Constants.ShooterConstants.speakerSpeed))));
 
-    // change the button binding and finish command
-    m_operatorController.rightTrigger().and(() -> !isInClimberMode).onTrue(new SequentialCommandGroup(
-        new InstantCommand(() -> intakeIO.setMotor(0.8)),
-        new WaitUntilCommand(() -> m_intake.isIntooked()),
-        new InstantCommand(() -> intakeIO.setMotor(0))));
     m_operatorController.leftTrigger().and(() -> isInClimberMode).whileTrue(new RunCommand(
         () -> m_climber.setLeftSpeed(0.2), m_climber)
 
@@ -272,6 +266,10 @@ public class RobotContainer {
     //randomly assigned button, change as necessary
     m_operatorController.y().and(() -> !isInClimberMode).onTrue(new InstantCommand(
     () -> m_shooter.setMotor(Constants.ShooterConstants.speakerSpeed))
+    
+    );
+    m_operatorController.povCenter().and(() -> !isInClimberMode).onTrue(new InstantCommand(
+    () -> m_indexer.setIsIntooked(!m_indexer.isIntooked))
     
     );
 
@@ -378,9 +376,6 @@ public class RobotContainer {
   // return swerveControllerCommand.andThen(() -> m_robotDrive.drive(0, 0, 0,
   // false, false));
   // }
-public void setPieceIntooked (boolean isIntooked) {
-  this.pieceIntooked = isIntooked;
-  }
 
   public enum CommandSelector {
     INTAKE,

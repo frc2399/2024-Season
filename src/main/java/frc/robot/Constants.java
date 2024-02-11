@@ -154,6 +154,7 @@ public final class Constants {
 
     public static final int INDEXER_MOTOR_ID = 5; //I put 5 at random. Find actual motor ID. 
     public static final double INDEXER_SLEW_RATE = 10;
+    public static final int INDEXER_SENSOR_CHANNEL = 1; //change as necessary
   }
 
   public static final class ArmConstants {
