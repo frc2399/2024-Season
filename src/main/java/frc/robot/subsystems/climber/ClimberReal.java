@@ -207,12 +207,4 @@ public class ClimberReal implements ClimberIO {
     public boolean isRightSideStalling() {
         return rightDebouncer.calculate(Math.abs(rightEncoder.getVelocity()) < ClimberConstants.VELOCITY_THRESHHOLD);
     }
-
-    // Called once the command ends or is interrupted.
-    // public void end(boolean interrupted) {
-    //     climber.setLeftSpeed();
-    //     climber.setRightSpeed(); 
-    //     // do something other than what we're interupting
-    // }
-
 }

@@ -21,20 +21,26 @@ public class automaticClimberCommand extends Command {
 
   @Override
   public void execute() {
-    while (climber.getLeftEncoderPosition() != setpoint || climber.getRightEncoderPosition() != setpoint) {
-      if (climber.getLeftEncoderPosition() != setpoint) {
-        if (climber.getLeftEncoderPosition() < setpoint) {
+    while (shouldRunWhileLoop(setpoint, climber)) {
+      if (climber.getLeftEncoderPosition() < (setpoint - ClimberConstants.SETPOINT_RANGE)
+          || (climber.getLeftEncoderPosition() > (setpoint - ClimberConstants.SETPOINT_RANGE))) {
+        if (climber.getLeftEncoderPosition() < (setpoint - ClimberConstants.SETPOINT_RANGE)
+            || climber.getLeftEncoderPosition() < setpoint) {
           climber.setLeftSpeed(0.2);
 
-        } else if (climber.getLeftEncoderPosition() > setpoint) {
-          climber.setLeftSpeed(0.2);
+        } else if (climber.getLeftEncoderPosition() > (setpoint + ClimberConstants.SETPOINT_RANGE)
+            || climber.getLeftEncoderPosition() > setpoint) {
+          climber.setLeftSpeed(-0.2);
         }
       }
 
-      if (climber.getRightEncoderPosition() != setpoint) {
-        if (climber.getRightEncoderPosition() < setpoint) {
+      if (climber.getRightEncoderPosition() < (setpoint - ClimberConstants.SETPOINT_RANGE)
+          || (climber.getLeftEncoderPosition() > (setpoint - ClimberConstants.SETPOINT_RANGE))) {
+        if (climber.getRightEncoderPosition() < (setpoint - ClimberConstants.SETPOINT_RANGE)
+            || climber.getRightEncoderPosition() < setpoint) {
           climber.setRightSpeed(0.2);
-        } else if (climber.getLeftEncoderPosition() > setpoint) {
+        } else if (climber.getRightEncoderPosition() > (setpoint + ClimberConstants.SETPOINT_RANGE)
+            || climber.getRightEncoderPosition() > setpoint) {
           climber.setRightSpeed(-0.2);
         }
       }
@@ -48,5 +54,16 @@ public class automaticClimberCommand extends Command {
 
     climber.setLeftSpeed(0.0);
     climber.setRightSpeed(0.0);
+  }
+
+  public static boolean shouldRunWhileLoop(double setpoint, Climber climber) {
+    boolean isRightAtPosition = (setpoint - ClimberConstants.SETPOINT_RANGE) < climber.getRightEncoderPosition()
+        && (setpoint + ClimberConstants.SETPOINT_RANGE) > climber.getRightEncoderPosition();
+
+    boolean isLeftAtPosition = (setpoint - ClimberConstants.SETPOINT_RANGE) < climber.getLeftEncoderPosition()
+        && (setpoint + ClimberConstants.SETPOINT_RANGE) > climber.getLeftEncoderPosition();
+
+    return !isRightAtPosition || !isLeftAtPosition;
+
   }
 }
