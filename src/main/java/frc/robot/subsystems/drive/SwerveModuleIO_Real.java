@@ -100,8 +100,7 @@ public class SwerveModuleIO_Real implements SwerveModuleIO {
     m_turningSparkMax.setSmartCurrentLimit(ModuleConstants.kTurningMotorCurrentLimit);
 
     this.chassisAngularOffset = chassisAngularOffset;
-
-
+    m_drivingEncoder.setPosition(0);
     }
     
 

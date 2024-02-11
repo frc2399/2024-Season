@@ -114,6 +114,8 @@ public class SwerveModule {
 
         io.setDesiredDriveSpeedMPS(optimizedDesiredState.speedMetersPerSecond);
         io.setDesiredTurnAngle(optimizedDesiredState.angle.getRadians());
+        SmartDashboard.putNumber(name + "drive/desired angle", optimizedDesiredState.angle.getRadians());
+        SmartDashboard.putNumber(name + "drive/real angle", getTurnEncoderPosition());
 
         m_desiredState = desiredState;
     }
