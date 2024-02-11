@@ -48,7 +48,7 @@ public class RobotContainer {
     // The robot's subsystems
     private DriveSubsystem m_robotDrive;
     private GyroIO m_gyro;
-    public boolean fieldOrientedDrive = true;
+    public boolean fieldOrientedDrive = false;
 
     private SwerveModuleIO m_frontLeftIO;
     private SwerveModuleIO m_frontRightIO;
@@ -81,6 +81,13 @@ public class RobotContainer {
                                 -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband),
                                 fieldOrientedDrive, false),
                         m_robotDrive));
+                // new RunCommand(
+                //         () -> m_robotDrive.drive(
+                //                 -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
+                //                 0,
+                //                 0,
+                //                 fieldOrientedDrive, false),
+                //         m_robotDrive));
         // new RunCommand(
         // () -> m_robotDrive.drive(
         // -MathUtil.applyDeadband(m_driverController.getLeftY(),

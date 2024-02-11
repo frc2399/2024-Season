@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Robot;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -194,9 +195,10 @@ public class DriveSubsystem extends SubsystemBase {
     if (DriverStation.isAutonomous()){
       System.out.println("Mahee is annoying");
     } 
-    double angleChange = Constants.DriveConstants.kDriveKinematics.toChassisSpeeds(swerveModuleStates).omegaRadiansPerSecond * (1/Constants.CodeConstants.kMainLoopFrequency);
-    lastAngle = lastAngle.plus(Rotation2d.fromRadians(angleChange));
-    m_gyro.setYaw(lastAngle.getRadians());
+    if (Robot.isSimulation()) {
+      double angleChange = Constants.DriveConstants.kDriveKinematics.toChassisSpeeds(swerveModuleStates).omegaRadiansPerSecond * (1/Constants.CodeConstants.kMainLoopFrequency);
+      lastAngle = lastAngle.plus(Rotation2d.fromRadians(angleChange));
+      m_gyro.setYaw(lastAngle.getRadians());}
   }
   // Log empty setpoint states when disabled
 
@@ -328,13 +330,14 @@ public class DriveSubsystem extends SubsystemBase {
     double xSpeedDelivered = xSpeedCommanded * DriveConstants.kMaxSpeedMetersPerSecond;
     double ySpeedDelivered = ySpeedCommanded * DriveConstants.kMaxSpeedMetersPerSecond;
     double rotRateDelivered = m_currentRotationRate * DriveConstants.kMaxAngularSpeed;
-
+    
 
     relativeRobotSpeeds = fieldRelative
             ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotRateDelivered,
                 Rotation2d.fromRadians(m_gyro.getYaw()))
             : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotRateDelivered);
 
+    SmartDashboard.putNumber("drive/gyro angle", m_gyro.getYaw());
     SmartDashboard.putNumber("x speed", relativeRobotSpeeds.vxMetersPerSecond);
     SmartDashboard.putNumber("y speed", relativeRobotSpeeds.vyMetersPerSecond);
     SmartDashboard.putNumber("omega value", relativeRobotSpeeds.omegaRadiansPerSecond);
