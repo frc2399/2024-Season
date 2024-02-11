@@ -24,6 +24,7 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.ClimberConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
+import frc.robot.commands.automaticClimberCommand;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -75,7 +76,7 @@ public class RobotContainer {
   // private static Gyro m_gyro = new Gyro();
   // public boolean fieldOrientedDrive = false;
   public static boolean isInClimberMode = false;
-  //public static CommandSelector angleHeight = CommandSelector.INTAKE;
+  // public static CommandSelector angleHeight = CommandSelector.INTAKE;
 
   // public static Shooter m_shooter;
   // public static Intake m_intake;
@@ -113,15 +114,15 @@ public class RobotContainer {
     // ArmIO armIO;
     // IOs currently always real
     // if (RobotBase.isSimulation()) {
-    //   indexerIO = new SimIndexer();
-    //   shooterIO = new SimShooter();
-    //   intakeIO = new SimIntake();
-    //   climberIO = new ClimberSim();
+    // indexerIO = new SimIndexer();
+    // shooterIO = new SimShooter();
+    // intakeIO = new SimIntake();
+    // climberIO = new ClimberSim();
     // } else {
-    //   intakeIO = new RealIntake();
-    //   indexerIO = new RealIndexer();
-    //   shooterIO = new RealShooter();
-       climberIO = new ClimberReal();
+    // intakeIO = new RealIntake();
+    // indexerIO = new RealIndexer();
+    // shooterIO = new RealShooter();
+    climberIO = new ClimberReal();
     // }
 
     // armIO = new RealArm();
@@ -130,7 +131,7 @@ public class RobotContainer {
     // // m_arm = new Arm(armIO);
     // m_shooter = new Shooter(shooterIO);
     // m_indexer = new Indexer(indexerIO);
-     m_climber = new Climber(climberIO);
+    m_climber = new Climber(climberIO);
   }
 
   // Configure default commands
@@ -138,27 +139,25 @@ public class RobotContainer {
     // default command for the shooter: setting speed to number input from the smart
     // dashboard
     // m_shooter.setDefaultCommand(
-    //     new InstantCommand(
-    //         () -> m_shooter.setMotor(SmartDashboard.getNumber("Shoot speed", 0)),
-    //         m_shooter));
+    // new InstantCommand(
+    // () -> m_shooter.setMotor(SmartDashboard.getNumber("Shoot speed", 0)),
+    // m_shooter));
 
     // // default command for intake: do nothing
     // m_intake.setDefaultCommand(
-    //     new InstantCommand(
-    //         () -> m_intake.setMotor(0),
-    //         m_intake));
+    // new InstantCommand(
+    // () -> m_intake.setMotor(0),
+    // m_intake));
 
     // m_indexer.setDefaultCommand(
-    //     new InstantCommand(
-    //         () -> m_indexer.setMotor(0),
-    //         m_indexer));
+    // new InstantCommand(
+    // () -> m_indexer.setMotor(0),
+    // m_indexer));
 
     m_climber.setDefaultCommand(
         new InstantCommand(
             () -> m_climber.setMotors(0),
-            m_climber
-        )
-    );
+            m_climber));
 
     // default command for drivetrain: drive based on controller inputs
     // m_robotDrive.setDefaultCommand(
@@ -207,7 +206,7 @@ public class RobotContainer {
     // m_robotDrive));
 
     // m_operatorController.a().onTrue(new InstantCommand(
-    //     () -> fieldOrientedDrive = !fieldOrientedDrive));
+    // () -> fieldOrientedDrive = !fieldOrientedDrive));
     // // below is old version of button binding
     // // new JoystickButton(m_driverController, XboxController.Button.kA.value)
     // // .onTrue(new InstantCommand(
@@ -217,8 +216,9 @@ public class RobotContainer {
     // // .onTrue(new InstantCommand(
     // // () -> m_gyro.resetYaw(), m_gyro));
 
-    // m_driverController.leftBumper().and(() -> !isInClimberMode).whileTrue(new InstantCommand(
-    //     () -> m_shooter.setMotor(0.8)));
+    // m_driverController.leftBumper().and(() -> !isInClimberMode).whileTrue(new
+    // InstantCommand(
+    // () -> m_shooter.setMotor(0.8)));
 
     // below is old version of button binding
     // new JoystickButton(m_driverController,
@@ -226,17 +226,21 @@ public class RobotContainer {
     // .whileTrue(new InstantCommand(
     // () -> m_shooter.setMotor(0.8)));
 
-    // m_operatorController.rightBumper().and(() -> !isInClimberMode).onTrue(new ParallelCommandGroup(
-    //     new SequentialCommandGroup(
-    //         new WaitUntilCommand(() -> m_shooter.getEncoderSpeed() == Constants.ShooterConstants.speakerSpeed),
-    //         new InstantCommand(() -> m_intake.setMotor(0.8))),
-    //     new InstantCommand(() -> m_shooter.setMotor(Constants.ShooterConstants.speakerSpeed))));
+    // m_operatorController.rightBumper().and(() -> !isInClimberMode).onTrue(new
+    // ParallelCommandGroup(
+    // new SequentialCommandGroup(
+    // new WaitUntilCommand(() -> m_shooter.getEncoderSpeed() ==
+    // Constants.ShooterConstants.speakerSpeed),
+    // new InstantCommand(() -> m_intake.setMotor(0.8))),
+    // new InstantCommand(() ->
+    // m_shooter.setMotor(Constants.ShooterConstants.speakerSpeed))));
 
     // // change the button binding and finish command
-    // m_operatorController.rightTrigger().and(() -> !isInClimberMode).onTrue(new SequentialCommandGroup(
-    //     new InstantCommand(() -> intakeIO.setMotor(0.8)),
-    //     new WaitUntilCommand(() -> m_intake.isIntooked()),
-    //     new InstantCommand(() -> intakeIO.setMotor(0))));
+    // m_operatorController.rightTrigger().and(() -> !isInClimberMode).onTrue(new
+    // SequentialCommandGroup(
+    // new InstantCommand(() -> intakeIO.setMotor(0.8)),
+    // new WaitUntilCommand(() -> m_intake.isIntooked()),
+    // new InstantCommand(() -> intakeIO.setMotor(0))));
 
     m_operatorController.leftTrigger().and(() -> isInClimberMode).whileTrue(new RunCommand(
         () -> m_climber.setLeftSpeed(0.2), m_climber)
@@ -254,16 +258,27 @@ public class RobotContainer {
         () -> m_climber.setRightSpeed(-0.2), m_climber)
 
     );
+
+    m_operatorController.b().and(() -> isInClimberMode).onTrue(new automaticClimberCommand(m_climber, 0));
+
+    m_operatorController.a().and(() -> isInClimberMode).onTrue(new automaticClimberCommand(m_climber, 0));
+
     m_operatorController.x().onTrue(new InstantCommand(() -> isInClimberMode = !isInClimberMode));
 
-    // m_operatorController.b().and(() -> isInClimberMode).onTrue(new ParallelCommandGroup(
-    //     new InstantCommand(() -> m_climber.setLeftMotor(ClimberConstants.MAX_HEIGHT - 0.1), m_climber),
-    //     new InstantCommand(() -> m_climber.setRightMotor(ClimberConstants.MAX_HEIGHT - 0.1)))
+    // m_operatorController.b().and(() -> isInClimberMode).onTrue(new
+    // ParallelCommandGroup(
+    // new InstantCommand(() -> m_climber.setLeftMotor(ClimberConstants.MAX_HEIGHT -
+    // 0.1), m_climber),
+    // new InstantCommand(() -> m_climber.setRightMotor(ClimberConstants.MAX_HEIGHT
+    // - 0.1)))
 
     // );
-    // m_operatorController.a().and(() -> isInClimberMode).onTrue(new ParallelCommandGroup(
-    //     new InstantCommand(() -> m_climber.setLeftMotor(ClimberConstants.MIN_HEIGHT + 0.1), m_climber),
-    //     new InstantCommand(() -> m_climber.setRightMotor(ClimberConstants.MIN_HEIGHT + 0.1)))
+    // m_operatorController.a().and(() -> isInClimberMode).onTrue(new
+    // ParallelCommandGroup(
+    // new InstantCommand(() -> m_climber.setLeftMotor(ClimberConstants.MIN_HEIGHT +
+    // 0.1), m_climber),
+    // new InstantCommand(() -> m_climber.setRightMotor(ClimberConstants.MIN_HEIGHT
+    // + 0.1)))
 
     // );
 
@@ -303,17 +318,18 @@ public class RobotContainer {
     // .onFalse(makeSetSpeedGravityCompensationCommand(m_arm, 0));
   }
 
-  // public static Command makeSetPositionCommand(ProfiledPIDSubsystem base, double target) {
-  //   return new SequentialCommandGroup(
-  //       new ConditionalCommand(new InstantCommand(() -> {
-  //       }), new InstantCommand(() -> base.enable()), () -> base.isEnabled()),
-  //       new InstantCommand(() -> base.setGoal(target), base));
+  // public static Command makeSetPositionCommand(ProfiledPIDSubsystem base,
+  // double target) {
+  // return new SequentialCommandGroup(
+  // new ConditionalCommand(new InstantCommand(() -> {
+  // }), new InstantCommand(() -> base.enable()), () -> base.isEnabled()),
+  // new InstantCommand(() -> base.setGoal(target), base));
   // }
 
   // private Command makeSetSpeedGravityCompensationCommand(Arm a, double speed) {
-  //   return new SequentialCommandGroup(
-  //       new InstantCommand(() -> a.disable()),
-  //       new RunCommand(() -> a.setSpeedGravityCompensation(speed), a));
+  // return new SequentialCommandGroup(
+  // new InstantCommand(() -> a.disable()),
+  // new RunCommand(() -> a.setSpeedGravityCompensation(speed), a));
   // }
 
   // static final double DELAY_OVERHEAD_SECONDS = 0.5;
@@ -372,19 +388,19 @@ public class RobotContainer {
   // }
 
   // public enum CommandSelector {
-  //   INTAKE,
-  //   AMP,
-  //   SPEAKER_SUBWOOFER_STRAIGHT,
-  //   SPEAKER_SUBWOOFER_SIDE,
-  //   SPEAKER_PODIUM
+  // INTAKE,
+  // AMP,
+  // SPEAKER_SUBWOOFER_STRAIGHT,
+  // SPEAKER_SUBWOOFER_SIDE,
+  // SPEAKER_PODIUM
   // }
 
   // private CommandSelector select() {
-  //   return angleHeight;
+  // return angleHeight;
   // }
 
   // public static String toString(CommandSelector node) {
-  //   return "Node: " + node;
+  // return "Node: " + node;
   // }
 
   // private Command selectPositionCommand() {

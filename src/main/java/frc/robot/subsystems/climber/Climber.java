@@ -35,4 +35,15 @@ public class Climber extends SubsystemBase {
         climberIO.periodicUpdate(); 
     }
 
+    public double getLeftEncoderPosition(){
+        return 0.0;
+    }
+
+    public double getRightEncoderPosition(){
+        return 0.0;
+    }
+
+
+
+
 }

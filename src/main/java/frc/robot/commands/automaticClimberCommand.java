@@ -1,31 +1,52 @@
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.RobotContainer;
+import frc.robot.Constants.ClimberConstants;
 import frc.robot.subsystems.climber.Climber;
-import frc.robot.subsystems.climber.ClimberIO;
-import frc.robot.subsystems.intake.Intake;
 
 public class automaticClimberCommand extends Command {
 
-    private final Climber climber;
+  private final Climber climber;
+  private double setpoint;
 
-    public automaticClimberCommand(Climber climber, double setpoint) {
+  public automaticClimberCommand(Climber climber, double setpoint) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.climber = climber;
-    addRequirements(climber); 
+    this.setpoint = setpoint;
+    addRequirements(climber);
+  }
 
-    @Override
-    public void execute() {
+  @Override
+  public void execute() {
+    while (climber.getLeftEncoderPosition() != setpoint || climber.getRightEncoderPosition() != setpoint) {
+      if (climber.getLeftEncoderPosition() != setpoint) {
+        if (climber.getLeftEncoderPosition() < setpoint) {
+          climber.setLeftSpeed(0.2);
 
-      if (XboxController.b.onTrue){
-        m_climber.setLeftMotor(ClimberConstants.MAX_HEIGHT - 0.1);
-        m_climber.setRightMotor(ClimberConstants.MAX_HEIGHT - 0.1);
+        } else if (climber.getLeftEncoderPosition() > setpoint) {
+          climber.setLeftSpeed(0.2);
+        }
       }
-      else if (XboxController.a.onTrue){
-        m_climber.setLeftMotor(ClimberConstants.MIN_HEIGHT + 0.1);
-        m_climber.setRightMotor(ClimberConstants.MIN_HEIGHT + 0.1);
+
+      if (climber.getRightEncoderPosition() != setpoint) {
+        if (climber.getRightEncoderPosition() < setpoint) {
+          climber.setRightSpeed(0.2);
+        } else if (climber.getLeftEncoderPosition() > setpoint) {
+          climber.setRightSpeed(-0.2);
+        }
       }
     }
+    climber.setLeftSpeed(0.0);
+    climber.setRightSpeed(0.0);
+  }
+
+  @Override
+  public void end(boolean interrupted) {
+
+    climber.setLeftSpeed(0.0);
+    climber.setRightSpeed(0.0);
   }
 }
