@@ -75,7 +75,7 @@ public class SwerveModule {
             // System.out.println(name + " getDriveEncoderSpeedMPS() = " + getDriveEncoderSpeedMPS());
         }
         return new SwerveModuleState(getDriveEncoderSpeedMPS(),
-                new Rotation2d((getTurnEncoderPosition()) - chassisAngularOffset));
+                new Rotation2d((getTurnEncoderPosition()) - io.getChassisAngularOffset()));
     }
 
     /**
@@ -91,7 +91,7 @@ public class SwerveModule {
         SmartDashboard.putNumber(io.getName() + " getTurnEncoderPosition in SwerveModule", getTurnEncoderPosition());
         return new SwerveModulePosition(
                 getDriveEncoderPosition(),
-                new Rotation2d(getTurnEncoderPosition() - chassisAngularOffset));
+                new Rotation2d(getTurnEncoderPosition() - io.getChassisAngularOffset()));
     }
 
     /**
@@ -103,7 +103,7 @@ public class SwerveModule {
         // Apply chassis angular offset to the desired state.
         SwerveModuleState correctedDesiredState = new SwerveModuleState();
         correctedDesiredState.speedMetersPerSecond = desiredState.speedMetersPerSecond;
-        correctedDesiredState.angle = desiredState.angle.plus(Rotation2d.fromRadians(chassisAngularOffset));
+        correctedDesiredState.angle = desiredState.angle.plus(Rotation2d.fromRadians(io.getChassisAngularOffset()));
 
         // Optimize the reference state to avoid spinning further than 90 degrees.
 
@@ -111,10 +111,7 @@ public class SwerveModule {
         SwerveModuleState.optimize(correctedDesiredState,
         new Rotation2d(getTurnEncoderPosition()));
 
-        if (name == "front left"){
-            System.out.println("left front optimizedDesiredState.speedMetersPerSecond " + 
-            optimizedDesiredState.speedMetersPerSecond);
-        }
+
         io.setDesiredDriveSpeedMPS(optimizedDesiredState.speedMetersPerSecond);
         io.setDesiredTurnAngle(optimizedDesiredState.angle.getRadians());
 

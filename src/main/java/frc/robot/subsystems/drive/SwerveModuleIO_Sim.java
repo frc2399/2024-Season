@@ -120,4 +120,8 @@ public class SwerveModuleIO_Sim implements SwerveModuleIO {
    public String getName(){
       return name;
    }
+
+   public double getChassisAngularOffset(){
+      return 0.0;
+   }
 }

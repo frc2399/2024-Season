@@ -164,6 +164,10 @@ public class SwerveModuleIO_Real implements SwerveModuleIO {
       return name;
    }
 
+   public double getChassisAngularOffset(){
+      return chassisAngularOffset;
+   }
+
 }
 
 

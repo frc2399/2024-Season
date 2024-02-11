@@ -258,21 +258,21 @@ public class DriveSubsystem extends SubsystemBase {
     double ySpeedCommanded;
     double currentAngle = (m_gyro.getYaw());
 
-    if (currentAngle == 0) {
-      desiredAngle = 0;
-      newRotRate = rotRate;
-    }
+    // if (currentAngle == 0) {
+    //   desiredAngle = 0;
+    //   newRotRate = rotRate;
+    // }
 
-    else if (rotRate == 0) {
-      newRotRate = 0;
+    // else if (rotRate == 0) {
+    //   newRotRate = 0;
 
-      if (Math.abs(desiredAngle - currentAngle) > Math.toRadians(0.1)) {
-        newRotRate = 3 * (desiredAngle - currentAngle) / (2 * Math.PI);
-      }
-    } else {
+    //   if (Math.abs(desiredAngle - currentAngle) > Math.toRadians(0.1)) {
+    //     newRotRate = 3 * (desiredAngle - currentAngle) / (2 * Math.PI);
+    //   }
+    // } else {
       newRotRate = rotRate;
       desiredAngle = currentAngle;
-    }
+    //}
     SmartDashboard.putNumber("desired angle", desiredAngle);
     SmartDashboard.putNumber("current angle", currentAngle);
     SmartDashboard.putNumber("rotRate", rotRate);
@@ -334,6 +334,10 @@ public class DriveSubsystem extends SubsystemBase {
             ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotRateDelivered,
                 Rotation2d.fromRadians(m_gyro.getYaw()))
             : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotRateDelivered);
+
+    SmartDashboard.putNumber("x speed", relativeRobotSpeeds.vxMetersPerSecond);
+    SmartDashboard.putNumber("y speed", relativeRobotSpeeds.vyMetersPerSecond);
+    SmartDashboard.putNumber("omega value", relativeRobotSpeeds.omegaRadiansPerSecond);
 
     
     var swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(relativeRobotSpeeds);
