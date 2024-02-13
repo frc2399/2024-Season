@@ -14,31 +14,18 @@ import frc.utils.MotorUtil;
 public class RealArm implements ArmIO {
     private static CANSparkMax armMotorControllerLeft;
     private static CANSparkMax armMotorControllerRight;
-    public static AbsoluteEncoder armAbsoluteEncoderLeft;
     public static AbsoluteEncoder armAbsoluteEncoderRight;
-    private final SparkPIDController armPIDControllerLeft;
     private final SparkPIDController armPIDControllerRight;
 
     public RealArm() {
         // armAbsoluteEncoder = new DutyCycleEncoder(0);
         // Higher slew rate of .75 seconds from 0 to 100% (sparkmax thinks we use this)
         // translates to .2 seconds from 0 to 20% (what we actually use)
-        armMotorControllerLeft = MotorUtil.createSparkMAX(ArmConstants.ARM_MOTOR_ID_LEFT, MotorType.kBrushless,
-                Constants.NEO_CURRENT_LIMIT,
-                false, true, 0.75);
-        armAbsoluteEncoderLeft = armMotorControllerLeft.getAbsoluteEncoder(Type.kDutyCycle);
-        armPIDControllerLeft = armMotorControllerLeft.getPIDController();
-        armPIDControllerLeft.setFeedbackDevice(armAbsoluteEncoderLeft);
-
-        armAbsoluteEncoderLeft.setPositionConversionFactor(ArmConstants.RADIANS_PER_REVOLUTION);
-        armAbsoluteEncoderLeft.setVelocityConversionFactor(ArmConstants.RADIANS_PER_REVOLUTION / 60);
-
-        // armEncoderLeft.setPosition(ArmConstants.INITIAL_OFFSET);
 
         armMotorControllerRight = MotorUtil.createSparkMAX(ArmConstants.ARM_MOTOR_ID_RIGHT, MotorType.kBrushless,
                 Constants.NEO_CURRENT_LIMIT,
                 true, true, 0.75);
-        //armMotorControllerRight.follow(armMotorControllerLeft);
+
         armAbsoluteEncoderRight = armMotorControllerRight.getAbsoluteEncoder(Type.kDutyCycle);
         armPIDControllerRight = armMotorControllerRight.getPIDController();
         armPIDControllerRight.setFeedbackDevice(armAbsoluteEncoderRight);
@@ -46,11 +33,15 @@ public class RealArm implements ArmIO {
         armAbsoluteEncoderRight.setPositionConversionFactor(ArmConstants.RADIANS_PER_REVOLUTION);
         armAbsoluteEncoderRight.setVelocityConversionFactor(ArmConstants.RADIANS_PER_REVOLUTION / 60);
 
-        // armEncoderRight.setPosition(ArmConstants.INITIAL_OFFSET);
+        armMotorControllerLeft = MotorUtil.createSparkMAX(ArmConstants.ARM_MOTOR_ID_LEFT, MotorType.kBrushless,
+            Constants.NEO_CURRENT_LIMIT,
+            false, true, 0.75);
+        //armMotorControllerLeft.follow(armMotorControllerRight);
+        // armAbsoluteEncoderRight.setPosition(ArmConstants.INITIAL_OFFSET);
     }
 
     public double getAbsoluteEncoderPosition() {
-        return -(armAbsoluteEncoderLeft.getPosition() - 0.88) * 2 * Math.PI / 3;
+        return -(armAbsoluteEncoderRight.getPosition() - 0.88) * 2 * Math.PI / 3;
     }
 
     @Override
@@ -61,29 +52,27 @@ public class RealArm implements ArmIO {
     @Override
     public double getEncoderPosition() {
         // return getAbsoluteEncoderPosition();
-        return armAbsoluteEncoderLeft.getPosition();
+        return armAbsoluteEncoderRight.getPosition();
     }
 
     @Override
     public double getEncoderSpeed() {
-        return armAbsoluteEncoderLeft.getVelocity();
+        return armAbsoluteEncoderRight.getVelocity();
     }
 
     @Override
     public void setSpeed(double speed) {
         armMotorControllerRight.set(speed);
-        armMotorControllerLeft.set(speed);
     }
 
     @Override
     public void setPosition(double position) {
-        armPIDControllerLeft.setReference(position, ControlType.kPosition);
         armPIDControllerRight.setReference(position, ControlType.kPosition);
     }
 
     @Override
     public double getArmCurrent() {
-        return armMotorControllerLeft.getOutputCurrent();
+        return armMotorControllerRight.getOutputCurrent();
     }
 
 }
