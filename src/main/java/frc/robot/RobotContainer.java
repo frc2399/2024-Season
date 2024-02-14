@@ -233,6 +233,7 @@ public class RobotContainer {
         new SequentialCommandGroup(
             new WaitUntilCommand(() -> m_shooter.getEncoderSpeed() == Constants.ShooterConstants.speakerSpeed),
             new InstantCommand(() -> m_intake.setMotor(0.8))),
+            new InstantCommand(() -> m_indexer.setIsIntooked(false)),
         new InstantCommand(() -> m_shooter.setMotor(Constants.ShooterConstants.speakerSpeed))));
 
     m_operatorController.leftTrigger().and(() -> isInClimberMode).whileTrue(new RunCommand(
@@ -263,6 +264,19 @@ public class RobotContainer {
         new InstantCommand(() -> m_climber.setRightMotor(ClimberConstants.MIN_HEIGHT + 0.1)))
 
     );
+
+    m_operatorController.rightTrigger().and(() -> !isInClimberMode).whileTrue(new ParallelCommandGroup(
+      new InstantCommand(() -> m_intake.setMotor(Constants.IntakeConstants.INTAKING_SPEED)),
+      new InstantCommand(() -> m_indexer.setMotor(Constants.IndexerConstants.INDEXER_IN_SPEED))
+    ));
+
+    m_operatorController.leftTrigger().and(() -> !isInClimberMode).whileTrue(new SequentialCommandGroup(
+      new ParallelCommandGroup(
+        new InstantCommand(() -> m_intake.setMotor(Constants.IntakeConstants.OUTAKING_SPEED)),
+        new InstantCommand(() -> m_indexer.setMotor(Constants.IndexerConstants.INDEXER_OUTAKING_SPEED))),
+      new InstantCommand(() -> m_indexer.setIsIntooked(false))
+    ));
+
     //randomly assigned button, change as necessary
     m_operatorController.y().and(() -> !isInClimberMode).onTrue(new InstantCommand(
     () -> m_shooter.setMotor(Constants.ShooterConstants.speakerSpeed))
@@ -272,7 +286,7 @@ public class RobotContainer {
     () -> m_indexer.setIsIntooked(!m_indexer.isIntooked))
     
     );
-
+    
     // below is old version of button binding
     // run shooter, wait until shooter reaches set speed, run intake to feed shooter
     // new JoystickButton(m_operatorController,

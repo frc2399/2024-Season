@@ -29,10 +29,10 @@ public final class Constants {
   public static final int NEO_CURRENT_LIMIT = 50;
   public static final int NEO_MAX_SPEED_RPM = 5676; 
   //MPS = (GearRatio * 2πr * RPM) / 60
-  public static final double NEO_MAX_SPEED_MPS = 2 * Math.PI * 0.0508 * NEO_MAX_SPEED_RPM * (1 / 60); 
+  public static final double NEO_MAX_SPEED_MPS = 2 * Math.PI * 0.0508 * NEO_MAX_SPEED_RPM * (1 / 60); //used in RealShooter
   public static final double NEO550_MAX_SPEED_RPM = 11000;
-  public static final double ENCODER_METERS = (2 * (Math.PI) * 0.375);
-  public static final double ENCODER_VELOCITY_MPS = (2 * (Math.PI) * 0.375) / 60;
+  public static final double ENCODER_METERS = (2 * (Math.PI) * 0.375); //used in climberReal
+  public static final double ENCODER_VELOCITY_MPS = (2 * (Math.PI) * 0.375) / 60; //used in climberReal
 
   public static final class DriveConstants {
     // Driving Parameters - Note that these are not the maximum capable speeds of
@@ -137,9 +137,13 @@ public final class Constants {
 
   public static final class IntakeConstants {
 
-    public static final int LEFT_INTAKE_MOTOR_ID = 1;
-    public static final int RIGHT_INTAKE_MOTOR_ID = 2;
+    public static final int LEFT_CENTERING_MOTOR_ID = 1;
+    public static final int RIGHT_CENTERING_MOTOR_ID = 2;
+    public static final int INTAKE_CENTERING_ID = 5; //RANDOM NUMBER --> CHANGE!!!!
     public static final double INTAKE_SLEW_RATE = 10;
+    public static final int INTAKE_SENSOR_CHANNEL = 0;
+    public static final double INTAKING_SPEED = 0.8;
+    public static final double OUTAKING_SPEED = -0.6;
   }
 
   public static final class ShooterConstants {
@@ -155,6 +159,8 @@ public final class Constants {
     public static final int INDEXER_MOTOR_ID = 5; //I put 5 at random. Find actual motor ID. 
     public static final double INDEXER_SLEW_RATE = 10;
     public static final int INDEXER_SENSOR_CHANNEL = 1; //change as necessary
+    public static final double INDEXER_IN_SPEED = 0.8; 
+    public static final double INDEXER_OUTAKING_SPEED = -0.6;
   }
 
   public static final class ArmConstants {
