@@ -259,7 +259,7 @@ public class RobotContainer {
 
 
     // Right Y axis to control the arm
-    // TODO: is this accurate? could totally be the wrong axis.
+    // // TODO: is this accurate? could totally be the wrong axis.
     // m_operatorController.axisGreaterThan(5, 0.1).and(() -> !isInClimberMode).whileTrue(makeSetSpeedGravityCompensationCommand(m_arm, 0.1))
     //     .onFalse(makeSetSpeedGravityCompensationCommand(m_arm, 0));
     // m_operatorController.axisLessThan(5, -0.1).and(() -> !isInClimberMode).whileTrue(makeSetSpeedGravityCompensationCommand(m_arm, -0.1))
