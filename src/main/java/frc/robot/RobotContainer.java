@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Axis;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.AutoConstants;
@@ -78,6 +79,7 @@ import frc.robot.subsystems.shooter.SimShooter;
  */
 public class RobotContainer {
   // The robot's subsystems
+  public static LED led = new LED();
   // private final DriveSubsystem m_robotDrive = new DriveSubsystem();
   // private static Gyro m_gyro = new Gyro();
   public boolean fieldOrientedDrive = false;
