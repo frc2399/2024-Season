@@ -35,6 +35,10 @@ public class Arm extends ProfiledPIDSubsystem {
   public Arm(ArmIO io) {
     super(new ProfiledPIDController(kpPos, 0, kd, constraints));
     armIO = io;
+    SmartDashboard.putNumber("kG", 0);
+    SmartDashboard.putNumber("kP", 0);
+    SmartDashboard.putNumber("kd", 0);
+    SmartDashboard.putNumber("arm ff", 0);
   }
 
   @Override
