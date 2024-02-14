@@ -272,8 +272,8 @@ public class RobotContainer {
 
     m_operatorController.leftTrigger().and(() -> !isInClimberMode).whileTrue(new SequentialCommandGroup(
       new ParallelCommandGroup(
-        new InstantCommand(() -> m_intake.setMotor(Constants.IntakeConstants.OUTAKING_SPEED)),
-        new InstantCommand(() -> m_indexer.setMotor(Constants.IndexerConstants.INDEXER_OUTAKING_SPEED))),
+        new InstantCommand(() -> m_intake.setMotor(Constants.IntakeConstants.OUTTAKING_SPEED)),
+        new InstantCommand(() -> m_indexer.setMotor(Constants.IndexerConstants.INDEXER_OUTTAKING_SPEED))),
       new InstantCommand(() -> m_indexer.setIsIntooked(false))
     ));
 

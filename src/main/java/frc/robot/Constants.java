@@ -143,7 +143,7 @@ public final class Constants {
     public static final double INTAKE_SLEW_RATE = 10;
     public static final int INTAKE_SENSOR_CHANNEL = 0;
     public static final double INTAKING_SPEED = 0.8;
-    public static final double OUTAKING_SPEED = -0.6;
+    public static final double OUTTAKING_SPEED = -0.6;
   }
 
   public static final class ShooterConstants {
@@ -160,7 +160,7 @@ public final class Constants {
     public static final double INDEXER_SLEW_RATE = 10;
     public static final int INDEXER_SENSOR_CHANNEL = 1; //change as necessary
     public static final double INDEXER_IN_SPEED = 0.8; 
-    public static final double INDEXER_OUTAKING_SPEED = -0.6;
+    public static final double INDEXER_OUTTAKING_SPEED = -0.6;
   }
 
   public static final class ArmConstants {
