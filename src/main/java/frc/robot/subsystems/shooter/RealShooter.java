@@ -56,10 +56,10 @@ public class RealShooter implements ShooterIO {
     //Shooting command, but using PID
     @Override
     public void setSpeed(double speedPercent) {
-        shooterHighController.setReference(speedPercent * Constants.NEO_MAX_SPEED_MPS, ControlType.kVelocity);
-        shooterLowController.setReference(speedPercent * Constants.NEO_MAX_SPEED_MPS, ControlType.kVelocity);    
+        shooterHighController.setReference(speedPercent * Constants.ShooterConstants.NEO_MAX_SPEED_MPS, ControlType.kVelocity);
+        shooterLowController.setReference(speedPercent * Constants.ShooterConstants.NEO_MAX_SPEED_MPS, ControlType.kVelocity);    
         SmartDashboard.putNumber("shooter reference", speedPercent);
-        SmartDashboard.putNumber("shooter speed (RPM)", getEncoderSpeed() / Constants.NEO_MAX_SPEED_MPS);
+        SmartDashboard.putNumber("shooter speed (RPM)", getEncoderSpeed() / Constants.ShooterConstants.NEO_MAX_SPEED_MPS);
 
     }
 

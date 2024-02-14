@@ -231,7 +231,7 @@ public class RobotContainer {
 
     m_operatorController.rightBumper().and(() -> !isInClimberMode).onTrue(new ParallelCommandGroup(
         new SequentialCommandGroup(
-            new WaitUntilCommand(() -> m_shooter.getEncoderSpeed() == Constants.ShooterConstants.speakerSpeed),
+            new WaitUntilCommand(() -> m_shooter.getEncoderSpeed() >= Constants.ShooterConstants.speakerSpeed - 0.05),
             new InstantCommand(() -> m_intake.setMotor(0.8))),
             new InstantCommand(() -> m_indexer.setIsIntooked(false)),
         new InstantCommand(() -> m_shooter.setMotor(Constants.ShooterConstants.speakerSpeed))));
