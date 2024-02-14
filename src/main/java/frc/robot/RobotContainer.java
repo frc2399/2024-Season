@@ -25,6 +25,7 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.ClimberConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
+import frc.robot.commands.automaticClimberCommand;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -80,9 +81,9 @@ public class RobotContainer {
   // The robot's subsystems
   // private final DriveSubsystem m_robotDrive = new DriveSubsystem();
   // private static Gyro m_gyro = new Gyro();
-  public boolean fieldOrientedDrive = false;
+ public boolean fieldOrientedDrive = false;
   public static boolean isInClimberMode = false;
-  //public static CommandSelector angleHeight = CommandSelector.INTAKE;
+  // public static CommandSelector angleHeight = CommandSelector.INTAKE;
 
   public static Shooter m_shooter;
   public static Intake m_intake;
@@ -133,33 +134,36 @@ public class RobotContainer {
 
     // armIO = new RealArm();
     // initialize subsystems
-    m_intake = new Intake(intakeIO);
-    // m_arm = new Arm(armIO);
-    m_shooter = new Shooter(shooterIO);
-    m_indexer = new Indexer(indexerIO);
+    // m_intake = new Intake(intakeIO);
+    // // m_arm = new Arm(armIO);
+    // m_shooter = new Shooter(shooterIO);
+    // m_indexer = new Indexer(indexerIO);
     m_climber = new Climber(climberIO);
     m_arm = new Arm(armIO);
+    m_shooter = new Shooter(shooterIO);
+    m_indexer = new Indexer(indexerIO);
+    m_intake = new Intake(intakeIO);
   }
 
   // Configure default commands
   private void configureDefaultCommands() {
     // default command for the shooter: setting speed to number input from the smart
     // dashboard
-    m_shooter.setDefaultCommand(
-        new InstantCommand(
-            () -> m_shooter.setMotor(SmartDashboard.getNumber("Shoot speed", 0)),
-            m_shooter));
+    // m_shooter.setDefaultCommand(
+    // new InstantCommand(
+    // () -> m_shooter.setMotor(SmartDashboard.getNumber("Shoot speed", 0)),
+    // m_shooter));
 
-    // default command for intake: do nothing
-    m_intake.setDefaultCommand(
-        new InstantCommand(
-            () -> m_intake.setMotor(0),
-            m_intake));
+    // // default command for intake: do nothing
+    // m_intake.setDefaultCommand(
+    // new InstantCommand(
+    // () -> m_intake.setMotor(0),
+    // m_intake));
 
-    m_indexer.setDefaultCommand(
-        new InstantCommand(
-            () -> m_indexer.setMotor(0),
-            m_indexer));
+    // m_indexer.setDefaultCommand(
+    // new InstantCommand(
+    // () -> m_indexer.setMotor(0),
+    // m_indexer));
 
     m_climber.setDefaultCommand(
         new InstantCommand(
@@ -250,12 +254,17 @@ public class RobotContainer {
     //operator x: switch operator controller modes
     m_operatorController.x().onTrue(new InstantCommand(() -> isInClimberMode = !isInClimberMode, m_climber));
 
+    m_operatorController.b().and(() -> isInClimberMode).onTrue(new automaticClimberCommand(m_climber, 0.4));
+
+    m_operatorController.a().and(() -> isInClimberMode).onTrue(new automaticClimberCommand(m_climber, 0));
+
+
     // Right Y axis to control the arm
-    // TODO: is this accurate? could totally be the wrong axis.
-    m_operatorController.axisGreaterThan(5, 0.1).and(() -> !isInClimberMode).whileTrue(makeSetSpeedGravityCompensationCommand(m_arm, 0.1))
-        .onFalse(makeSetSpeedGravityCompensationCommand(m_arm, 0));
-    m_operatorController.axisLessThan(5, -0.1).and(() -> !isInClimberMode).whileTrue(makeSetSpeedGravityCompensationCommand(m_arm, -0.1))
-        .onFalse(makeSetSpeedGravityCompensationCommand(m_arm, 0));
+    // // TODO: is this accurate? could totally be the wrong axis.
+    // m_operatorController.axisGreaterThan(5, 0.1).and(() -> !isInClimberMode).whileTrue(makeSetSpeedGravityCompensationCommand(m_arm, 0.1))
+    //     .onFalse(makeSetSpeedGravityCompensationCommand(m_arm, 0));
+    // m_operatorController.axisLessThan(5, -0.1).and(() -> !isInClimberMode).whileTrue(makeSetSpeedGravityCompensationCommand(m_arm, -0.1))
+    //     .onFalse(makeSetSpeedGravityCompensationCommand(m_arm, 0));
     
     
     // m_driverController.a().onTrue(setkG(arm, SmartDashboard.getNumber("kG", 0)));
@@ -327,18 +336,19 @@ public class RobotContainer {
     // .onFalse(makeSetSpeedGravityCompensationCommand(m_arm, 0));
   }
 
-  public static Command makeSetPositionCommand(ProfiledPIDSubsystem base, double target) {
-    return new SequentialCommandGroup(
-        new ConditionalCommand(new InstantCommand(() -> {
-        }), new InstantCommand(() -> base.enable()), () -> base.isEnabled()),
-        new InstantCommand(() -> base.setGoal(target), base));
-  }
+  // public static Command makeSetPositionCommand(ProfiledPIDSubsystem base,
+  // double target) {
+  // return new SequentialCommandGroup(
+  // new ConditionalCommand(new InstantCommand(() -> {
+  // }), new InstantCommand(() -> base.enable()), () -> base.isEnabled()),
+  // new InstantCommand(() -> base.setGoal(target), base));
+  // }
 
-  private Command makeSetSpeedGravityCompensationCommand(Arm a, double speed) {
-    return new SequentialCommandGroup(
-        new InstantCommand(() -> a.disable()),
-        new RunCommand(() -> a.setSpeedGravityCompensation(speed), a));
-  }
+  // private Command makeSetSpeedGravityCompensationCommand(Arm a, double speed) {
+  // return new SequentialCommandGroup(
+  // new InstantCommand(() -> a.disable()),
+  // new RunCommand(() -> a.setSpeedGravityCompensation(speed), a));
+  // }
 
   // static final double DELAY_OVERHEAD_SECONDS = 0.5;
   // static final double correctSpeed = 0.8;

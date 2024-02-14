@@ -205,7 +205,7 @@ public final class Constants {
     public static final int RIGHT_CLIMBER_MOTOR_ID = 1;
     public static final double CLIMBER_SPEED = 0.5;
 
-    public static final double MAX_HEIGHT = 24;
+    public static final double MAX_HEIGHT = 0.4;
     public static final double MIN_HEIGHT = 0;
 
     public static final int CLIMBER_SLEW = 5;
@@ -213,7 +213,11 @@ public final class Constants {
     public static final int EXTEND_PISTON = 4;
     public static final int RETRACT_PISTON = 5;
 
-    public static final double VELOCITY_THRESHHOLD = 100;
+    public static final double VELOCITY_THRESHHOLD = 20;
+
+    public static final double CLIMBER_RADIUS = 0.375; 
+
+    public static final double SETPOINT_RANGE = 0.05; 
 
     public static final double ENCODER_VELOCITY_MPS = (2 * (Math.PI) * 0.375) / 60;
     public static final double ENCODER_METERS = (2 * (Math.PI) * 0.375); 
@@ -222,8 +226,8 @@ public final class Constants {
   }
 
   public static final class OIConstants {
-    public static final int kDriverControllerPort = 0;
-    public static final int kOperatorControllerPort = 1;
+    public static final int kDriverControllerPort = 1;
+    public static final int kOperatorControllerPort = 0;
     public static final double kDriveDeadband = 0.1;
   }
 
