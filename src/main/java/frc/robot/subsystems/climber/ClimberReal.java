@@ -120,6 +120,10 @@ public class ClimberReal implements ClimberIO {
         SmartDashboard.putNumber("Right Climber Hieght", getRightEncoderPosition());
     }
 
+    public boolean isInClimberMode() {
+        return true;
+    }
+
     // left basic climbing with just speed
     public void setLeftSpeed(double speed) {
         if ((isLeftRetracted() && speed < 0)) {
