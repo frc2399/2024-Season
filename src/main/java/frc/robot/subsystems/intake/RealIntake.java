@@ -24,7 +24,8 @@ public class RealIntake implements IntakeIO {
     public static SparkPIDController rightCenteringIntakeController;
     public static SparkPIDController intakeController;
     private double slewRate = 0.2;
-    private static DigitalInput intakeSensor;
+    private static DigitalInput intakeSensorTop;
+    private static DigitalInput intakeSensorBottom;
 
     public RealIntake()
     {
@@ -50,7 +51,8 @@ public class RealIntake implements IntakeIO {
         rightCenteringIntakeController.setFeedbackDevice(rightCenteringIntakeEncoder);
         intakeController.setFeedbackDevice(intakeEncoder);
 
-        intakeSensor = new DigitalInput(Constants.IntakeConstants.INTAKE_SENSOR_CHANNEL);
+        intakeSensorTop = new DigitalInput(Constants.IntakeConstants.INTAKE_SENSOR_CHANNEL_TOP);
+        intakeSensorBottom = new DigitalInput(Constants.IntakeConstants.INTAKE_SENSOR_CHANNEL_BOTTOM);
     }
 
     @Override
@@ -61,7 +63,7 @@ public class RealIntake implements IntakeIO {
     }
 
     public boolean isIntooked() {
-        return intakeSensor.get();
+        return intakeSensorTop.get();
     }
 
     public void setSpeed(double speedPercent) {

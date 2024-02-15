@@ -138,7 +138,8 @@ public final class Constants {
     public static final int RIGHT_CENTERING_MOTOR_ID = 5;
     public static final int INTAKE_CENTERING_ID = 2; //RANDOM NUMBER --> CHANGE!!!!
     public static final double INTAKE_SLEW_RATE = 10;
-    public static final int INTAKE_SENSOR_CHANNEL = 0;
+    public static final int INTAKE_SENSOR_CHANNEL_TOP = 0;
+    public static final int INTAKE_SENSOR_CHANNEL_BOTTOM = 1;
     public static final double INTAKING_SPEED = 0.8;
     public static final double OUTTAKING_SPEED = -0.6;
   }
