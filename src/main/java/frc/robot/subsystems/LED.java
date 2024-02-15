@@ -1,9 +1,11 @@
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.RobotContainer;
+import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.util.LEDController;
 
@@ -27,8 +29,11 @@ public class LED extends SubsystemBase {
         if (Intake.isIntooked) {
             this.setColor(0, 255, 0, 0);
         } 
-        else if (Robot.autonomousInit) {
+        else if (RobotBase.isSimulation()) {
             this.setColor(255, 50, 200, 0);
+        }
+        else if (Climber.isInClimberMode) {
+            this.setColor(0, 100, 255, 0);
         }
 
     }
