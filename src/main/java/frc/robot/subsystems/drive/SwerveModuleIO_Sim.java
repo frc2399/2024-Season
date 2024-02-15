@@ -55,8 +55,8 @@ public class SwerveModuleIO_Sim implements SwerveModuleIO {
       turnMotor.update(1.0/Constants.CodeConstants.kMainLoopFrequency);
       m_drivingEncoder.setDistance(driveMotor.getAngularPositionRotations() );
       m_drivingEncoder.setSpeed(driveMotor.getAngularVelocityRadPerSec() );
-      System.out.println(name + " " +driveMotor.getAngularVelocityRadPerSec() );
-      System.out.println(name + getDriveOutput());
+      // System.out.println(name + " " +driveMotor.getAngularVelocityRadPerSec() );
+      // System.out.println(name + getDriveOutput());
       m_turningEncoder.setDistance(turnMotor.getAngularPositionRad() );
    };
 

@@ -194,7 +194,6 @@ public class RobotContainer {
 
                         m_gyro = new GyroIOSim();
 
-                        m_vision = new VisionSim();
                 } else {
                         m_gyro = new GyroIOPigeon2();
                         m_frontLeftIO = new SwerveModuleIO_Real(DriveConstants.kFrontLeftDrivingCanId,
@@ -219,8 +218,11 @@ public class RobotContainer {
                                 new SwerveModule(m_frontRightIO),
                                 new SwerveModule(m_rearLeftIO),
                                 new SwerveModule(m_rearRightIO), m_gyro);
-                m_vision = new VisionReal();
 
+                if (Robot.robotType == RobotType.SIMULATION) {
+                        m_vision = new VisionSim(m_robotDrive);
+                } else {
+                        m_vision = new VisionReal();
+                }
         }
-
 }

@@ -20,6 +20,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.VisionConstants;
+import frc.robot.subsystems.drive.DriveSubsystem;
 
 public class VisionSim extends SubsystemBase implements VisionIO {
 
@@ -45,13 +46,17 @@ public class VisionSim extends SubsystemBase implements VisionIO {
     int camResolutionHeight = 480; // pixels
     PhotonCameraSim cameraSim;
 
-    private static AprilTagFieldLayout kFieldLayout;
     private static PhotonPoseEstimator camPoseEstimator;
     private boolean updatePoseWithVisionReadings = true;
 
+
+    private DriveSubsystem drive;
+
     /** Creates a new Vision. */
-    public VisionSim() {
-        visionSim.addAprilTags(aprilTagFieldLayout);
+    public VisionSim(DriveSubsystem drive) {
+        this.drive = drive ;
+        
+        visionSim.addAprilTags(VisionConstants.kFieldLayout);
 
         // Get the built-in Field2d used by this VisionSystemSim
         visionSim.getDebugField();
@@ -93,6 +98,9 @@ public class VisionSim extends SubsystemBase implements VisionIO {
         // SmartDashboard.putBoolean("Camera is connected", camera.isConnected());
         SmartDashboard.putBoolean("Pose Updates Enabled?: ", updatePoseWithVisionReadings);
         camPoseEstimator.update();
+
+        visionSim.update(drive.getPose());
+
         // System.out.println("working!!!");
         if (!updatePoseWithVisionReadings) {
             return;
@@ -112,8 +120,8 @@ public class VisionSim extends SubsystemBase implements VisionIO {
     // estimates the robot pose
     public Optional<EstimatedRobotPose> getCameraEst() {
         var visionest = camPoseEstimator.update();
-        System.out.println("vision est:");
-        System.out.println(visionest);
+        // System.out.println("vision est:");
+        // System.out.println(visionest);
         return visionest;
     }
 

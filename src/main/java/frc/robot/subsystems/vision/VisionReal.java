@@ -55,10 +55,10 @@ public class VisionReal extends SubsystemBase implements VisionIO {
 
     // estimates the robot pose
     public Optional<EstimatedRobotPose> getCameraEst() {
-        System.out.println(CamEstimator);
+        // System.out.println(CamEstimator);
         var visionest = CamEstimator.update();
-        System.out.println("vision est:");
-        System.out.println(visionest);
+        // System.out.println("vision est:");
+        // System.out.println(visionest);
         return visionest;
     }
 

@@ -191,9 +191,6 @@ public class DriveSubsystem extends SubsystemBase {
     };
     swerveModuleStatePublisher.set(swerveModuleStates);
 
-    if (DriverStation.isAutonomous()){
-      System.out.println("Mahee is annoying");
-    } 
     double angleChange = Constants.DriveConstants.kDriveKinematics.toChassisSpeeds(swerveModuleStates).omegaRadiansPerSecond * (1/Constants.CodeConstants.kMainLoopFrequency);
     lastAngle = lastAngle.plus(Rotation2d.fromRadians(angleChange));
     m_gyro.setYaw(lastAngle.getRadians());

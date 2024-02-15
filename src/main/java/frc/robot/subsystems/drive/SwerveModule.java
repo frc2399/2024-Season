@@ -111,10 +111,10 @@ public class SwerveModule {
         SwerveModuleState.optimize(correctedDesiredState,
         new Rotation2d(getTurnEncoderPosition()));
 
-        if (name == "front left"){
-            System.out.println("left front optimizedDesiredState.speedMetersPerSecond " + 
-            optimizedDesiredState.speedMetersPerSecond);
-        }
+        // if (name == "front left"){
+        //     System.out.println("left front optimizedDesiredState.speedMetersPerSecond " + 
+        //     optimizedDesiredState.speedMetersPerSecond);
+        // }
         io.setDesiredDriveSpeedMPS(optimizedDesiredState.speedMetersPerSecond);
         io.setDesiredTurnAngle(optimizedDesiredState.angle.getRadians());
 
