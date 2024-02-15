@@ -79,7 +79,7 @@ import frc.robot.subsystems.shooter.SimShooter;
  */
 public class RobotContainer {
   // The robot's subsystems
-  // private final DriveSubsystem m_robotDrive = new DriveSubsystem();
+  private DriveSubsystem m_robotDrive;
   // private static Gyro m_gyro = new Gyro();
  public boolean fieldOrientedDrive = false;
   public static boolean isInClimberMode = false;
@@ -116,7 +116,7 @@ public class RobotContainer {
 
   // construct subsystems
   private void setUpSubsystems() {
-    // m_robotDrive = new DriveSubsystem();
+    m_robotDrive = new DriveSubsystem();
     // set up IOs
     if (RobotBase.isSimulation()) {
       indexerIO = new SimIndexer();
@@ -149,21 +149,21 @@ public class RobotContainer {
   private void configureDefaultCommands() {
     // default command for the shooter: setting speed to number input from the smart
     // dashboard
-    // m_shooter.setDefaultCommand(
-    // new InstantCommand(
-    // () -> m_shooter.setMotor(SmartDashboard.getNumber("Shoot speed", 0)),
-    // m_shooter));
+    m_shooter.setDefaultCommand(
+    new InstantCommand(
+    () -> m_shooter.setMotor(SmartDashboard.getNumber("Shoot speed", 0)),
+    m_shooter));
 
-    // // default command for intake: do nothing
-    // m_intake.setDefaultCommand(
-    // new InstantCommand(
-    // () -> m_intake.setMotor(0),
-    // m_intake));
+    // default command for intake: do nothing
+    m_intake.setDefaultCommand(
+    new InstantCommand(
+    () -> m_intake.setMotor(0),
+    m_intake));
 
-    // m_indexer.setDefaultCommand(
-    // new InstantCommand(
-    // () -> m_indexer.setMotor(0),
-    // m_indexer));
+    m_indexer.setDefaultCommand(
+    new InstantCommand(
+    () -> m_indexer.setMotor(0),
+    m_indexer));
 
     m_climber.setDefaultCommand(
         new InstantCommand(
@@ -174,19 +174,19 @@ public class RobotContainer {
     //Arm setpoint must be in RADIANS
     //m_arm.setDefaultCommand(makeSetPositionCommand(m_arm, Units.degreesToRadians(SmartDashboard.getNumber("arm setpoint", 0))));
     // default command for drivetrain: drive based on controller inputs
-    // m_robotDrive.setDefaultCommand(
-    // // The left stick controls translation of the robot.
-    // // Turning is controlled by the X axis of the right stick.
-    // new RunCommand(
-    // () -> m_robotDrive.drive(
-    // -MathUtil.applyDeadband(m_driverController.getLeftY(),
-    // OIConstants.kDriveDeadband),
-    // -MathUtil.applyDeadband(m_driverController.getLeftX(),
-    // OIConstants.kDriveDeadband),
-    // -MathUtil.applyDeadband(m_driverController.getRightX(),
-    // OIConstants.kDriveDeadband),
-    // fieldOrientedDrive, false),
-    // m_robotDrive));
+    m_robotDrive.setDefaultCommand(
+    // The left stick controls translation of the robot.
+    // Turning is controlled by the X axis of the right stick.
+    new RunCommand(
+    () -> m_robotDrive.drive(
+    -MathUtil.applyDeadband(m_driverController.getLeftY(),
+    OIConstants.kDriveDeadband),
+    -MathUtil.applyDeadband(m_driverController.getLeftX(),
+    OIConstants.kDriveDeadband),
+    -MathUtil.applyDeadband(m_driverController.getRightX(),
+    OIConstants.kDriveDeadband),
+    fieldOrientedDrive, false),
+    m_robotDrive));
     
   }
 
@@ -336,19 +336,19 @@ public class RobotContainer {
     // .onFalse(makeSetSpeedGravityCompensationCommand(m_arm, 0));
   }
 
-  // public static Command makeSetPositionCommand(ProfiledPIDSubsystem base,
-  // double target) {
-  // return new SequentialCommandGroup(
-  // new ConditionalCommand(new InstantCommand(() -> {
-  // }), new InstantCommand(() -> base.enable()), () -> base.isEnabled()),
-  // new InstantCommand(() -> base.setGoal(target), base));
-  // }
+  public static Command makeSetPositionCommand(ProfiledPIDSubsystem base,
+  double target) {
+  return new SequentialCommandGroup(
+  new ConditionalCommand(new InstantCommand(() -> {
+  }), new InstantCommand(() -> base.enable()), () -> base.isEnabled()),
+  new InstantCommand(() -> base.setGoal(target), base));
+  }
 
-  // private Command makeSetSpeedGravityCompensationCommand(Arm a, double speed) {
-  // return new SequentialCommandGroup(
-  // new InstantCommand(() -> a.disable()),
-  // new RunCommand(() -> a.setSpeedGravityCompensation(speed), a));
-  // }
+  private Command makeSetSpeedGravityCompensationCommand(Arm a, double speed) {
+  return new SequentialCommandGroup(
+  new InstantCommand(() -> a.disable()),
+  new RunCommand(() -> a.setSpeedGravityCompensation(speed), a));
+  }
 
   // static final double DELAY_OVERHEAD_SECONDS = 0.5;
   // static final double correctSpeed = 0.8;
