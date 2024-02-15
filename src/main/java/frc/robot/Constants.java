@@ -134,9 +134,9 @@ public final class Constants {
 
   public static final class IntakeConstants {
 
-    public static final int LEFT_CENTERING_MOTOR_ID = 1;
-    public static final int RIGHT_CENTERING_MOTOR_ID = 2;
-    public static final int INTAKE_CENTERING_ID = 5; //RANDOM NUMBER --> CHANGE!!!!
+    public static final int LEFT_CENTERING_MOTOR_ID = 4;
+    public static final int RIGHT_CENTERING_MOTOR_ID = 5;
+    public static final int INTAKE_CENTERING_ID = 2; //RANDOM NUMBER --> CHANGE!!!!
     public static final double INTAKE_SLEW_RATE = 10;
     public static final int INTAKE_SENSOR_CHANNEL = 0;
     public static final double INTAKING_SPEED = 0.8;
@@ -145,8 +145,8 @@ public final class Constants {
 
   public static final class ShooterConstants {
 
-    public static final int SHOOT_LOW_MOTOR_ID = 4;
-    public static final int SHOOT_HIGH_MOTOR_ID = 3;
+    public static final int SHOOT_LOW_MOTOR_ID = 7;
+    public static final int SHOOT_HIGH_MOTOR_ID = 8;
     public static final double speakerSpeed = 0.8;
     public static final double ampSpeed = 0.3;
     public static final double NEO_MAX_SPEED_MPS = 2 * Math.PI * 0.0508 * NEO_MAX_SPEED_RPM * (1 / 60);
@@ -154,7 +154,7 @@ public final class Constants {
 
   public static final class IndexerConstants {
 
-    public static final int INDEXER_MOTOR_ID = 5; //I put 5 at random. Find actual motor ID. 
+    public static final int INDEXER_MOTOR_ID = 6; //I put 5 at random. Find actual motor ID. 
     public static final double INDEXER_SLEW_RATE = 10;
     public static final int INDEXER_SENSOR_CHANNEL = 1; //change as necessary
     public static final double INDEXER_IN_SPEED = 0.8; 
@@ -163,8 +163,8 @@ public final class Constants {
 
   public static final class ArmConstants {
 
-    public static final int ARM_MOTOR_ID_LEFT = 6;
-    public static final int ARM_MOTOR_ID_RIGHT = 7;
+    public static final int ARM_MOTOR_ID_LEFT = 9;
+    public static final int ARM_MOTOR_ID_RIGHT = 10;
 
     // arm min and max angles in radians
     public static final double MAX_ARM_ANGLE = Math.PI / 4 * 3;
