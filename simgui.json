@@ -6,6 +6,11 @@
       "/SmartDashboard/Field": "Field2d"
     },
     "windows": {
+      "/FMSInfo": {
+        "window": {
+          "visible": true
+        }
+      },
       "/SmartDashboard/Autos/Selector": {
         "window": {
           "visible": true

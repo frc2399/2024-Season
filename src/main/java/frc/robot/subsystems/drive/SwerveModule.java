@@ -3,7 +3,6 @@ package frc.robot.subsystems.drive;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.drive.SwerveModuleIO.SwerveModuleIOInputs;
 
 public class SwerveModule {
@@ -16,6 +15,7 @@ public class SwerveModule {
 
     private final SwerveModuleIOInputs inputs = new SwerveModuleIOInputs();
 
+    //name is used for smart dashboard values to distinguish between modules
     private String name;
 
     public SwerveModule(SwerveModuleIO io) {
@@ -71,9 +71,6 @@ public class SwerveModule {
     public SwerveModuleState getState() {
         // Apply chassis angular offset to the encoder position to get the position
         // relative to the chassis.
-        if (name == "front left") {
-            // System.out.println(name + " getDriveEncoderSpeedMPS() = " + getDriveEncoderSpeedMPS());
-        }
         return new SwerveModuleState(getDriveEncoderSpeedMPS(),
                 new Rotation2d((getTurnEncoderPosition()) - io.getChassisAngularOffset()));
     }
@@ -86,9 +83,6 @@ public class SwerveModule {
     public SwerveModulePosition getPosition() {
         // Apply chassis angular offset to the encoder position to get the position
         // relative to the chassis.
-        SmartDashboard.putNumber(io.getName() + " getDriveEncoderPosition in SwerveModule", getDriveEncoderPosition());
-
-        SmartDashboard.putNumber(io.getName() + " getTurnEncoderPosition in SwerveModule", getTurnEncoderPosition());
         return new SwerveModulePosition(
                 getDriveEncoderPosition(),
                 new Rotation2d(getTurnEncoderPosition() - io.getChassisAngularOffset()));
@@ -103,7 +97,6 @@ public class SwerveModule {
         // Apply chassis angular offset to the desired state.
         SwerveModuleState correctedDesiredState = new SwerveModuleState();
         correctedDesiredState.speedMetersPerSecond = desiredState.speedMetersPerSecond;
-        SmartDashboard.putNumber("drive/" + name + "desired angle before optimize", desiredState.angle.getRadians());
         correctedDesiredState.angle = desiredState.angle.plus(Rotation2d.fromRadians(io.getChassisAngularOffset()));
 
         // Optimize the reference state to avoid spinning further than 90 degrees.
@@ -115,9 +108,6 @@ public class SwerveModule {
 
         io.setDesiredDriveSpeedMPS(optimizedDesiredState.speedMetersPerSecond);
         io.setDesiredTurnAngle(optimizedDesiredState.angle.getRadians());
-        SmartDashboard.putNumber("drive/" + name + " desired angle", optimizedDesiredState.angle.getRadians());
-        SmartDashboard.putNumber( "drive/" + name + " real angle", getTurnEncoderPosition());
-
         m_desiredState = desiredState;
     }
 

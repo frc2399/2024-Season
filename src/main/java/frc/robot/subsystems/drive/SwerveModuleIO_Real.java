@@ -39,8 +39,8 @@ public class SwerveModuleIO_Real implements SwerveModuleIO {
     m_drivingSparkMax.restoreFactoryDefaults();
     m_turningSparkMax.restoreFactoryDefaults();
 
-    // m_drivingSparkMax.enableVoltageCompensation(12);
-    // m_turningSparkMax.enableVoltageCompensation(12);
+    m_drivingSparkMax.enableVoltageCompensation(12);
+    m_turningSparkMax.enableVoltageCompensation(12);
 
     // Setup encoders and PID controllers for the driving and turning SPARKS MAX.
     m_drivingEncoder = m_drivingSparkMax.getEncoder();
@@ -65,7 +65,6 @@ public class SwerveModuleIO_Real implements SwerveModuleIO {
     // Invert the turning encoder, since the output shaft rotates in the opposite direction of
     // the steering motor in the MAXSwerve Module.
     m_turningEncoder.setInverted(ModuleConstants.kTurningEncoderInverted);
-    //also testing lol
     m_drivingSparkMax.setInverted(ModuleConstants.kDrivingEncoderInverted);
 
     // Enable PID wrap around for the turning motor. This will allow the PID
@@ -76,8 +75,7 @@ public class SwerveModuleIO_Real implements SwerveModuleIO {
     m_turningPIDController.setPositionPIDWrappingMinInput(ModuleConstants.kTurningEncoderPositionPIDMinInput);
     m_turningPIDController.setPositionPIDWrappingMaxInput(ModuleConstants.kTurningEncoderPositionPIDMaxInput);
 
-        // Set the PID gains for the driving motor. Note these are example gains, and you
-    // may need to tune them for your own robot!
+   // Set the PID gains for the driving motor
     m_drivingPIDController.setP(ModuleConstants.kDrivingP);
     m_drivingPIDController.setI(ModuleConstants.kDrivingI);
     m_drivingPIDController.setD(ModuleConstants.kDrivingD);
@@ -85,8 +83,7 @@ public class SwerveModuleIO_Real implements SwerveModuleIO {
     m_drivingPIDController.setOutputRange(ModuleConstants.kDrivingMinOutput,
         ModuleConstants.kDrivingMaxOutput);
 
-    // Set the PID gains for the turning motor. Note these are example gains, and you
-    // may need to tune them for your own robot!
+    // Set the PID gains for the turning motor
     m_turningPIDController.setP(ModuleConstants.kTurningP);
     m_turningPIDController.setI(ModuleConstants.kTurningI);
     m_turningPIDController.setD(ModuleConstants.kTurningD);
@@ -116,7 +113,6 @@ public class SwerveModuleIO_Real implements SwerveModuleIO {
         
     }
     
-    //TODO: check units on these methods 
     public void setDriveEncoderPosition(double position){
         m_drivingEncoder.setPosition(position);
     };

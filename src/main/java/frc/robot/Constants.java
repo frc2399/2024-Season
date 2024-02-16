@@ -8,21 +8,9 @@ import com.revrobotics.CANSparkMax;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 
-/**
- * The Constants class provides a convenient place for teams to hold robot-wide
- * numerical or boolean
- * constants. This class should not be used for any other purpose. All constants
- * should be declared
- * globally (i.e. public static). Do not put anything functional in this class.
- *
- * <p>
- * It is advised to statically import this class (or one of its inner classes)
- * wherever the
- * constants are needed, to reduce verbosity.
- */
+
 public final class Constants {
 
   public static final class CodeConstants {
@@ -31,28 +19,19 @@ public final class Constants {
 
   public static final class DriveConstants {
     public static final int kGyroCanId = 3;
-    // Driving Parameters - Note that these are not the maximum capable speeds of
-    // the robot, rather the allowed maximum speeds
+    // Driving Parameters
     public static final double kMaxSpeedMetersPerSecond = 4.8;
     public static final double kMaxAngularSpeed = 2 * Math.PI; // radians per second
-
-    public static final double kDirectionSlewRate = 1.2; // radians per second
-    public static final double kMagnitudeSlewRate = 1.8; // percent per second (1 = 100%)
-    public static final double kRotationalSlewRate = 2.0; // percent per second (1 = 100%)
 
     // Chassis configuration
     public static final double kTrackWidth = Units.inchesToMeters(26 - 2 * 1.75);
     // Distance between centers of right and left wheels on robot
     public static final double kWheelBase = Units.inchesToMeters(26 - 2 * 1.75);
     // Distance between front and back wheels on robot
-    public static final Translation2d FRONT_LEFT_OFFSET = new Translation2d(kWheelBase / 2, kTrackWidth / 2); // front
-                                                                                                              // left
-    public static final Translation2d REAR_LEFT_OFFSET = new Translation2d(-kWheelBase / 2, kTrackWidth / 2); // rear
-                                                                                                              // left
-    public static final Translation2d FRONT_RIGHT_OFFSET = new Translation2d(kWheelBase / 2, -kTrackWidth / 2); // front
-                                                                                                                // right
-    public static final Translation2d REAR_RIGHT_OFFSET = new Translation2d(-kWheelBase / 2, -kTrackWidth / 2); // rear
-                                                                                                                // right
+    public static final Translation2d FRONT_LEFT_OFFSET = new Translation2d(kWheelBase / 2, kTrackWidth / 2); 
+    public static final Translation2d REAR_LEFT_OFFSET = new Translation2d(-kWheelBase / 2, kTrackWidth / 2);
+    public static final Translation2d FRONT_RIGHT_OFFSET = new Translation2d(kWheelBase / 2, -kTrackWidth / 2); 
+    public static final Translation2d REAR_RIGHT_OFFSET = new Translation2d(-kWheelBase / 2, -kTrackWidth / 2); 
 
     public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(
         FRONT_LEFT_OFFSET,
@@ -60,15 +39,6 @@ public final class Constants {
         REAR_LEFT_OFFSET,
         REAR_RIGHT_OFFSET);
 
-    // Angular offsets of the modules relative to the chassis in radians
-    // public static final double kFrontLeftChassisAngularOffset = -Math.PI / 2 +
-    // 3.6128315516282616;
-    // public static final double kFrontRightChassisAngularOffset = 0 +
-    // 5.855928706291374;
-    // public static final double kBackLeftChassisAngularOffset = Math.PI +
-    // 3.248406803811846;
-    // public static final double kBackRightChassisAngularOffset = Math.PI / 2 +
-    // 2.2556635252774715;
 
     public static final double kFrontLeftChassisAngularOffset = -Math.PI / 2;
     public static final double kFrontRightChassisAngularOffset = 0;
@@ -87,22 +57,14 @@ public final class Constants {
     public static final int kFrontRightTurningCanId = 32;
     public static final int kRearRightTurningCanId = 42;
 
-    public static final boolean kGyroReversed = true;
   }
 
   public static final class ModuleConstants {
-    // The MAXSwerve module can be configured with one of three pinion gears: 12T,
-    // 13T, or 14T.
-    // This changes the drive speed of the module (a pinion gear with more teeth
-    // will result in a
-    // robot that drives faster).
     public static final int kDrivingMotorPinionTeeth = 14;
 
     // Invert the turning encoder, since the output shaft rotates in the opposite
-    // direction of
-    // the steering motor in the MAXSwerve Module.
+    // direction of the steering motor in the MAXSwerve Module.
     public static final boolean kTurningEncoderInverted = true;
-    // testing lol
     public static final boolean kDrivingEncoderInverted = false;
 
     // Calculations required for driving motor conversion factors and feed forward
@@ -165,9 +127,6 @@ public final class Constants {
     public static final double kPYController = 1;
     public static final double kPThetaController = 1;
 
-    // Constraint for the motion profiled robot angle controller
-    public static final TrapezoidProfile.Constraints kThetaControllerConstraints = new TrapezoidProfile.Constraints(
-        kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared);
   }
 
   public static final class NeoMotorConstants {
