@@ -10,7 +10,7 @@ public class Climber extends SubsystemBase {
         climberIO = io;
     }
 
-    public static boolean isInClimberMode(){
+    public boolean isInClimberMode(){
         return true;
     }
 
