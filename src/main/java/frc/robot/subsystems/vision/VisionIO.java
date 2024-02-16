@@ -13,7 +13,7 @@ import org.photonvision.targeting.PhotonPipelineResult;
 public interface VisionIO {
     public void periodic();
     public PhotonPipelineResult getCameraResult();
-    public Optional<EstimatedRobotPose> getCameraEst() ;
+    public Optional<EstimatedRobotPose> getCameraEst();
     public void enableUpdatePoseWithVisionReading ();
     public void disableUpdatePoseWithVisionReading ();
     public PhotonCamera getCamera () ;

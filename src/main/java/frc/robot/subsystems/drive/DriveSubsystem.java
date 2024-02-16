@@ -44,7 +44,8 @@ public class DriveSubsystem extends SubsystemBase {
   // private final AHRS ahrs = new AHRS(SPI.Port.kMXP, (byte) 66);
 
   // Odometry
-  private SwerveDrivePoseEstimator poseEstimator;
+  private SwerveDrivePoseEstimator m_poseEstimator;
+  
 
   // swerve modules
   private SwerveModule m_frontLeft;
@@ -67,6 +68,7 @@ public class DriveSubsystem extends SubsystemBase {
   private double pitchRate;
   private GyroIO m_gyro;
 
+  
   private final Field2d field2d = new Field2d();
   private FieldObject2d frontLeftField2dModule = field2d.getObject("front left module");
   private FieldObject2d rearLeftField2dModule = field2d.getObject("rear left module");
@@ -88,11 +90,21 @@ public class DriveSubsystem extends SubsystemBase {
     this.m_rearLeft = m_rearLeft;
     this.m_rearRight = m_rearRight;
 
+
     SmartDashboard.putData(field2d);
 
-    poseEstimator = new SwerveDrivePoseEstimator(
-        Constants.DriveConstants.kDriveKinematics, new Rotation2d(m_gyro.getYaw()), getModulePositions(), 
-        new Pose2d());
+    // poseEstimator = new SwerveDrivePoseEstimator(
+    //     Constants.DriveConstants.kDriveKinematics, new Rotation2d(m_gyro.getYaw()), getModulePositions(), 
+    //     new Pose2d());
+    m_poseEstimator = new SwerveDrivePoseEstimator(
+      DriveConstants.kDriveKinematics,
+      Rotation2d.fromDegrees(m_gyro.getYaw()), 
+      new SwerveModulePosition[] {
+          m_frontLeft.getPosition(),
+          m_frontRight.getPosition(),
+          m_rearLeft.getPosition(),
+          m_rearRight.getPosition()}, new Pose2d (0, 0, new Rotation2d(0,0)));
+
 
 
     AutoBuilder.configureHolonomic(
@@ -127,7 +139,7 @@ public class DriveSubsystem extends SubsystemBase {
     // This will get the simulated sensor readings that we set
     // in the previous article while in simulation, but will use
     // real values on the robot itself.
-    poseEstimator.updateWithTime(Timer.getFPGATimestamp(), Rotation2d.fromRadians(m_gyro.getYaw()),
+    m_poseEstimator.updateWithTime(Timer.getFPGATimestamp(), Rotation2d.fromRadians(m_gyro.getYaw()),
         new SwerveModulePosition[] {
             m_frontLeft.getPosition(),
             m_frontRight.getPosition(),
@@ -203,7 +215,7 @@ public class DriveSubsystem extends SubsystemBase {
    * @return The pose.
    */
   public Pose2d getPose() {
-    return poseEstimator.getEstimatedPosition();
+    return m_poseEstimator.getEstimatedPosition();
   }
 
   /** Returns the current odometry rotation. */
@@ -215,9 +227,9 @@ public class DriveSubsystem extends SubsystemBase {
   /** Resets the current odometry pose. */
   public void setPose(Pose2d pose) {
     if (RobotBase.isReal()) {
-      poseEstimator.resetPosition(new Rotation2d(m_gyro.getYaw()), getModulePositions(), pose);
+      m_poseEstimator.resetPosition(new Rotation2d(m_gyro.getYaw()), getModulePositions(), pose);
     } else {
-      poseEstimator.resetPosition(pose.getRotation(), getModulePositions(), pose);
+      m_poseEstimator.resetPosition(pose.getRotation(), getModulePositions(), pose);
     }
   }
 
@@ -227,7 +239,7 @@ public class DriveSubsystem extends SubsystemBase {
    * @param pose The pose to which to set the odometry.
    */
   public void resetOdometry(Pose2d pose) {
-    poseEstimator.resetPosition(
+    m_poseEstimator.resetPosition(
         Rotation2d.fromDegrees(m_gyro.getYaw()),
         new SwerveModulePosition[] {
             m_frontLeft.getPosition(),
@@ -237,7 +249,27 @@ public class DriveSubsystem extends SubsystemBase {
         },
         pose);
   }
+  public void updateOdometry () {
+    m_poseEstimator.update(Rotation2d.fromDegrees(m_gyro.getYaw()),
+    new SwerveModulePosition[] {
+            m_frontLeft.getPosition(),
+            m_frontRight.getPosition(),
+            m_rearLeft.getPosition(),
+            m_rearRight.getPosition()
+        });
+  }
 
+  public void alignOrigins(Pose2d pose) {
+    m_poseEstimator.resetPosition(
+        Rotation2d.fromDegrees(m_gyro.getYaw()),
+        new SwerveModulePosition[] {
+            m_frontLeft.getPosition(),
+            m_frontRight.getPosition(),
+            m_rearLeft.getPosition(),
+            m_rearRight.getPosition()
+        },
+        pose);
+  }
   /**
    * Method to drive the robot using joystick info.
    *
@@ -326,7 +358,7 @@ public class DriveSubsystem extends SubsystemBase {
     double ySpeedDelivered = ySpeedCommanded * DriveConstants.kMaxSpeedMetersPerSecond;
     double rotRateDelivered = m_currentRotationRate * DriveConstants.kMaxAngularSpeed;
 
-
+    
     relativeRobotSpeeds = fieldRelative
             ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotRateDelivered,
                 Rotation2d.fromRadians(m_gyro.getYaw()))

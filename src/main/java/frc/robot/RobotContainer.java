@@ -18,6 +18,7 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -30,9 +31,11 @@ import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Robot.RobotType;
 import frc.robot.commands.AimAtTargetCommand;
+import frc.robot.commands.AlignAprilTag;
 import frc.robot.subsystems.gyro.GyroIO;
 import frc.robot.subsystems.gyro.GyroIOPigeon2;
 import frc.robot.subsystems.gyro.GyroIOSim;
+import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionReal;
 import frc.robot.subsystems.vision.VisionSim;
@@ -60,6 +63,7 @@ public class RobotContainer {
         private SwerveModuleIO m_rearRightIO;
 
         private VisionIO m_vision;
+        private Vision vision;
 
         private static SendableChooser<Command> m_autoChooser;
 
@@ -129,8 +133,14 @@ public class RobotContainer {
                                 .onTrue(new InstantCommand(
                                                 () -> m_gyro.setYaw(0.0)));
 
-                new JoystickButton(m_driverController, XboxController.Button.kRightBumper.value)
-                                .whileTrue(new AimAtTargetCommand(m_robotDrive, m_vision));
+                //new JoystickButton(m_driverController, XboxController.Button.kRightBumper.value)
+                  //              .whileTrue(new AimAtTargetCommand(m_robotDrive, m_vision));
+
+                new JoystickButton(m_driverController, XboxController.Button.kLeftBumper.value).
+    onTrue(new InstantCommand( () -> System.out.println(m_gyro.getYaw())));
+
+     new JoystickButton(m_driverController, XboxController.Button.kRightBumper.value)
+              .onTrue(new AlignAprilTag(m_robotDrive, vision, m_robotDrive.getPose()));   
 
         }
 
@@ -219,10 +229,11 @@ public class RobotContainer {
                                 new SwerveModule(m_rearLeftIO),
                                 new SwerveModule(m_rearRightIO), m_gyro);
 
-                if (Robot.robotType == RobotType.SIMULATION) {
+                                if (Robot.robotType == RobotType.SIMULATION) {
                         m_vision = new VisionSim(m_robotDrive);
                 } else {
                         m_vision = new VisionReal();
                 }
+                vision = new Vision(m_vision);
         }
 }

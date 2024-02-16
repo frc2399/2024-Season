@@ -32,18 +32,18 @@ public class VisionSim extends SubsystemBase implements VisionIO {
     // Simulated Vision System.
     // Configure these to match your PhotonVision Camera,
     // pipeline, and LED setup.
-    final double CAMERA_HEIGHT_METERS = Units.inchesToMeters(24);
-    final double TARGET_HEIGHT_METERS = Units.feetToMeters(5);
+    final double camHeightOffGround = Units.inchesToMeters(24);
+    // final double TARGET_HEIGHT_METERS = Units.feetToMeters(5);
     // Angle between horizontal and the camera.
-    final double CAMERA_PITCH_RADIANS = Units.degreesToRadians(0);
+    final double camPitch = Units.degreesToRadians(0);
 
-    double camDiagFOV = 100.0; // degrees
-    double camPitch = CAMERA_PITCH_RADIANS; // degrees
-    double camHeightOffGround = CAMERA_HEIGHT_METERS; // meters
+    double camDiagFOV = 70.0; // degrees
+    // double camPitch = CAMERA_PITCH_RADIANS; // degrees
+    // double camHeightOffGround = CAMERA_HEIGHT_METERS; // meters
     double minTargetArea = 0.1; // percentage (0 - 100)
     double maxLEDRange = 20; // meters
-    int camResolutionWidth = 640; // pixels
-    int camResolutionHeight = 480; // pixels
+    int camResolutionWidth = 1280; // pixels
+    int camResolutionHeight = 720; // pixels
     PhotonCameraSim cameraSim;
 
     private static PhotonPoseEstimator camPoseEstimator;
@@ -65,8 +65,8 @@ public class VisionSim extends SubsystemBase implements VisionIO {
         cameraProp.setCalibration(
                 camResolutionWidth, camResolutionHeight, Rotation2d.fromDegrees(camDiagFOV));
         cameraProp.setCalibError(0.2, 0.05);
-        cameraProp.setFPS(25);
-        cameraProp.setAvgLatencyMs(30);
+        cameraProp.setFPS(30);
+        cameraProp.setAvgLatencyMs(24);
         cameraProp.setLatencyStdDevMs(4);
         // Create a PhotonCameraSim which will update the linked PhotonCamera's values
         // with visible
@@ -82,8 +82,8 @@ public class VisionSim extends SubsystemBase implements VisionIO {
         Rotation3d robotToCameraRot = new Rotation3d(0, Math.toRadians(-15), 0);
         Transform3d robotToCamera = new Transform3d(robotToCameraTrl, robotToCameraRot);
 
-        camPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-                camera, robotToCamera);
+        // camPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
+        //         camera, robotToCamera);
 
         // Add this camera to the vision system simulation with the given
         // robot-to-camera transform.
