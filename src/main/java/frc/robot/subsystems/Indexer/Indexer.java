@@ -24,6 +24,10 @@ public class Indexer extends SubsystemBase {
     indexerIO.setIsIntooked(intooked);
   }
 
+  public void setIsOverride(boolean override) {
+    indexerIO.setIsOverride(override);
+  }
+
   public void setMotor(double indexerSpeed) {
     indexerIO.setMotor(indexerSpeed);
   }

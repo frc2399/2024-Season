@@ -19,6 +19,7 @@ public class RealIndexer implements IndexerIO {
     public static SparkPIDController indexerController;
     private double slewRate = 0.2;
     public boolean isIntooked = false;
+    public boolean isOverride = false;
     private static DigitalInput indexerSensorTop;
     private static DigitalInput indexerSensorBottom;
 
@@ -79,9 +80,22 @@ public class RealIndexer implements IndexerIO {
         isIntooked = intooked;
     }
 
+    public void setIsOverride(boolean override) {
+        isOverride = override;
+    }
+
+    public boolean getIsOverride() {
+        return isOverride;
+    }
+
     @Override
     public boolean getIsBeamBroken() {
-        return indexerSensorTop.get();
+        if (isOverride) {
+            return false;
+        } else {
+            return indexerSensorTop.get();
+        }
+
     }
 
 }

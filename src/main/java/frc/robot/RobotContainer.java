@@ -204,16 +204,17 @@ public class RobotContainer {
         () -> fieldOrientedDrive = !fieldOrientedDrive));
 
     //driver left bumper: manual shoot
-    m_driverController.leftBumper().and(() -> !isInClimberMode).whileTrue(new InstantCommand(
-        () -> m_shooter.setMotor(0.8)));
+    m_driverController.leftBumper().and(() -> !isInClimberMode).whileTrue(new SequentialCommandGroup(
+        new InstantCommand(() -> m_indexer.setIsOverride(true)),
+        new InstantCommand(() -> m_shooter.setMotor(0.8))));
 
     //driver right bumper: auto-shoot
     m_driverController.rightBumper().and(() -> !isInClimberMode).onTrue(new ParallelCommandGroup(
-        new SequentialCommandGroup(
-            new WaitUntilCommand(() -> m_shooter.getEncoderSpeed() >= Constants.ShooterConstants.speakerSpeed - 0.05),
-            new InstantCommand(() -> m_intake.setMotor(0.8))),
-            new InstantCommand(() -> m_indexer.setIsIntooked(false)),
-        new InstantCommand(() -> m_shooter.setMotor(Constants.ShooterConstants.speakerSpeed))));
+      new InstantCommand(() -> m_indexer.setIsOverride(true)),
+      new SequentialCommandGroup(
+          new WaitUntilCommand(() -> m_shooter.getEncoderSpeed() >= Constants.ShooterConstants.speakerSpeed - 0.05),
+          new InstantCommand(() -> m_intake.setMotor(0.8))),
+      new InstantCommand(() -> m_shooter.setMotor(Constants.ShooterConstants.speakerSpeed))));
 
     //driver right trigger: intake
     m_driverController.rightTrigger().whileTrue(new ParallelCommandGroup(
