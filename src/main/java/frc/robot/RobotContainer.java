@@ -206,21 +206,17 @@ public class RobotContainer {
 
     //driver left bumper: manual shoot
     m_driverController.leftBumper().and(() -> !isInClimberMode).whileTrue(new SequentialCommandGroup(
-        new InstantCommand(() -> m_indexer.setIsOverride(true)),
         new InstantCommand(() -> m_shooter.setMotor(0.8))));
 
     //driver right bumper: auto-shoot
     m_driverController.rightBumper().and(() -> !isInClimberMode).onTrue(new ParallelCommandGroup(
-      new InstantCommand(() -> m_indexer.setIsOverride(true)),
       new SequentialCommandGroup(
           new WaitUntilCommand(() -> m_shooter.getEncoderSpeed() >= Constants.ShooterConstants.speakerSpeed - 0.05),
           new InstantCommand(() -> m_intake.setMotor(0.8))),
       new InstantCommand(() -> m_shooter.setMotor(Constants.ShooterConstants.speakerSpeed))));
 
     //driver right trigger: intake
-    m_driverController.rightTrigger().whileTrue(new ParallelCommandGroup(
-      new RunCommand(() -> m_intake.setMotor(0.5), m_intake), 
-      new RunCommand(() -> m_indexer.setMotor(0.5), m_indexer))
+    m_driverController.rightTrigger().whileTrue(sensorIntakeCommand()
     );
 
     //driver left trigger: outtake
@@ -375,6 +371,26 @@ public class RobotContainer {
       new InstantCommand(() -> m_shooter.setMotor(Constants.ShooterConstants.speakerSpeed)));
   }
 
+  private Command sensorIntakeCommand() {
+    return new SequentialCommandGroup(
+      //Tells if override is activated if the speed is greater than 5%
+      new ConditionalCommand(new InstantCommand(() -> m_indexer.setIsOverride(true)), new InstantCommand(() ->m_indexer.setIsOverride(false)), () -> m_shooter.getEncoderSpeed() > 0.05),
+      //If beam is broken, then the intake and indexer speed is set to zero. If not, then they keep running 50%
+      new ConditionalCommand(
+        new ParallelCommandGroup(
+          new InstantCommand(() -> m_indexer.setMotor(0)),
+          new InstantCommand(() -> m_intake.setMotor(0))
+        ),
+        new ParallelCommandGroup(
+          new InstantCommand(() -> m_indexer.setMotor(0.5)),
+          new InstantCommand(() -> m_intake.setMotor(0.5))
+        ), 
+       () -> m_indexer.getIsBeamBroken())
+      );
+    }
+
+  
+
   // static final double DELAY_OVERHEAD_SECONDS = 0.5;
   // static final double correctSpeed = 0.8;
 
@@ -393,4 +409,4 @@ public class RobotContainer {
   // public static String toString(CommandSelector node) {
   //   return "Node: " + node;
   // }
-}
+  }

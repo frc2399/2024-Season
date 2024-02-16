@@ -1,5 +1,7 @@
 package frc.robot.subsystems.Indexer;
 
+import java.util.function.Supplier;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
