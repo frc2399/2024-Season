@@ -32,6 +32,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDSubsystem;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.TrapezoidProfileSubsystem;
@@ -349,6 +350,20 @@ public class RobotContainer {
   return new SequentialCommandGroup(
   new InstantCommand(() -> a.disable()),
   new RunCommand(() -> a.setSpeedGravityCompensation(speed), a));
+  }
+
+  private Command setIntakeSpeed (Intake i, double speed) {
+    return new InstantCommand(() -> i.setMotor(speed));
+  }
+
+  private Command setIndexerSpeed (Indexer i, double speed) {
+    return new InstantCommand(() -> i.setMotor(speed));
+  }
+
+  private Command setIndexerAndIntakeSpeed (Indexer indexer, Intake intake, double speed) {
+    return new ParallelCommandGroup(
+      new InstantCommand(() -> intake.setMotor(speed)),
+      new InstantCommand(()-> indexer.setMotor(speed)));
   }
 
   // static final double DELAY_OVERHEAD_SECONDS = 0.5;
