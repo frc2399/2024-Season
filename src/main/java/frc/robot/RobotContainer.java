@@ -294,7 +294,7 @@ public class RobotContainer {
     
     );
     m_operatorController.povCenter().and(() -> !isInClimberMode).onTrue(new InstantCommand(
-    () -> m_indexer.setIsIntooked(!m_indexer.isIntooked))
+    () -> m_indexer.setIsOverride(!m_indexer.isIntooked))
     
     );
     
