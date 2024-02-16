@@ -138,8 +138,6 @@ public final class Constants {
     public static final int RIGHT_CENTERING_MOTOR_ID = 5;
     public static final int INTAKE_CENTERING_ID = 2; //RANDOM NUMBER --> CHANGE!!!!
     public static final double INTAKE_SLEW_RATE = 10;
-    public static final int INTAKE_SENSOR_CHANNEL_TOP = 0;
-    public static final int INTAKE_SENSOR_CHANNEL_BOTTOM = 1;
     public static final double INTAKING_SPEED = 0.8;
     public static final double OUTTAKING_SPEED = -0.6;
   }
@@ -157,7 +155,8 @@ public final class Constants {
 
     public static final int INDEXER_MOTOR_ID = 6; //I put 5 at random. Find actual motor ID. 
     public static final double INDEXER_SLEW_RATE = 10;
-    public static final int INDEXER_SENSOR_CHANNEL = 1; //change as necessary
+    public static final int INDEXER_SENSOR_CHANNEL_TOP = 0; //change as necessary
+    public static final int INDEXER_SENSOR_CHANNEL_BOTTOM = 1; //change as necessary
     public static final double INDEXER_IN_SPEED = 0.8; 
     public static final double INDEXER_OUTTAKING_SPEED = -0.6;
   }

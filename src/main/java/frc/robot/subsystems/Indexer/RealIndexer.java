@@ -19,7 +19,8 @@ public class RealIndexer implements IndexerIO {
     public static SparkPIDController indexerController;
     private double slewRate = 0.2;
     public boolean isIntooked = false;
-    private static DigitalInput indexerSensor;
+    private static DigitalInput indexerSensorTop;
+    private static DigitalInput indexerSensorBottom;
 
     public RealIndexer()
     {
@@ -31,7 +32,8 @@ public class RealIndexer implements IndexerIO {
         indexerController = indexerMotorController.getPIDController();
         indexerController.setFeedbackDevice(indexerEncoder);
         indexerController.setFF(0.0001);
-        indexerSensor = new DigitalInput(IndexerConstants.INDEXER_SENSOR_CHANNEL);
+        indexerSensorTop = new DigitalInput(IndexerConstants.INDEXER_SENSOR_CHANNEL_TOP);
+        indexerSensorBottom = new DigitalInput(IndexerConstants.INDEXER_SENSOR_CHANNEL_BOTTOM);
         //indexController.setP(1);
     }
 
@@ -69,7 +71,7 @@ public class RealIndexer implements IndexerIO {
 
     @Override
     public void periodicUpdate() {
-       
+        SmartDashboard.putBoolean("isIntooked:", getIsBeamBroken());
     }
 
     @Override
@@ -79,7 +81,7 @@ public class RealIndexer implements IndexerIO {
 
     @Override
     public boolean getIsBeamBroken() {
-        return indexerSensor.get();
+        return indexerSensorTop.get();
     }
 
 }

@@ -44,10 +44,6 @@ public class Intake extends SubsystemBase {
     intakeIO.setRightCurrentLimit(current);
   }
 
-  public boolean isIntooked()
-{
-  return intakeIO.isIntooked();
-}
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
