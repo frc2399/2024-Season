@@ -27,12 +27,12 @@ public class LED extends SubsystemBase {
     @Override
     public void periodic() {
         if (Intake.isIntooked) {
-            this.setColor(0, 255, 0, 0);
+            this.setColor(112, 243, 121, 0);
         } 
         else if (RobotBase.isSimulation()) {
             this.setColor(255, 50, 200, 0);
         }
-        else if (Climber.isInClimberMode) {
+        else if (Climber.isInClimberMode()) {
             this.setColor(0, 100, 255, 0);
         }
 
