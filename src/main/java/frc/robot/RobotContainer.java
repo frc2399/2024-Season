@@ -366,6 +366,15 @@ public class RobotContainer {
       new InstantCommand(()-> indexer.setMotor(speed)));
   }
 
+  private Command autoShoot () {
+    return new ParallelCommandGroup(
+      new InstantCommand(() -> m_indexer.setIsOverride(true)),
+      new SequentialCommandGroup(
+          new WaitUntilCommand(() -> m_shooter.getEncoderSpeed() >= Constants.ShooterConstants.speakerSpeed - 0.05),
+          new InstantCommand(() -> m_intake.setMotor(0.8))),
+      new InstantCommand(() -> m_shooter.setMotor(Constants.ShooterConstants.speakerSpeed)));
+  }
+
   // static final double DELAY_OVERHEAD_SECONDS = 0.5;
   // static final double correctSpeed = 0.8;
 
