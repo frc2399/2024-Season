@@ -9,8 +9,6 @@ import frc.robot.subsystems.intake.IntakeIO;
 public class automaticIntakeAndIndexer extends Command {
     private final Indexer indexer;
     private final Intake intake;
-    public static boolean isIntooked = false;
-    public boolean pieceIntooked = false;
 
     public automaticIntakeAndIndexer(Indexer indexer, Intake intake) {
         this.indexer = indexer;
@@ -21,13 +19,14 @@ public class automaticIntakeAndIndexer extends Command {
 
     @Override
     public void execute() {
-        while (isIntooked == false) {
+        while (indexer.isIntooked == false) {
             if (indexer.getIsBeamBroken()) {
-                isIntooked = true;
                 indexer.setIsIntooked(true);
             }
             intake.setMotor(5);
             indexer.setMotor(5);
         }
+        indexer.setMotor(0);
+        intake.setMotor(0);
     }
 }

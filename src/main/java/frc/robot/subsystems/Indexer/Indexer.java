@@ -24,9 +24,12 @@ public class Indexer extends SubsystemBase {
     indexerIO.setIsIntooked(intooked);
   }
 
-  public void setIsOverride(boolean override) {
-    indexerIO.setIsOverride(override);
-    isIntooked = override;
+  public boolean getIsIntooked() {
+    return indexerIO.getIsIntooked();
+  }
+
+  public void setIsSensorOverriden(boolean override) {
+    indexerIO.setIsSensorOverriden(override);
   }
 
   public void setMotor(double indexerSpeed) {
@@ -54,5 +57,9 @@ public class Indexer extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     indexerIO.periodicUpdate();
+  }
+
+  public boolean getIsSensorOverriden() {
+    return indexerIO.getIsSensorOverriden();
   }
 }

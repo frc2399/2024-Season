@@ -12,5 +12,7 @@ public interface IndexerIO {
     public void periodicUpdate();
     public void setIsIntooked(boolean intooked);
     public boolean getIsBeamBroken();
-    public void setIsOverride(boolean override);
+    public void setIsSensorOverriden(boolean override);
+    public boolean getIsIntooked();
+    public boolean getIsSensorOverriden();
 }

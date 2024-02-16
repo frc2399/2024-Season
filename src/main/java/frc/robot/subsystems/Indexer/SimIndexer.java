@@ -60,6 +60,16 @@ public class SimIndexer implements IndexerIO {
     }
 
     @Override
-    public void setIsOverride(boolean override) {
+    public void setIsSensorOverriden(boolean override) {
+    }
+
+    @Override
+    public boolean getIsIntooked() {
+        return false;
+    }
+
+    @Override
+    public boolean getIsSensorOverriden() {
+        return false;
     }
 }
