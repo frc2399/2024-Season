@@ -10,9 +10,10 @@ public class Climber extends SubsystemBase {
         climberIO = io;
     }
 
-    public boolean isInClimberMode(){
+    public static boolean isInClimberMode(){
         return true;
     }
+
 
     public void setLeftSpeed(double speed) {
         climberIO.setLeftSpeed(speed);
@@ -46,6 +47,7 @@ public class Climber extends SubsystemBase {
     public double getRightEncoderPosition(){
         return 0.0;
     }
+    
 
 
 

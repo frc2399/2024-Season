@@ -120,7 +120,7 @@ public class ClimberReal implements ClimberIO {
         SmartDashboard.putNumber("Right Climber Hieght", getRightEncoderPosition());
     }
 
-    public boolean isInClimberMode() {
+    public static boolean isInClimberMode(){
         return true;
     }
 
