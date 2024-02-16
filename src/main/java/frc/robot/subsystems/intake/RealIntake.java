@@ -123,7 +123,7 @@ public class RealIntake implements IntakeIO {
 
     @Override
     public void periodicUpdate() {
-       
+       SmartDashboard.putBoolean("isIntooked:", isIntooked());
     }
 
 }
