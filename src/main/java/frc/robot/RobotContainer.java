@@ -79,7 +79,7 @@ import frc.robot.subsystems.shooter.SimShooter;
  */
 public class RobotContainer {
   // The robot's subsystems
-  public static LED led = new LED();
+  public static LED m_led;
   // private final DriveSubsystem m_robotDrive = new DriveSubsystem();
   // private static Gyro m_gyro = new Gyro();
   public boolean fieldOrientedDrive = false;
@@ -141,6 +141,7 @@ public class RobotContainer {
     m_indexer = new Indexer(indexerIO);
     m_climber = new Climber(climberIO);
     m_arm = new Arm(armIO);
+    m_led = new LED(m_climber);
   }
 
   // Configure default commands

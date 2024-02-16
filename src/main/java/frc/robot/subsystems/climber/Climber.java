@@ -10,6 +10,10 @@ public class Climber extends SubsystemBase {
         climberIO = io;
     }
 
+    public boolean isInClimberMode(){
+        return true; 
+    }
+
     public void setLeftSpeed(double speed) {
         climberIO.setLeftSpeed(speed);
     }
