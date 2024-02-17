@@ -8,6 +8,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -301,7 +302,10 @@ public class RobotContainer {
     -0.1))
     .onFalse(makeSetSpeedGravityCompensationCommand(m_arm, 0));
 
-    // m_driverController.a().onTrue(setkG(arm, SmartDashboard.getNumber("kG", 0)));
+    m_operatorController.a().onTrue(makeSetPositionCommand(m_arm, Units.degreesToRadians(14)));
+    
+    m_operatorController.b().onTrue(makeSetPositionCommand(m_arm, Units.degreesToRadians(60)));
+
 
 
     m_operatorController.a().and(() -> isInClimberMode).onTrue(new ParallelCommandGroup(
