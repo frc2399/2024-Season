@@ -19,8 +19,8 @@ public class RealShooter implements ShooterIO {
     public static SparkPIDController shooterHighController;
     public static SparkPIDController shooterLowController;
 
-    public double feedforward = 0;
-    public double pvalue = 0.001;
+    public double feedforward = 0.03;
+    public double pvalue = 0.01;
     private double slewRate = 0.2;
 
     public RealShooter()
@@ -81,15 +81,7 @@ public class RealShooter implements ShooterIO {
     @Override
     public void periodicUpdate() {
         // SmartDashboard.putNumber("intake/current (A)", getCurrent());
-        // SmartDashboard.putNumber("intake/temp (C)", shooterMotorControllerHigh.getMotorTemperature());    
-
-        feedforward = SmartDashboard.getNumber("shooter/ff", feedforward);    
-        pvalue = SmartDashboard.getNumber("shooter/pvalue", pvalue); 
-        SmartDashboard.putNumber("shooter/pvalue", pvalue);
-        shooterLowController.setFF(feedforward);
-        shooterHighController.setFF(feedforward);
-        shooterHighController.setP(pvalue);
-        shooterLowController.setP(pvalue);
+        // SmartDashboard.putNumber("intake/temp (C)", shooterMotorControllerHigh.getMotorTemperature());   
  
     }
 
