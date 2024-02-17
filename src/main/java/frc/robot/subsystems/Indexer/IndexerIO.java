@@ -1,7 +1,5 @@
 package frc.robot.subsystems.Indexer;
 
-import edu.wpi.first.wpilibj.DigitalInput;
-
 public interface IndexerIO {
     public void setMotor(double speed);
     public void setSpeed(double speed);

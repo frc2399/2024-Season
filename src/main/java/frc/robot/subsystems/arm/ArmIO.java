@@ -1,7 +1,5 @@
 package frc.robot.subsystems.arm;
 
-import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
-
 public interface ArmIO {
     public double getEncoderPosition();
 

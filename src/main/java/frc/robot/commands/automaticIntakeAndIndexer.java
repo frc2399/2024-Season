@@ -1,10 +1,7 @@
 package frc.robot.commands;
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Indexer.Indexer;
-import frc.robot.subsystems.Indexer.IndexerIO;
 import frc.robot.subsystems.intake.Intake;
-import frc.robot.subsystems.intake.IntakeIO;
 
 public class automaticIntakeAndIndexer extends Command {
     private final Indexer indexer;

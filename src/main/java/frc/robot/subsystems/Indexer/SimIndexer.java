@@ -2,10 +2,8 @@ package frc.robot.subsystems.Indexer;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.Constants;
 //import frc.robot.subsystems.indexer.SimIndexer;
 import frc.utils.SimEncoder;
 
