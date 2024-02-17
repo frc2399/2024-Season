@@ -75,6 +75,7 @@ public class RealIndexer implements IndexerIO {
     @Override
     public void periodicUpdate() {
         SmartDashboard.putBoolean("isIntooked:", isIntooked);
+        SmartDashboard.putBoolean("getIsBeamBroken", getIsBeamBroken());
     }
 
     @Override

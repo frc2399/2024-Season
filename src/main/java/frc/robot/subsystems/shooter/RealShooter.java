@@ -18,6 +18,9 @@ public class RealShooter implements ShooterIO {
     public static RelativeEncoder shooterHighEncoder;
     public static SparkPIDController shooterHighController;
     public static SparkPIDController shooterLowController;
+
+    public double feedforward = 0;
+    public double pvalue = 0.001;
     private double slewRate = 0.2;
 
     public RealShooter()
@@ -37,10 +40,6 @@ public class RealShooter implements ShooterIO {
         shooterLowController = shooterMotorControllerLow.getPIDController();
         shooterHighController.setFeedbackDevice(shooterHighEncoder);
         shooterLowController.setFeedbackDevice(shooterLowEncoder);
-        shooterLowController.setFF(.0001);
-        shooterHighController.setFF(.0001);
-        // shooterHighController.setP(.00045);
-        // shooterLowController.setP(.00045);
 
 
 
@@ -49,15 +48,16 @@ public class RealShooter implements ShooterIO {
     //Basic shooting command
     @Override
     public void setMotor(double shootSpeed) {
-        shooterMotorControllerLow.set(shootSpeed);
-        shooterMotorControllerHigh.set(shootSpeed);
+        shooterHighController.setReference(shootSpeed, ControlType.kDutyCycle);
+        shooterLowController.setReference(shootSpeed, ControlType.kDutyCycle);   
+
     }
 
     //Shooting command, but using PID
     @Override
     public void setSpeed(double speedPercent) {
-        shooterHighController.setReference(speedPercent * Constants.ShooterConstants.NEO_MAX_SPEED_MPS, ControlType.kVelocity);
-        shooterLowController.setReference(speedPercent * Constants.ShooterConstants.NEO_MAX_SPEED_MPS, ControlType.kVelocity);    
+        shooterHighController.setReference(speedPercent, ControlType.kVelocity);
+        shooterLowController.setReference(speedPercent, ControlType.kVelocity);    
         SmartDashboard.putNumber("shooter reference", speedPercent);
         SmartDashboard.putNumber("shooter speed (RPM)", getEncoderSpeed() / Constants.ShooterConstants.NEO_MAX_SPEED_MPS);
 
@@ -81,7 +81,16 @@ public class RealShooter implements ShooterIO {
     @Override
     public void periodicUpdate() {
         // SmartDashboard.putNumber("intake/current (A)", getCurrent());
-        // SmartDashboard.putNumber("intake/temp (C)", shooterMotorControllerHigh.getMotorTemperature());        
+        // SmartDashboard.putNumber("intake/temp (C)", shooterMotorControllerHigh.getMotorTemperature());    
+
+        feedforward = SmartDashboard.getNumber("shooter/ff", feedforward);    
+        pvalue = SmartDashboard.getNumber("shooter/pvalue", pvalue); 
+        SmartDashboard.putNumber("shooter/pvalue", pvalue);
+        shooterLowController.setFF(feedforward);
+        shooterHighController.setFF(feedforward);
+        shooterHighController.setP(pvalue);
+        shooterLowController.setP(pvalue);
+ 
     }
 
 }
