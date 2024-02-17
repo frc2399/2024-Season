@@ -212,7 +212,7 @@ public class RobotContainer {
     m_driverController.leftBumper().whileTrue(
       //new SequentialCommandGroup(
         //new InstantCommand(() -> m_indexer.setIsIntooked(false)),
-        new RunCommand(() -> m_shooter.setMotor(0.8)))
+        new RunCommand(() -> m_shooter.setMotor(0.7)))
         //)
         ;
 
