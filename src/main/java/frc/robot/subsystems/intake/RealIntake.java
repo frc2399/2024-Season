@@ -31,10 +31,10 @@ public class RealIntake implements IntakeIO {
             Constants.NEO550_CURRENT_LIMIT, false, true, slewRate);
         
         rightCenteringIntakeMotorController = MotorUtil.createSparkMAX(IntakeConstants.RIGHT_CENTERING_MOTOR_ID, MotorType.kBrushless, 
-            Constants.NEO550_CURRENT_LIMIT, true, true, slewRate);
+            Constants.NEO550_CURRENT_LIMIT, false, true, slewRate);
 
         intakeMotorController = MotorUtil.createSparkMAX(IntakeConstants.INTAKE_CENTERING_ID, MotorType.kBrushless,
-        Constants.NEO550_CURRENT_LIMIT, false, true, slewRate);
+        Constants.NEO550_CURRENT_LIMIT, true, true, slewRate);
 
         // initialize motor encoder
         leftCenteringIntakeEncoder = leftCenteringIntakeMotorController.getEncoder();

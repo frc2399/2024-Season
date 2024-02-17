@@ -118,7 +118,7 @@ public final class Constants {
     public static final double kDrivingMinOutput = -1;
     public static final double kDrivingMaxOutput = 1;
 
-    public static final double kTurningP = 2.5;
+    public static final double kTurningP = 1.0;
     public static final double kTurningI = 0;
     public static final double kTurningD = 0.001;
     public static final double kTurningFF = 0;
@@ -134,8 +134,8 @@ public final class Constants {
 
   public static final class IntakeConstants {
 
-    public static final int LEFT_CENTERING_MOTOR_ID = 4;
-    public static final int RIGHT_CENTERING_MOTOR_ID = 5;
+    public static final int LEFT_CENTERING_MOTOR_ID = 5;
+    public static final int RIGHT_CENTERING_MOTOR_ID = 4;
     public static final int INTAKE_CENTERING_ID = 2; //RANDOM NUMBER --> CHANGE!!!!
     public static final double INTAKE_SLEW_RATE = 10;
     public static final double INTAKING_SPEED = 0.8;
@@ -177,25 +177,24 @@ public final class Constants {
 
     // arm angles for intaking and shooting in different positions, in radians
     //intake angle same as initial offset
-    public static final double INTAKE_ANGLE = 0;
-    public static final double SPEAKER_SUBWOOFER_ANGLE = -0.66;
+    public static final double INTAKE_ANGLE = Units.degreesToRadians(14);
+    public static final double SPEAKER_SUBWOOFER_ANGLE = Units.degreesToRadians(14);;
     public static final double SPEAKER_PODIUM_ANGLE = -0.06;
-    public static final double AMP_ANGLE = -0.25;
+    public static final double AMP_ANGLE = Units.degreesToRadians(90);
 
-    public static final double TURTLE_ANGLE = 0.5;
+    public static final double TURTLE_ANGLE = Units.degreesToRadians(14);
 
     // 1 4-1 gearbox, 2 3-1 gearboxes, then a 4-1 reduction from the sprocket/chain; 4^2 * 3^2 = 144
     public static final double RADIANS_PER_REVOLUTION = 2 * Math.PI / 144;
     // initial offset is 0.711 + (0.287) - (0.308)
     
-    public static final double INITIAL_OFFSET = 0.660;
+    public static final double INITIAL_OFFSET = Units.degreesToRadians(14);
 
     //can be 2 degrees off from goal setpoints and still considered at goal; made higher so arm.atGoal() in placeConeOnNode cmd will execute in auton
     public static final double ANGLE_TOLERANCE_AUTON = Units.degreesToRadians(2);
 
-    public static final double SPEAKER_SUBWOOFER_STRAIGHT_ANGLE = 0;
 
-    public static final double SPEAKER_SUBWOOFER_SIDE_ANGLE = 0;
+    //public static final double SPEAKER_SUBWOOFER_SIDE_ANGLE = 0;
 
     }
 

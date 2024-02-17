@@ -36,7 +36,7 @@ public class RealArm implements ArmIO {
         armMotorControllerLeft = MotorUtil.createSparkMAX(ArmConstants.ARM_MOTOR_ID_LEFT, MotorType.kBrushless,
             Constants.NEO_CURRENT_LIMIT,
             false, true, 0.75);
-        //armMotorControllerLeft.follow(armMotorControllerRight);
+        armMotorControllerLeft.follow(armMotorControllerRight, true);
         // armAbsoluteEncoderRight.setPosition(ArmConstants.INITIAL_OFFSET);
     }
 
@@ -46,7 +46,7 @@ public class RealArm implements ArmIO {
 
     @Override
     public void periodicUpdate() {
-        SmartDashboard.putNumber("arm/temp (C)", armMotorControllerLeft.getMotorTemperature());
+        SmartDashboard.putNumber("arm position", getEncoderPosition());
     }
 
     @Override

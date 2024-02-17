@@ -19,14 +19,22 @@ public class automaticIntakeAndIndexer extends Command {
 
     @Override
     public void execute() {
-        while (indexer.isIntooked == false) {
-            if (indexer.getIsBeamBroken()) {
+        if (indexer.getIsBeamBroken()) {
                 indexer.setIsIntooked(true);
+                indexer.setMotor(0);
+            intake.setMotor(0);
             }
-            intake.setMotor(5);
-            indexer.setMotor(5);
+        else {
+            intake.setMotor(.3);
+            indexer.setMotor(.3);
         }
-        indexer.setMotor(0);
-        intake.setMotor(0);
+        
+    }
+
+    @Override
+    public void end(boolean interrupted) {
+  
+      indexer.setMotor(0);
+      intake.setMotor(0);
     }
 }

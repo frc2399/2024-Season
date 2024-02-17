@@ -83,8 +83,8 @@ import frc.robot.subsystems.shooter.SimShooter;
 public class RobotContainer {
   // The robot's subsystems
   private DriveSubsystem m_robotDrive;
-  // private static Gyro m_gyro = new Gyro();
-  public boolean fieldOrientedDrive = false;
+  private static Gyro m_gyro;
+  public boolean fieldOrientedDrive = true;
   public static boolean isInClimberMode = false;
   // public static CommandSelector angleHeight = CommandSelector.INTAKE;
 
@@ -120,6 +120,7 @@ public class RobotContainer {
   // construct subsystems
   private void setUpSubsystems() {
     m_robotDrive = new DriveSubsystem();
+    m_gyro = new Gyro();
     // set up IOs
     if (RobotBase.isSimulation()) {
       indexerIO = new SimIndexer();
@@ -131,7 +132,7 @@ public class RobotContainer {
       intakeIO = new RealIntake();
       indexerIO = new RealIndexer();
       shooterIO = new RealShooter();
-      climberIO = new ClimberReal();
+      climberIO = new ClimberSim();
       armIO = new RealArm();
     }
 
@@ -153,23 +154,23 @@ public class RobotContainer {
     // default command for the shooter: setting speed to number input from the smart
     // dashboard
     m_shooter.setDefaultCommand(
-        new InstantCommand(
-            () -> m_shooter.setMotor(SmartDashboard.getNumber("Shoot speed", 0)),
+        new RunCommand(
+            () -> m_shooter.setMotor(0),
             m_shooter));
 
     // default command for intake: do nothing
     m_intake.setDefaultCommand(
-        new InstantCommand(
+        new RunCommand(
             () -> m_intake.setMotor(0),
             m_intake));
 
     m_indexer.setDefaultCommand(
-        new InstantCommand(
+        new RunCommand(
             () -> m_indexer.setMotor(0),
             m_indexer));
 
     m_climber.setDefaultCommand(
-        new InstantCommand(
+        new RunCommand(
             () -> m_climber.setMotors(0),
             m_climber));
 
@@ -208,21 +209,31 @@ public class RobotContainer {
         () -> fieldOrientedDrive = !fieldOrientedDrive));
 
     // driver left bumper: manual shoot
-    m_driverController.leftBumper().and(() -> !isInClimberMode).whileTrue(new SequentialCommandGroup(
-        new InstantCommand(() -> m_indexer.setIsIntooked(false)),
-        new InstantCommand(() -> m_shooter.setMotor(0.8))));
+    m_driverController.leftBumper().whileTrue(
+      //new SequentialCommandGroup(
+        //new InstantCommand(() -> m_indexer.setIsIntooked(false)),
+        new RunCommand(() -> m_shooter.setMotor(0.8)))
+        //)
+        ;
 
     // driver right bumper: auto-shoot
     m_driverController.rightBumper().and(() -> !isInClimberMode).onTrue(autoShoot());
 
     // driver right trigger: intake
-    m_driverController.rightTrigger().whileTrue(new automaticIntakeAndIndexer(m_indexer, m_intake));
+    //m_driverController.rightTrigger().whileTrue(new automaticIntakeAndIndexer(m_indexer, m_intake)).onFalse(setIndexerAndIntakeSpeed(m_indexer, m_intake, 0));
 
+    m_driverController.rightTrigger().whileTrue(new ParallelCommandGroup(
+        new RunCommand(() -> m_intake.setMotor(0.8), m_intake),
+        new RunCommand(() -> m_indexer.setMotor(0.8), m_indexer)));
+
+    
     // driver left trigger: outtake
     m_driverController.leftTrigger().whileTrue(new ParallelCommandGroup(
-        new RunCommand(() -> m_intake.setMotor(-0.5), m_intake),
-        new RunCommand(() -> m_indexer.setMotor(-0.5), m_indexer)));
+        new RunCommand(() -> m_intake.setMotor(-0.3), m_intake),
+        new RunCommand(() -> m_indexer.setMotor(-0.3), m_indexer)));
 
+    m_driverController.b().onTrue(new InstantCommand(() -> m_gyro.resetYaw(), m_gyro));
+   
     // operater left trigger: climber mode: left climber up
     m_operatorController.leftTrigger().and(() -> isInClimberMode).whileTrue(new RunCommand(
         () -> m_climber.setLeftSpeed(0.2), m_climber)
@@ -254,21 +265,19 @@ public class RobotContainer {
 
     m_operatorController.a().and(() -> isInClimberMode).onTrue(new automaticClimberCommand(m_climber, 0));
 
-    // Right Y axis to control the arm
-    // // TODO: is this accurate? could totally be the wrong axis.
-    // m_operatorController.axisGreaterThan(5, 0.1).and(() ->
-    // !isInClimberMode).whileTrue(makeSetSpeedGravityCompensationCommand(m_arm,
-    // 0.1))
-    // .onFalse(makeSetSpeedGravityCompensationCommand(m_arm, 0));
-    // m_operatorController.axisLessThan(5, -0.1).and(() ->
-    // !isInClimberMode).whileTrue(makeSetSpeedGravityCompensationCommand(m_arm,
-    // -0.1))
-    // .onFalse(makeSetSpeedGravityCompensationCommand(m_arm, 0));
+
+    m_operatorController.rightTrigger().and(() ->
+    !isInClimberMode).whileTrue(makeSetSpeedGravityCompensationCommand(m_arm,
+    0.1))
+    .onFalse(makeSetSpeedGravityCompensationCommand(m_arm, 0));
+    
+    m_operatorController.leftTrigger().and(() ->
+    !isInClimberMode).whileTrue(makeSetSpeedGravityCompensationCommand(m_arm,
+    -0.1))
+    .onFalse(makeSetSpeedGravityCompensationCommand(m_arm, 0));
 
     // m_driverController.a().onTrue(setkG(arm, SmartDashboard.getNumber("kG", 0)));
-    // new JoystickButton(m_driverController, XboxController.Button.kB.value)
-    // .onTrue(new InstantCommand(
-    // () -> m_gyro.resetYaw(), m_gyro));
+
 
     m_operatorController.a().and(() -> isInClimberMode).onTrue(new ParallelCommandGroup(
         new InstantCommand(() -> m_climber.setLeftMotor(ClimberConstants.MIN_HEIGHT + 0.1), m_climber),
@@ -276,21 +285,21 @@ public class RobotContainer {
 
     );
 
-    m_operatorController.rightTrigger().and(() -> !isInClimberMode).whileTrue(new ParallelCommandGroup(
-        new InstantCommand(() -> m_intake.setMotor(Constants.IntakeConstants.INTAKING_SPEED)),
-        new InstantCommand(() -> m_indexer.setMotor(Constants.IndexerConstants.INDEXER_IN_SPEED))));
+    // m_operatorController.rightTrigger().and(() -> !isInClimberMode).whileTrue(new ParallelCommandGroup(
+    //     new InstantCommand(() -> m_intake.setMotor(Constants.IntakeConstants.INTAKING_SPEED)),
+    //     new InstantCommand(() -> m_indexer.setMotor(Constants.IndexerConstants.INDEXER_IN_SPEED))));
 
-    m_operatorController.leftTrigger().and(() -> !isInClimberMode).whileTrue(new SequentialCommandGroup(
-        new ParallelCommandGroup(
-            new InstantCommand(() -> m_intake.setMotor(Constants.IntakeConstants.OUTTAKING_SPEED)),
-            new InstantCommand(() -> m_indexer.setMotor(Constants.IndexerConstants.INDEXER_OUTTAKING_SPEED))),
-        new InstantCommand(() -> m_indexer.setIsIntooked(false))));
+    // m_operatorController.leftTrigger().and(() -> !isInClimberMode).whileTrue(new SequentialCommandGroup(
+    //     new ParallelCommandGroup(
+    //         new InstantCommand(() -> m_intake.setMotor(Constants.IntakeConstants.OUTTAKING_SPEED)),
+    //         new InstantCommand(() -> m_indexer.setMotor(Constants.IndexerConstants.INDEXER_OUTTAKING_SPEED))),
+    //     new InstantCommand(() -> m_indexer.setIsIntooked(false))));
 
     // randomly assigned button, change as necessary
-    m_operatorController.y().and(() -> !isInClimberMode).onTrue(new InstantCommand(
-        () -> m_shooter.setMotor(Constants.ShooterConstants.speakerSpeed))
+    // m_operatorController.y().and(() -> !isInClimberMode).onTrue(new InstantCommand(
+    //     () -> m_shooter.setMotor(Constants.ShooterConstants.speakerSpeed))
 
-    );
+    // );
     m_operatorController.povCenter().and(() -> !isInClimberMode).onTrue(new InstantCommand(
         () -> m_indexer.setIsSensorOverriden(!m_indexer.getIsSensorOverriden())));
 

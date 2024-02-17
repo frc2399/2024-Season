@@ -74,7 +74,7 @@ public class RealIndexer implements IndexerIO {
 
     @Override
     public void periodicUpdate() {
-        SmartDashboard.putBoolean("isIntooked:", getIsBeamBroken());
+        SmartDashboard.putBoolean("isIntooked:", isIntooked);
     }
 
     @Override
@@ -95,7 +95,7 @@ public class RealIndexer implements IndexerIO {
         if (isSensorOverriden) {
             return false;
         } else {
-            return indexerSensorTop.get();
+            return indexerSensorBottom.get();
         }
     }
 

@@ -163,7 +163,7 @@ public class DriveSubsystem extends SubsystemBase {
       desiredAngle = 0;
     }
 
-    else if (rotRate == 0) {
+    else if (rotRate == 0 && (xSpeed != 0 || ySpeed != 0)) {
       newRotRate = 0;
       
       if(Math.abs(desiredAngle - currentAngle) > Math.toRadians(0.1)) {
