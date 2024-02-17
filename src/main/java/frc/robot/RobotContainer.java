@@ -172,7 +172,7 @@ public class RobotContainer {
   private void setUpAuton(){
         NamedCommands.registerCommand("intake", sensorIntakeCommand());
         NamedCommands.registerCommand("shoot", autoShoot());
-        NamedCommands.registerCommand("aim to target", Commands.print("aimed to target!"));
+        NamedCommands.registerCommand("AimToTarget", Commands.print("aimed to target!"));
         m_autoChooser = AutoBuilder.buildAutoChooser();
         SmartDashboard.putData("Autos/Selector", m_autoChooser);
   }
