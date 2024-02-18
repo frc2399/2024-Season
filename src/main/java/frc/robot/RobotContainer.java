@@ -207,7 +207,7 @@ public class RobotContainer {
             () -> m_climber.setMotors(0),
             m_climber));
 
-    m_arm.setDefaultCommand(new InstantCommand(() -> m_arm.setSpeedGravityCompensation(0), m_arm));
+    m_arm.setDefaultCommand(new RunCommand(() -> m_arm.setSpeedGravityCompensation(0), m_arm));
     // Arm setpoint must be in RADIANS
     // m_arm.setDefaultCommand(makeSetPositionCommand(m_arm,
     // Units.degreesToRadians(SmartDashboard.getNumber("arm setpoint", 0))));
@@ -240,14 +240,14 @@ public class RobotContainer {
 
     // driver left bumper: manual shoot
     m_driverController.leftBumper().whileTrue(
-        // new SequentialCommandGroup(
-        // new InstantCommand(() -> m_indexer.setIsIntooked(false)),
-        new RunCommand(() -> m_shooter.setMotor(0.7)))
-    // )
-    ;
+      //new SequentialCommandGroup(
+        //new InstantCommand(() -> m_indexer.setIsIntooked(false)),
+        new RunCommand(() -> m_shooter.setMotor(m_arm.getSpeedFromArmHeight())))
+        //)
+        ; 
 
     // driver right bumper: auto-shoot
-    m_driverController.rightBumper().and(() -> !isInClimberMode).onTrue(autoShoot());
+    m_driverController.rightBumper().onTrue(shootAfterDelay());
 
     // driver right trigger: intake
     // m_driverController.rightTrigger().whileTrue(new
@@ -301,14 +301,22 @@ public class RobotContainer {
             0.1))
         .onFalse(makeSetSpeedGravityCompensationCommand(m_arm, 0));
 
-    m_operatorController.leftTrigger().and(() -> !isInClimberMode)
-        .whileTrue(makeSetSpeedGravityCompensationCommand(m_arm,
-            -0.1))
-        .onFalse(makeSetSpeedGravityCompensationCommand(m_arm, 0));
+    m_operatorController.rightTrigger().and(() ->
+    !isInClimberMode).whileTrue(makeSetSpeedGravityCompensationCommand(m_arm,
+    0.1)).onFalse(makeSetSpeedGravityCompensationCommand(m_arm, 0));
+    
+    m_operatorController.leftTrigger().and(() ->
+    !isInClimberMode).whileTrue(makeSetSpeedGravityCompensationCommand(m_arm,
+    -0.1)).onFalse(makeSetSpeedGravityCompensationCommand(m_arm, 0));
 
-    m_operatorController.a().onTrue(makeSetPositionCommand(m_arm, Units.degreesToRadians(14)));
+    //Basic intake angle
+    m_operatorController.a().and(() -> !isInClimberMode).onTrue(makeSetPositionCommand(m_arm, 0.320));
+    
+    //Podium shot angle
+    m_operatorController.b().and(() -> !isInClimberMode).onTrue(makeSetPositionCommand(m_arm, 0.616));
 
-    m_operatorController.b().onTrue(makeSetPositionCommand(m_arm, Units.degreesToRadians(60)));
+    //amp angle
+    m_operatorController.y().and(() -> !isInClimberMode).onTrue(makeSetPositionCommand(m_arm, 1.4));
 
     m_operatorController.a().and(() -> isInClimberMode).onTrue(new ParallelCommandGroup(
         new InstantCommand(() -> m_climber.setLeftMotor(ClimberConstants.MIN_HEIGHT + 0.1), m_climber),
@@ -318,17 +326,13 @@ public class RobotContainer {
 
   }
 
-  // m_operatorController.povCenter().and(() -> !isInClimberMode).onTrue(new
-  // InstantCommand(
-  // () -> m_indexer.setIsSensorOverriden(!m_indexer.getIsSensorOverriden())));
-  // }
-
-  public static Command makeSetPositionCommand(ProfiledPIDSubsystem base,
+  public static Command makeSetPositionCommand(Arm arm,
       double target) {
     return new SequentialCommandGroup(
         new ConditionalCommand(new InstantCommand(() -> {
-        }), new InstantCommand(() -> base.enable()), () -> base.isEnabled()),
-        new InstantCommand(() -> base.setGoal(target), base));
+        }), new InstantCommand(() -> arm.enable()), () -> arm.isEnabled()),
+        new InstantCommand(() -> arm.setEncoderPosition(arm.getAbsoluteEncoderPosition())),
+        new RunCommand(() -> arm.setGoal(target), arm));
   }
 
   private Command makeSetSpeedGravityCompensationCommand(Arm a, double speed) {
@@ -363,24 +367,27 @@ public class RobotContainer {
         new InstantCommand(() -> m_shooter.setMotor(0)));
   }
 
-  // private Command sensorIntakeCommand() {
-  // return new SequentialCommandGroup(
-  // // Tells if override is activated if the speed is greater than 5%
-  // new ConditionalCommand(new InstantCommand(() ->
-  // m_indexer.setIsSensorOverriden(true)),
-  // new InstantCommand(() -> m_indexer.setIsSensorOverriden(false)), () ->
-  // m_shooter.getEncoderSpeed() > 0.05),
-  // // If beam is broken, then the intake and indexer speed is set to zero. If
-  // not,
-  // // then they keep running 50%
-  // new ConditionalCommand(
-  // new ParallelCommandGroup(
-  // new InstantCommand(() -> m_indexer.setMotor(0)),
-  // new InstantCommand(() -> m_intake.setMotor(0))),
-  // new ParallelCommandGroup(
-  // new InstantCommand(() -> m_indexer.setMotor(0.5)),
-  // new InstantCommand(() -> m_intake.setMotor(0.5))),
-  // () -> m_indexer.getIsBeamBroken()));
-  // }
+   private Command shootAfterDelay() {
+    return new ParallelCommandGroup(
+      new ParallelCommandGroup(
+        new SequentialCommandGroup(
+          new WaitCommand(0.5),
+          new RunCommand(() -> m_indexer.setMotor(Constants.IndexerConstants.INDEXER_IN_SPEED), m_indexer),
+          new RunCommand(() -> m_indexer.setIsIntooked(false), m_indexer),
+        new RunCommand(() -> m_shooter.setMotor(0.8), m_shooter))),
+      new WaitCommand(1.5));
+   }
 
+   private Command outtakeAndShootAfterDelay() {
+    return new ParallelCommandGroup(
+      new RunCommand(() -> m_indexer.setMotor(-Constants.IndexerConstants.INDEXER_IN_SPEED), m_intake),
+      new ParallelCommandGroup(
+        new ParallelCommandGroup(
+          new SequentialCommandGroup(
+            new WaitCommand(0.5),
+            new RunCommand(() -> m_indexer.setMotor(Constants.IndexerConstants.INDEXER_IN_SPEED), m_indexer),
+            new RunCommand(() -> m_indexer.setIsIntooked(false), m_indexer),
+          new RunCommand(() -> m_shooter.setMotor(m_arm.getSpeedFromArmHeight()), m_shooter))),
+        new WaitCommand(1.5)));
+   }
 }
