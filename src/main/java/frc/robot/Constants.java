@@ -10,16 +10,16 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
 
-
 public final class Constants {
 
   public static final class CodeConstants {
     public static final double kMainLoopFrequency = 50; // Hz
   }
+
   public static final int NEO550_CURRENT_LIMIT = 20;
   public static final int NEO_CURRENT_LIMIT = 50;
-  public static final int NEO_MAX_SPEED_RPM = 5676; 
-  //MPS = (GearRatio * 2πr * RPM) / 60
+  public static final int NEO_MAX_SPEED_RPM = 5676;
+  // MPS = (GearRatio * 2πr * RPM) / 60
   public static final double NEO550_MAX_SPEED_RPM = 11000;
 
   public static final class DriveConstants {
@@ -33,10 +33,10 @@ public final class Constants {
     // Distance between centers of right and left wheels on robot
     public static final double kWheelBase = Units.inchesToMeters(26 - 2 * 1.75);
     // Distance between front and back wheels on robot
-    public static final Translation2d FRONT_LEFT_OFFSET = new Translation2d(kWheelBase / 2, kTrackWidth / 2); 
+    public static final Translation2d FRONT_LEFT_OFFSET = new Translation2d(kWheelBase / 2, kTrackWidth / 2);
     public static final Translation2d REAR_LEFT_OFFSET = new Translation2d(-kWheelBase / 2, kTrackWidth / 2);
-    public static final Translation2d FRONT_RIGHT_OFFSET = new Translation2d(kWheelBase / 2, -kTrackWidth / 2); 
-    public static final Translation2d REAR_RIGHT_OFFSET = new Translation2d(-kWheelBase / 2, -kTrackWidth / 2); 
+    public static final Translation2d FRONT_RIGHT_OFFSET = new Translation2d(kWheelBase / 2, -kTrackWidth / 2);
+    public static final Translation2d REAR_RIGHT_OFFSET = new Translation2d(-kWheelBase / 2, -kTrackWidth / 2);
 
     public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(
         FRONT_LEFT_OFFSET,
@@ -128,7 +128,7 @@ public final class Constants {
 
     public static final int LEFT_CENTERING_MOTOR_ID = 5;
     public static final int RIGHT_CENTERING_MOTOR_ID = 4;
-    public static final int INTAKE_CENTERING_ID = 2; //RANDOM NUMBER --> CHANGE!!!!
+    public static final int INTAKE_CENTERING_ID = 2; // RANDOM NUMBER --> CHANGE!!!!
     public static final double INTAKE_SLEW_RATE = 10;
     public static final double INTAKING_SPEED = 0.8;
     public static final double OUTTAKING_SPEED = -0.6;
@@ -147,11 +147,11 @@ public final class Constants {
 
   public static final class IndexerConstants {
 
-    public static final int INDEXER_MOTOR_ID = 6; //I put 5 at random. Find actual motor ID. 
+    public static final int INDEXER_MOTOR_ID = 6; // I put 5 at random. Find actual motor ID.
     public static final double INDEXER_SLEW_RATE = 10;
-    public static final int INDEXER_SENSOR_CHANNEL_TOP = 0; //change as necessary
-    public static final int INDEXER_SENSOR_CHANNEL_BOTTOM = 1; //change as necessary
-    public static final double INDEXER_IN_SPEED = 0.8; 
+    public static final int INDEXER_SENSOR_CHANNEL_TOP = 0; // change as necessary
+    public static final int INDEXER_SENSOR_CHANNEL_BOTTOM = 1; // change as necessary
+    public static final double INDEXER_IN_SPEED = 0.8;
     public static final double INDEXER_OUTTAKING_SPEED = -0.6;
   }
 
@@ -170,7 +170,7 @@ public final class Constants {
     public static final double ARM_LENGTH = 0.65;
 
     // arm angles for intaking and shooting in different positions, in radians
-    //intake angle same as initial offset
+    // intake angle same as initial offset
     public static final double INTAKE_ANGLE = Units.degreesToRadians(14);
     public static final double SPEAKER_SUBWOOFER_ANGLE = Units.degreesToRadians(14);;
     public static final double SPEAKER_PODIUM_ANGLE = -0.06;
@@ -178,19 +178,19 @@ public final class Constants {
 
     public static final double TURTLE_ANGLE = Units.degreesToRadians(14);
 
-    // 1 4-1 gearbox, 2 3-1 gearboxes, then a 4-1 reduction from the sprocket/chain; 4^2 * 3^2 = 144
-    //public static final double RADIANS_PER_REVOLUTION = 2 * Math.PI / 144;
+    // 1 4-1 gearbox, 2 3-1 gearboxes, then a 4-1 reduction from the sprocket/chain;
+    // 4^2 * 3^2 = 144
+    // public static final double RADIANS_PER_REVOLUTION = 2 * Math.PI / 144;
     public static final double RADIANS_PER_REVOLUTION = 2 * Math.PI / 4;
     // initial offset is 0.711 + (0.287) - (0.308)
-    
+
     public static final double INITIAL_OFFSET = Units.degreesToRadians(14);
 
     // can be 2 degrees off from goal setpoints and still considered at goal; made
     // higher so arm.atGoal() in placeConeOnNode cmd will execute in auton
     public static final double ANGLE_TOLERANCE_AUTON = Units.degreesToRadians(2);
 
-
-    //public static final double SPEAKER_SUBWOOFER_SIDE_ANGLE = 0;
+    // public static final double SPEAKER_SUBWOOFER_SIDE_ANGLE = 0;
 
   }
 
@@ -210,13 +210,12 @@ public final class Constants {
 
     public static final double VELOCITY_THRESHHOLD = 20;
 
-    public static final double CLIMBER_RADIUS = 0.375; 
+    public static final double CLIMBER_RADIUS = 0.375;
 
-    public static final double SETPOINT_RANGE = 0.05; 
+    public static final double SETPOINT_RANGE = 0.05;
 
     public static final double ENCODER_VELOCITY_MPS = (2 * (Math.PI) * 0.375) / 60;
-    public static final double ENCODER_METERS = (2 * (Math.PI) * 0.375); 
-
+    public static final double ENCODER_METERS = (2 * (Math.PI) * 0.375);
 
   }
 
@@ -249,7 +248,7 @@ public final class Constants {
     public static final int WHITE_CHANNEL = 0;
     public static final int[] blue2399 = { 0, 100, 255 };
     public static final int[] pink2399 = { 255, 50, 200 };
-    public static final int[] isIntookedGreen = {112, 243, 121};
+    public static final int[] isIntookedGreen = { 112, 243, 121 };
 
   }
 }

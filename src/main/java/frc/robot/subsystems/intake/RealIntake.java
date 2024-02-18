@@ -8,6 +8,7 @@ import com.revrobotics.SparkPIDController;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
+import frc.robot.Constants.ClimberConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.utils.MotorUtil;
 
@@ -115,5 +116,4 @@ public class RealIntake implements IntakeIO {
     @Override
     public void periodicUpdate() {
     }
-
 }

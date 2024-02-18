@@ -10,6 +10,8 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.Constants.IndexerConstants; //doesn't exist yet but put in later
+import frc.robot.Constants.IntakeConstants;
+import frc.robot.subsystems.intake.Intake;
 import frc.utils.MotorUtil;
 
 public class RealIndexer implements IndexerIO {
@@ -23,10 +25,9 @@ public class RealIndexer implements IndexerIO {
     private static DigitalInput indexerSensorTop;
     private static DigitalInput indexerSensorBottom;
 
-    public RealIndexer()
-    {
-        indexerMotorController = MotorUtil.createSparkMAX(IndexerConstants.INDEXER_MOTOR_ID, MotorType.kBrushless, 
-            Constants.NEO550_CURRENT_LIMIT, false, true, slewRate);
+    public RealIndexer() {
+        indexerMotorController = MotorUtil.createSparkMAX(IndexerConstants.INDEXER_MOTOR_ID, MotorType.kBrushless,
+                Constants.NEO550_CURRENT_LIMIT, false, true, slewRate);
 
         // initialize motor encoder
         indexerEncoder = indexerMotorController.getEncoder();
@@ -35,7 +36,7 @@ public class RealIndexer implements IndexerIO {
         indexerController.setFF(0.0001);
         indexerSensorTop = new DigitalInput(IndexerConstants.INDEXER_SENSOR_CHANNEL_TOP);
         indexerSensorBottom = new DigitalInput(IndexerConstants.INDEXER_SENSOR_CHANNEL_BOTTOM);
-        //indexController.setP(1);
+        // indexController.setP(1);
     }
 
     @Override
@@ -50,8 +51,7 @@ public class RealIndexer implements IndexerIO {
 
     }
 
-    public double getCurrent()
-    {
+    public double getCurrent() {
         return indexerMotorController.getOutputCurrent();
     }
 
@@ -67,7 +67,7 @@ public class RealIndexer implements IndexerIO {
 
     @Override
     public void setCurrentLimit(int current) {
-        indexerMotorController.setSmartCurrentLimit(current);        
+        indexerMotorController.setSmartCurrentLimit(current);
     }
 
     @Override
@@ -79,14 +79,6 @@ public class RealIndexer implements IndexerIO {
     @Override
     public void setIsIntooked(boolean intooked) {
         isIntooked = intooked;
-    }
-
-    public void setIsSensorOverriden(boolean override) {
-        isSensorOverriden = override;
-    }
-
-    public boolean getIsSensorOverriden() {
-        return isSensorOverriden;
     }
 
     @Override
@@ -101,6 +93,11 @@ public class RealIndexer implements IndexerIO {
     @Override
     public boolean getIsIntooked() {
         return isIntooked;
+    }
+
+    @Override
+    public boolean isStalling() {
+        return ((Math.abs(getCurrent()) > Constants.NEO550_CURRENT_LIMIT));
     }
 
 }
