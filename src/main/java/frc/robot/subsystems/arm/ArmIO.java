@@ -12,4 +12,6 @@ public interface ArmIO {
     public void periodicUpdate();
 
     public double getArmCurrent();
+
+    public double getSpeedFromArmHeight();
 }

@@ -10,6 +10,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDSubsystem;
+import frc.robot.Constants;
 import frc.robot.Constants.ArmConstants;
 import frc.utils.PIDUtil;
 
@@ -23,6 +24,7 @@ public class Arm extends ProfiledPIDSubsystem {
   // private static final double kpPos = 0.8;
   private static double kpPos = 0;
   private static double kd = 0;
+  public static double speedFromArmHeight;
 
   // Trapezoidal profile constants and variables
   private static final double max_vel = 1.5; // rad/s
@@ -125,4 +127,18 @@ public class Arm extends ProfiledPIDSubsystem {
   public void setkG(double kG) {
     gravityCompensation = kG;
   }
+
+  public double getSpeedFromArmHeight() {
+    if (getEncoderPosition() <= 0.37) {
+      speedFromArmHeight = Constants.ShooterConstants.subWooferShotSpeed;
+    } else if (getEncoderPosition() > 0.37 & getEncoderPosition() <= 0.8) {
+      speedFromArmHeight = Constants.ShooterConstants.speakerSpeed;
+    } else if (getEncoderPosition() > 0.8 & getEncoderPosition() <= 1) {
+      speedFromArmHeight = Constants.ShooterConstants.farAwayShotSpeed;
+    } else if (getEncoderPosition() > 1) {
+        speedFromArmHeight = Constants.ShooterConstants.ampSpeed;
+    }
+    return speedFromArmHeight;
+    }
+
 }
