@@ -18,6 +18,7 @@ public class RealArm implements ArmIO {
     public static AbsoluteEncoder armAbsoluteEncoderRight;
     public static RelativeEncoder armEncoderRight;
     // private final SparkPIDController armPIDControllerRight;
+    public static double speedFromArmHeight;
 
     public RealArm() {
         // armAbsoluteEncoder = new DutyCycleEncoder(0);
@@ -48,6 +49,7 @@ public class RealArm implements ArmIO {
         armMotorControllerLeft.follow(armMotorControllerRight, true);
         armEncoderRight.setPosition(armAbsoluteEncoderRight.getPosition());
         // armAbsoluteEncoderRight.setPosition(ArmConstants.INITIAL_OFFSET);
+
     }
 
     public double getAbsoluteEncoderPosition() {
@@ -91,4 +93,17 @@ public class RealArm implements ArmIO {
        armEncoderRight.setPosition(angle);
     }
 
+    @Override
+    public double getSpeedFromArmHeight() {
+        if (getEncoderPosition() < 0.4) {
+            speedFromArmHeight = 0.7;
+          } else if (getEncoderPosition() < 0.8 & getEncoderPosition() > 0.4) {
+            speedFromArmHeight = 0.8;
+          } else if (getEncoderPosition() < 1 & getEncoderPosition() > 0.8) {
+            speedFromArmHeight = 1;
+          } else if (getEncoderPosition() > 1) {
+              speedFromArmHeight = 0.3;
+          }
+          return speedFromArmHeight;
+    }
 }

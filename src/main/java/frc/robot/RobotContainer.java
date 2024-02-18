@@ -238,12 +238,12 @@ public class RobotContainer {
     m_driverController.leftBumper().whileTrue(
       //new SequentialCommandGroup(
         //new InstantCommand(() -> m_indexer.setIsIntooked(false)),
-        new RunCommand(() -> m_shooter.setMotor(.8)))
+        new RunCommand(() -> m_shooter.setMotor(m_arm.getSpeedFromArmHeight())))
         //)
         ; 
 
     // driver right bumper: auto-shoot
-    m_driverController.rightBumper().and(() -> !isInClimberMode).onTrue(autoShoot());
+    m_driverController.rightBumper().onTrue(shootAfterDelay());
 
     // driver right trigger: intake
     //m_driverController.rightTrigger().whileTrue(new automaticIntakeAndIndexer(m_indexer, m_intake)).onFalse(setIndexerAndIntakeSpeed(m_indexer, m_intake, 0));
@@ -379,5 +379,27 @@ public class RobotContainer {
             () -> m_indexer.getIsBeamBroken()));
   }
 
+   private Command shootAfterDelay() {
+    return new ParallelCommandGroup(
+      new ParallelCommandGroup(
+        new SequentialCommandGroup(
+          new WaitCommand(0.5),
+          new RunCommand(() -> m_indexer.setMotor(Constants.IndexerConstants.INDEXER_IN_SPEED), m_indexer),
+          new RunCommand(() -> m_indexer.setIsIntooked(false), m_indexer),
+        new RunCommand(() -> m_shooter.setMotor(0.8), m_shooter))),
+      new WaitCommand(1.5));
+   }
 
+   private Command outtakeAndShootAfterDelay() {
+    return new ParallelCommandGroup(
+      new RunCommand(() -> m_indexer.setMotor(-Constants.IndexerConstants.INDEXER_IN_SPEED), m_intake),
+      new ParallelCommandGroup(
+        new ParallelCommandGroup(
+          new SequentialCommandGroup(
+            new WaitCommand(0.5),
+            new RunCommand(() -> m_indexer.setMotor(Constants.IndexerConstants.INDEXER_IN_SPEED), m_indexer),
+            new RunCommand(() -> m_indexer.setIsIntooked(false), m_indexer),
+          new RunCommand(() -> m_shooter.setMotor(m_arm.getSpeedFromArmHeight()), m_shooter))),
+        new WaitCommand(1.5)));
+   }
 }

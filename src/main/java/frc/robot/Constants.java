@@ -132,6 +132,8 @@ public final class Constants {
     public static final int SHOOT_HIGH_MOTOR_ID = 8;
     public static final double speakerSpeed = 0.8;
     public static final double ampSpeed = 0.3;
+    public static final double farAwayShotSpeed = 1;
+    public static final double subWooferShotSpeed = 0.7;
     public static final double NEO_MAX_SPEED_MPS = 2 * Math.PI * 0.0508 * NEO_MAX_SPEED_RPM * (1 / 60);
     public static final double SHOOTER_FEEDFORWRD = 0.03;
     public static final double SHOOTER_PVALUE = 0.01;

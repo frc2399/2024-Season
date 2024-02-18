@@ -11,6 +11,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDSubsystem;
+import frc.robot.Constants;
 import frc.robot.Constants.ArmConstants;
 import frc.utils.PIDUtil;
 
@@ -21,6 +22,7 @@ public class Arm extends ProfiledPIDSubsystem {
   // private static final double feedForward = 0.133;
   // private static final double feedForward = 0.14285;
   // private static final double kpPos = 0.8;
+  public static double speedFromArmHeight;
 
   // Trapezoidal profile constants and variables
   private static final double max_vel = 3.9; // rad/s (NEO specs / gear ratio, converted into rad/s ~ 4.1, give it a slightly lower one to make it acheivable)
@@ -136,4 +138,18 @@ public void setEncoderPosition(double angle) {
     // TODO Auto-generated method stub
     armIO.setEncoderPosition(angle);
 }
+
+  public double getSpeedFromArmHeight() {
+    if (getEncoderPosition() <= 0.37) {
+      speedFromArmHeight = Constants.ShooterConstants.subWooferShotSpeed;
+    } else if (getEncoderPosition() > 0.37 & getEncoderPosition() <= 0.8) {
+      speedFromArmHeight = Constants.ShooterConstants.speakerSpeed;
+    } else if (getEncoderPosition() > 0.8 & getEncoderPosition() <= 1) {
+      speedFromArmHeight = Constants.ShooterConstants.farAwayShotSpeed;
+    } else if (getEncoderPosition() > 1) {
+        speedFromArmHeight = Constants.ShooterConstants.ampSpeed;
+    }
+    return speedFromArmHeight;
+    }
+
 }
