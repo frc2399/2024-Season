@@ -203,7 +203,7 @@ public class RobotContainer {
             () -> m_climber.setMotors(0),
             m_climber));
 
-    m_arm.setDefaultCommand(new InstantCommand(() -> m_arm.setSpeedGravityCompensation(0), m_arm));
+    m_arm.setDefaultCommand(new RunCommand(() -> m_arm.setSpeedGravityCompensation(0), m_arm));
     // Arm setpoint must be in RADIANS
     // m_arm.setDefaultCommand(makeSetPositionCommand(m_arm,
     // Units.degreesToRadians(SmartDashboard.getNumber("arm setpoint", 0))));
@@ -238,7 +238,7 @@ public class RobotContainer {
     m_driverController.leftBumper().whileTrue(
       //new SequentialCommandGroup(
         //new InstantCommand(() -> m_indexer.setIsIntooked(false)),
-        new RunCommand(() -> m_shooter.setMotor(0.7)))
+        new RunCommand(() -> m_shooter.setMotor(0.3)))
         //)
         ;
 
@@ -294,15 +294,13 @@ public class RobotContainer {
 
     m_operatorController.rightTrigger().and(() ->
     !isInClimberMode).whileTrue(makeSetSpeedGravityCompensationCommand(m_arm,
-    0.1))
-    .onFalse(makeSetSpeedGravityCompensationCommand(m_arm, 0));
+    0.1)).onFalse(makeSetSpeedGravityCompensationCommand(m_arm, 0));
     
     m_operatorController.leftTrigger().and(() ->
     !isInClimberMode).whileTrue(makeSetSpeedGravityCompensationCommand(m_arm,
-    -0.1))
-    .onFalse(makeSetSpeedGravityCompensationCommand(m_arm, 0));
+    -0.1)).onFalse(makeSetSpeedGravityCompensationCommand(m_arm, 0));
 
-    m_operatorController.a().onTrue(makeSetPositionCommand(m_arm, Units.degreesToRadians(14)));
+    m_operatorController.a().onTrue(makeSetPositionCommand(m_arm, Units.degreesToRadians(25)));
     
     m_operatorController.b().onTrue(makeSetPositionCommand(m_arm, Units.degreesToRadians(60)));
 
@@ -323,7 +321,7 @@ public class RobotContainer {
     return new SequentialCommandGroup(
         new ConditionalCommand(new InstantCommand(() -> {
         }), new InstantCommand(() -> base.enable()), () -> base.isEnabled()),
-        new InstantCommand(() -> base.setGoal(target), base));
+        new RunCommand(() -> base.setGoal(target), base));
   }
 
   private Command makeSetSpeedGravityCompensationCommand(Arm a, double speed) {
