@@ -242,10 +242,10 @@ public final class Constants {
   }
 
   public static final class LEDConstants {
-    public static final int RED_CHANNEL = 2;
-    public static final int GREEN_CHANNEL = 1;
-    public static final int BLUE_CHANNEL = 3;
-    public static final int WHITE_CHANNEL = 0;
+    public static final int RED_CHANNEL = 5;
+    public static final int GREEN_CHANNEL = 6;
+    public static final int BLUE_CHANNEL = 7;
+    public static final int WHITE_CHANNEL = 8;
     public static final int[] blue2399 = { 0, 100, 255 };
     public static final int[] pink2399 = { 255, 50, 200 };
     public static final int[] isIntookedGreen = { 112, 243, 121 };
