@@ -20,8 +20,6 @@ public class Vision extends SubsystemBase {
 
     }
     
-
-
     public PhotonPipelineResult getCameraResult() {
         return io.getCameraResult();
     }

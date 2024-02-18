@@ -16,18 +16,15 @@ import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.RobotContainer;
 import frc.robot.Constants.VisionConstants;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.apriltag.AprilTagFields;
-import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.Constants.VisionConstants;
 
 public class VisionReal extends SubsystemBase implements VisionIO {
     private static AprilTagFieldLayout kFieldLayout;
@@ -38,11 +35,15 @@ public class VisionReal extends SubsystemBase implements VisionIO {
     public Pose2d prevRobotPose;
     final double ANGULAR_P = 0.8; // TODO: tune
     final double ANGULAR_D = 0.0;
-    PIDController keepPointedController = new PIDController(ANGULAR_P, 0, ANGULAR_D);
+    ProfiledPIDController keepPointedController = new ProfiledPIDController(
+      ANGULAR_P, 0, ANGULAR_D, 
+      new TrapezoidProfile.Constraints(
+        Units.degreesToRadians(540.0), 
+        Units.degreesToRadians(540.0)));
 
   /** Creates a new Vision. */
   public VisionReal() {
-    camera = new PhotonCamera("Arducam_OV2311_USB_Camera");    
+    camera = new PhotonCamera("Arducam_OV2311_USB_Camera"); //swap if swapping cameras
     CamEstimator = new PhotonPoseEstimator(VisionConstants.kFieldLayout, 
     PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camera, VisionConstants.camToRobot);
     kFieldLayout = VisionConstants.kFieldLayout; 
@@ -112,13 +113,14 @@ public class VisionReal extends SubsystemBase implements VisionIO {
       return camera;
     }
 
-    public double keepPointedAtSpeaker() {
+    public double keepPointedAtSpeaker(int SpeakerID) {
+      int speakerID = SpeakerID;
       boolean seesSpeaker = false;
       double yawDiff = 0.0;
       for (PhotonTrackedTarget result : getCameraResult().getTargets()) {
-        if (result.getFiducialId() == RobotContainer.aprilTagAssignment.speakerID) {
+        if (result.getFiducialId() == speakerID) {
           seesSpeaker = true;
-          //yaw in radians bc p values get too big
+          //yaw in radians bc p values get too small
           yawDiff = ((result.getYaw()*Math.PI)/180);
           SmartDashboard.putBoolean("Sees speaker: ", true);
           break; //saves a tiny bit of processing power possibly
@@ -129,6 +131,24 @@ public class VisionReal extends SubsystemBase implements VisionIO {
       }
       return (keepPointedController.calculate(yawDiff, 0));
     }
-}
 
-//possible test idea to see if yawDiff is getting changed: put cap on and see if its still rotating
+    public double keepArmAtAngle(int SpeakerID) {    
+      final double eightySlope = VisionConstants.eightyModelSlope;
+      final double eightyIntercept = VisionConstants.eightyModelIntercept;
+      final double hundredSlope = VisionConstants.hundredModelSlope;
+      final double hundredIntercept = VisionConstants.hundredModelIntercept;
+      final double boundary = VisionConstants.eightyModelRange;
+      final int desiredSpeakerTag = SpeakerID;
+      double dist;
+      Translation2d speakerDist = new Translation2d(
+        robotPose.getX() - VisionConstants.kFieldLayout.getTagPose(desiredSpeakerTag).get().toPose2d().getX(),
+        robotPose.getY() - VisionConstants.kFieldLayout.getTagPose(desiredSpeakerTag).get().toPose2d().getY()
+      );
+      dist = speakerDist.getNorm();
+      if (dist <= boundary) {
+        return (eightySlope * Units.metersToInches(dist) + eightyIntercept);
+      } else {
+        return (hundredSlope * Units.metersToInches(dist) + hundredIntercept);
+      }
+    }
+}

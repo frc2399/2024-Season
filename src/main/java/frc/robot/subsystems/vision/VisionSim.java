@@ -18,6 +18,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -147,38 +148,38 @@ public class VisionSim extends SubsystemBase implements VisionIO {
         return camera;
     }
 // TODO: sim implementation
-    @Override
     public Boolean hasTargets() {
         return getCameraResult().hasTargets(); 
     }
 
-    @Override
     public PhotonTrackedTarget bestTarget() {
         return getCameraResult().getBestTarget();
     }
 
-    @Override
     public List<PhotonTrackedTarget> getTargets() {
         return getCameraResult().getTargets();
     }
 
-    @Override
-    public double keepPointedAtSpeaker() {
+    public double keepPointedAtSpeaker(int speakerID) {
         boolean seesSpeaker = false;
-      double yawDiff = 0.0;
-      for (PhotonTrackedTarget result : getCameraResult().getTargets()) {
-        if (result.getFiducialId() == RobotContainer.aprilTagAssignment.speakerID) {
-          seesSpeaker = true;
-          //yaw in radians bc p values get too big
-          yawDiff = ((result.getYaw()*Math.PI)/180);
-          SmartDashboard.putBoolean("Sees speaker: ", true);
-          break; //saves a tiny bit of processing power possibly
+        double yawDiff = 0.0;
+        for (PhotonTrackedTarget result : getCameraResult().getTargets()) {
+            if (result.getFiducialId() == RobotContainer.aprilTagAssignment.speakerID) {
+            seesSpeaker = true;
+            //yaw in radians bc p values get too big
+            yawDiff = ((result.getYaw()*Math.PI)/180);
+            SmartDashboard.putBoolean("Sees speaker: ", true);
+            break; //saves a tiny bit of processing power possibly
         }
-      }
-      if (!seesSpeaker) {
-        SmartDashboard.putBoolean("Sees speaker: ", false);
-      }
-      return (keepPointedController.calculate(yawDiff, 0));
+        }
+        if (!seesSpeaker) {
+            SmartDashboard.putBoolean("Sees speaker: ", false);
+        }
+        return (keepPointedController.calculate(yawDiff, 0));
+    }
+
+    public double keepArmAtAngle(int SpeakerID) {
+        return 0.0;
     }
 
 }

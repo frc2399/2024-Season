@@ -38,7 +38,6 @@ import frc.robot.commands.automaticClimberCommand;
 import frc.robot.subsystems.gyro.GyroIO;
 import frc.robot.subsystems.gyro.GyroIOPigeon2;
 import frc.robot.subsystems.gyro.GyroIOSim;
-import frc.robot.subsystems.Vision;
 import frc.robot.subsystems.Indexer.Indexer;
 import frc.robot.subsystems.Indexer.IndexerIO;
 import frc.robot.subsystems.Indexer.SimIndexer;
@@ -88,7 +87,6 @@ public class RobotContainer {
       private SwerveModuleIO m_rearRightIO;
 
         private VisionIO m_vision;
-        private Vision vision;
   // public static CommandSelector angleHeight = CommandSelector.INTAKE;
 
   public static Shooter m_shooter;
@@ -255,7 +253,6 @@ public class RobotContainer {
                 } else {
                         m_vision = new VisionReal();
                 }
-                vision = new Vision();
         }
 
         
@@ -370,6 +367,26 @@ public class RobotContainer {
         new RunCommand(() -> m_indexer.setMotor(-0.3), m_indexer)));
 
     m_driverController.b().onTrue(new InstantCommand(() -> m_gyro.setYaw(0.0)));
+
+    m_driverController.a().whileTrue(
+        new ParallelCommandGroup(
+            new RunCommand(() -> 
+            m_robotDrive.drive(
+            -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
+            -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),
+            m_vision.keepPointedAtSpeaker(aprilTagAssignment.speakerID),
+            fieldOrientedDrive), m_robotDrive), 
+            makeSetPositionCommand(m_arm, m_vision.keepPointedAtSpeaker(aprilTagAssignment.speakerID)))).
+        onFalse(new RunCommand(() -> m_robotDrive.drive(
+          -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
+          -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),
+          -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband),
+          fieldOrientedDrive), m_robotDrive));
+
+          //make parallel command to also adjust arm height
+          //another function in vision
+          //will commandeer the arm but only when drivetrain is also yoinked
+          //runcommand
    
     // operater left trigger: climber mode: left climber up
     m_operatorController.leftTrigger().and(() -> isInClimberMode).whileTrue(new RunCommand(

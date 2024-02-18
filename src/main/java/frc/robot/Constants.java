@@ -252,6 +252,16 @@ public final class Constants {
     public static final double zOffsetToRobot = 0;
     public static final boolean isBlueAlliance = true; // FIXME: udpate before every match
     // TODO: pull from FMS
+
+    // TODO: cannot test without better model that sets intercept above 0
+    public static final double eightyModelSlope = 0.008182;
+    public static final double eightyModelIntercept = -0.1562;
+    public static final double eightyModelRange = Units.feetToMeters(14);
+    public static final double hundredModelSlope = 0.0008596;
+    public static final double hundredModelIntercept = 0.6907;
+
+    //possible todo: model for 100% speed
+
   }
 
 }

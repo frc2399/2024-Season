@@ -22,7 +22,7 @@ public interface VisionIO {
     public void enableUpdatePoseWithVisionReading ();
     public void disableUpdatePoseWithVisionReading ();
     public PhotonCamera getCamera();
-    public double keepPointedAtSpeaker();
-
+    public double keepPointedAtSpeaker(int speakerID);
+    public double keepArmAtAngle(int SpeakerID);
 
 }

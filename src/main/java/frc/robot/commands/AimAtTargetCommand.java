@@ -46,7 +46,7 @@ public class AimAtTargetCommand extends Command {
 
         if (numTargets > 0) {
             double rotationSpeed = -turnController.calculate(yawTotal / numTargets, 0);
-            drive.drive(0.0, 0.0, rotationSpeed, true, false);
+            drive.drive(0.0, 0.0, rotationSpeed, true);
         }
 
     }
