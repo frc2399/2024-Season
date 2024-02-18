@@ -9,9 +9,7 @@ import com.revrobotics.SparkPIDController;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
-import frc.robot.Constants.IndexerConstants; //doesn't exist yet but put in later
-import frc.robot.Constants.IntakeConstants;
-import frc.robot.subsystems.intake.Intake;
+import frc.robot.Constants.IndexerConstants; 
 import frc.utils.MotorUtil;
 
 public class RealIndexer implements IndexerIO {
@@ -36,7 +34,6 @@ public class RealIndexer implements IndexerIO {
         indexerController.setFF(0.0001);
         indexerSensorTop = new DigitalInput(IndexerConstants.INDEXER_SENSOR_CHANNEL_TOP);
         indexerSensorBottom = new DigitalInput(IndexerConstants.INDEXER_SENSOR_CHANNEL_BOTTOM);
-        // indexController.setP(1);
     }
 
     @Override
@@ -48,7 +45,6 @@ public class RealIndexer implements IndexerIO {
         indexerController.setReference(speedPercent * Constants.NEO550_MAX_SPEED_RPM, ControlType.kVelocity);
         SmartDashboard.putNumber("shooter reference", speedPercent);
         SmartDashboard.putNumber("shooter speed (RPM)", getEncoderSpeed() / Constants.NEO550_MAX_SPEED_RPM);
-
     }
 
     public double getCurrent() {

@@ -4,11 +4,9 @@
 
 package frc.robot.subsystems.arm;
 
-import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
-import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDSubsystem;
 import frc.robot.Constants;
@@ -18,10 +16,7 @@ import frc.utils.PIDUtil;
 public class Arm extends ProfiledPIDSubsystem {
   /** Creates a new Arm. */
   private ArmIO armIO;
-  private double targetAngle = -Math.PI / 2;
-  // private static final double feedForward = 0.133;
-  // private static final double feedForward = 0.14285;
-  // private static final double kpPos = 0.8;
+ 
   public static double speedFromArmHeight;
 
   // Trapezoidal profile constants and variables
@@ -36,10 +31,6 @@ public class Arm extends ProfiledPIDSubsystem {
   public Arm(ArmIO io) {
     super(new ProfiledPIDController(kpPos, 0, kd, constraints));
     armIO = io;
-    SmartDashboard.putNumber("kG", 0);
-    SmartDashboard.putNumber("kP", 0);
-    SmartDashboard.putNumber("kd", 0);
-    SmartDashboard.putNumber("arm ff", 0);
   }
 
   @Override
@@ -47,15 +38,6 @@ public class Arm extends ProfiledPIDSubsystem {
     // Call periodic method in profile pid subsystem to prevent overriding
     super.periodic();
     armIO.periodicUpdate();
-
-    // gravityCompensation = SmartDashboard.getNumber("kG", 0);
-    kpPos = SmartDashboard.getNumber("kP", 0);
-    kd = SmartDashboard.getNumber("kd", 0);
-    feedForward = SmartDashboard.getNumber("arm ff", 0);
-    SmartDashboard.putNumber("arm/goal position", getGoal());
-    SmartDashboard.putNumber("arm/velocity", getEncoderSpeed());
-    SmartDashboard.putNumber("arm/postion", getEncoderPosition());
-
   }
 
   public double getEncoderPosition() {
@@ -69,21 +51,9 @@ public class Arm extends ProfiledPIDSubsystem {
   public void setSpeed(double speed) {
     //speed = Math.max(Math.min(speed, 0.5), -0.5);
     armIO.setSpeed(speed);
-    SmartDashboard.putNumber("arm/speed", speed);
-  }
-
-  public double getTargetAngle() {
-    return targetAngle;
-  }
-
-  public void setTargetAngle(double angle) {
-    DataLogManager.log("Set target to " + angle);
-    targetAngle = angle;
   }
 
   public void setSpeedGravityCompensation(double speed) {
-    // calls set speed function in the file that does armIO.setSpeed after capping
-    // speed
     setSpeed(speed + gravityCompensation * Math.cos(getEncoderPosition()));
   }
 
@@ -102,8 +72,7 @@ public class Arm extends ProfiledPIDSubsystem {
     speed += gravityCompensation * Math.cos(getEncoderPosition());
     // Add PID output to speed to account for error in arm
     speed += output;
-    // calls set speed function in the file that does armIO.setSpeed after capping
-    // speed
+    // calls set speed function in the file that does armIO.setSpeed
     setSpeed(speed);
   }
 
@@ -121,33 +90,27 @@ public class Arm extends ProfiledPIDSubsystem {
     return (PIDUtil.checkWithinRange(getGoal(), getMeasurement(), ArmConstants.ANGLE_TOLERANCE_AUTON));
   }
 
-  public void setPosition(double position) {
-    armIO.setPosition(position);
-  }
-
   public void setkG(double kG) {
     gravityCompensation = kG;
   }
 
   public double getAbsoluteEncoderPosition() {
-    // TODO Auto-generated method stub
     return armIO.getAbsoluteEncoderPosition();
   }
 
 public void setEncoderPosition(double angle) {
-    // TODO Auto-generated method stub
     armIO.setEncoderPosition(angle);
 }
 
   public double getSpeedFromArmHeight() {
     if (getEncoderPosition() <= 0.37) {
-      speedFromArmHeight = Constants.ShooterConstants.subWooferShotSpeed;
+      speedFromArmHeight = Constants.ShooterConstants.SUBWOOFER_SPEED;
     } else if (getEncoderPosition() > 0.37 & getEncoderPosition() <= 0.8) {
-      speedFromArmHeight = Constants.ShooterConstants.speakerSpeed;
+      speedFromArmHeight = Constants.ShooterConstants.SPEAKER_SPEED;
     } else if (getEncoderPosition() > 0.8 & getEncoderPosition() <= 1) {
-      speedFromArmHeight = Constants.ShooterConstants.farAwayShotSpeed;
+      speedFromArmHeight = Constants.ShooterConstants.FAR_AWAY_SPEED;
     } else if (getEncoderPosition() > 1) {
-        speedFromArmHeight = Constants.ShooterConstants.ampSpeed;
+        speedFromArmHeight = Constants.ShooterConstants.AMP_SPEED;
     }
     return speedFromArmHeight;
     }

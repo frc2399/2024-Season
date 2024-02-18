@@ -1,6 +1,5 @@
 package frc.robot.subsystems.intake;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -12,8 +11,6 @@ public class SimIntake implements IntakeIO {
     public static SimEncoder rightIntakeEncoderSim;
     private DCMotorSim leftIntakeMotorSim;
     private DCMotorSim rightIntakeMotorSim;
-    private PIDController leftPidController;
-    private PIDController rightPidController;
 
     public SimIntake() {
         leftIntakeEncoderSim = new SimEncoder("left intake");
@@ -22,8 +19,6 @@ public class SimIntake implements IntakeIO {
         rightIntakeMotorSim = new DCMotorSim(DCMotor.getNeo550(1), 1, 1);
         SmartDashboard.putNumber("intakecurrent sim", 0);
         SmartDashboard.putNumber("intake sim velocity", 0);
-        leftPidController = new PIDController(1, 0,0);
-        rightPidController = new PIDController(1, 0,0);
 
     }
 
@@ -67,11 +62,6 @@ public class SimIntake implements IntakeIO {
     public void periodicUpdate() {
         SmartDashboard.putNumber("intake/current (A)", getLeftCurrent());
         SmartDashboard.putNumber("intake/current (A)", getRightCurrent());
-    }
-   
-    public void setSpeed(double speed) {
-        leftPidController.calculate(getLeftEncoderSpeed(), speed);
-        rightPidController.calculate(getRightEncoderSpeed(), speed);
     }
     
 }

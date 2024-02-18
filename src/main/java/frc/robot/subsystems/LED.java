@@ -3,10 +3,7 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.Robot;
-import frc.robot.RobotContainer;
 import frc.robot.subsystems.climber.Climber;
-import frc.robot.subsystems.climber.ClimberReal;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.util.LEDController;
 

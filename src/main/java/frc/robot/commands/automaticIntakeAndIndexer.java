@@ -25,12 +25,10 @@ public class automaticIntakeAndIndexer extends Command {
             intake.setMotor(.3);
             indexer.setMotor(.3);
         }
-
     }
 
     @Override
     public void end(boolean interrupted) {
-
         indexer.setMotor(0);
         intake.setMotor(0);
     }

@@ -7,9 +7,6 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 
 import edu.wpi.first.math.filter.Debouncer;
-import edu.wpi.first.math.filter.SlewRateLimiter;
-import edu.wpi.first.networktables.GenericEntry;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.Constants.ClimberConstants;
@@ -23,22 +20,10 @@ public class ClimberReal implements ClimberIO {
     private SparkPIDController leftPIDController, rightPIDController;
     private Debouncer leftDebouncer, rightDebouncer;
 
-    // get info on slew rate and what motors are doing
-    public static final GenericEntry slewRate = Shuffleboard.getTab("Params").addPersistent("Climber Slew Rate", 5.0)
-            .getEntry();
-    public static final GenericEntry leftClimberMotor = Shuffleboard.getTab("Driver")
-            .addPersistent("Left Climber Motor", 0).getEntry();
-    public static final GenericEntry rightClimberMotor = Shuffleboard.getTab("Driver")
-            .addPersistent("Right Climber Motor", 0).getEntry();
-
-    SlewRateLimiter filter;
-
-    // private double climberSetpoint;
-
-    public static final double CLIMBER_KP = 0;// 1.875;
-    public static final double CLIMBER_KI = 0;// 0.006;
-    public static final double CLIMBER_KD = 0;// 52.5;
-    public static final double CLIMBER_KF = 0.000086; // 0.15;
+    public static final double CLIMBER_KP = 0;
+    public static final double CLIMBER_KI = 0;
+    public static final double CLIMBER_KD = 0;
+    public static final double CLIMBER_KF = 0.000086;
     public static final double CLIMBER_KIZ = 0;
     public static final double CLIMBER_K_MAX_OUTPUT = 1;
     public static final double CLIMBER_K_MIN_OUTPUT = 0;
@@ -53,7 +38,7 @@ public class ClimberReal implements ClimberIO {
         rightMotorController = MotorUtil.createSparkMAX(ClimberConstants.RIGHT_CLIMBER_MOTOR_ID, MotorType.kBrushless,
                 50, false, true, 0.5);
 
-        // initialize motor encoder
+        // initialize motor encoders
         leftEncoder = leftMotorController.getEncoder();
         rightEncoder = rightMotorController.getEncoder();
 
@@ -96,14 +81,6 @@ public class ClimberReal implements ClimberIO {
         // reset encoders to zero
         leftEncoder.setPosition(0.0);
         rightEncoder.setPosition(0.0);
-
-        // get info on climber slew rate
-        SmartDashboard.putNumber("Climber Slew Rate",
-                SmartDashboard.getNumber("Climber Slew Rate", ClimberConstants.CLIMBER_SLEW));
-        filter = new SlewRateLimiter(SmartDashboard.getNumber("Climber Slew Rate", ClimberConstants.CLIMBER_SLEW));
-        System.out.println("Climber SlewRateLimiter "
-                + SmartDashboard.getNumber("Climber Slew Rate", ClimberConstants.CLIMBER_SLEW));
-
     }
 
     @Override
@@ -122,11 +99,8 @@ public class ClimberReal implements ClimberIO {
     public void setLeftSpeed(double speed) {
         if ((isLeftRetracted() && speed < 0)) {
             leftMotorController.set(0);
-            leftClimberMotor.setDouble(0);
         } else {
-            speed = filter.calculate(speed);
             leftMotorController.set(speed);
-            leftClimberMotor.setDouble(speed);
         }
 
     }
@@ -135,11 +109,8 @@ public class ClimberReal implements ClimberIO {
     public void setLeftMotor(double setpoint) {
         if ((isLeftRetracted() && setpoint < 0) || (isLeftSideStalling() && !isRightSideStalling())) {
             leftMotorController.set(0);
-            leftClimberMotor.setDouble(0);
         } else {
-
             leftPIDController.setReference(setpoint, CANSparkBase.ControlType.kPosition);
-            // SmartDashboard.putNumber("Climber speed ", speed);
         }
     }
 
@@ -147,11 +118,8 @@ public class ClimberReal implements ClimberIO {
     public void setRightSpeed(double speed) {
         if ((isRightRetracted() && speed < 0)) {
             rightMotorController.set(0);
-            rightClimberMotor.setDouble(0);
         } else {
-            speed = filter.calculate(speed);
             rightMotorController.set(speed);
-            rightClimberMotor.setDouble(speed);
         }
 
     }
@@ -160,11 +128,9 @@ public class ClimberReal implements ClimberIO {
     public void setRightMotor(double setpoint) {
         if ((isRightRetracted() && setpoint < 0) || (isRightSideStalling() && !isLeftSideStalling())) {
             rightMotorController.set(0);
-            rightClimberMotor.setDouble(0);
         } else {
 
             rightPIDController.setReference(setpoint, CANSparkBase.ControlType.kPosition);
-            // SmartDashboard.putNumber("Climber speed ", speed);
         }
     }
 
