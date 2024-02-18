@@ -12,37 +12,26 @@ import com.ctre.phoenix6.hardware.Pigeon2;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
 
-
 /** IO implementation for Pigeon2 */
 public class GyroIOPigeon2 implements GyroIO {
   private final Pigeon2 pigeon;
-  
 
   public GyroIOPigeon2() {
-    System.out.println("[Init] Creating GyroIOPigeon2");
 
-
-        pigeon = new Pigeon2(Constants.DriveConstants.kGyroCanId, "rio");
-       
-    
-    // pigeon.configFactoryDefault();
-    // pigeon.zeroGyroBiasNow();
-    
-
+    pigeon = new Pigeon2(Constants.DriveConstants.kGyroCanId, "rio");
     pigeon.setYaw(0.0);
-    // pigeon.setStatusFramePeriod(PigeonIMU_StatusFrame.BiasedStatus_2_Gyro, 20);
   }
 
-  public double getYaw(){
-    return pigeon.getYaw().getValue();
+  public double getYaw() {
+    return Units.degreesToRadians(pigeon.getYaw().getValue());
   }
-  public void setYaw(double yaw){
+
+  public void setYaw(double yaw) {
     pigeon.setYaw(Units.radiansToDegrees(yaw));
   }
+
   public void updateInputs(GyroIOInputs inputs) {
-    // inputs.connected = pigeon.getLastError().equals(ErrorCode.OK);
-    
     inputs.yawPositionRad = pigeon.getYaw().getValue();
-    
+
   }
 }

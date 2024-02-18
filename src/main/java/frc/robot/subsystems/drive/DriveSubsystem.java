@@ -4,24 +4,24 @@
 
 package frc.robot.subsystems.drive;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.PIDConstants;
+import com.pathplanner.lib.util.ReplanningConfig;
+
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
-import edu.wpi.first.math.filter.LinearFilter;
-import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
-import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -29,14 +29,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.path.PathConstraints;
-import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
-import com.pathplanner.lib.util.PIDConstants;
-import com.pathplanner.lib.util.ReplanningConfig;
-
+import frc.robot.Robot;
 import frc.robot.subsystems.gyro.GyroIO;
-import frc.utils.SwerveUtils;
 
 public class DriveSubsystem extends SubsystemBase {
 
@@ -55,17 +49,9 @@ public class DriveSubsystem extends SubsystemBase {
 
   // Slew rate filter variables for controlling lateral acceleration
   private double m_currentRotationRate = 0.0;
-  private double m_currentTranslationDir = 0.0;
-  private double m_currentTranslationMag = 0.0;
 
   private double desiredAngle = 0;
-
-  private SlewRateLimiter m_magLimiter = new SlewRateLimiter(DriveConstants.kMagnitudeSlewRate);
-  private SlewRateLimiter m_rotRateLimiter = new SlewRateLimiter(DriveConstants.kRotationalSlewRate);
-  private double m_prevTime = WPIUtilJNI.now() * 1e-6;
-
-  private LinearFilter derivativeCalculator = LinearFilter.backwardFiniteDifference(1, 2, 0.02);
-  private double pitchRate;
+  
   private GyroIO m_gyro;
 
   
@@ -146,28 +132,7 @@ public class DriveSubsystem extends SubsystemBase {
             m_rearLeft.getPosition(),
             m_rearRight.getPosition()
         });
-    SmartDashboard.putNumber("periodic front left position", m_frontLeft.getPosition().distanceMeters);
-    SmartDashboard.putNumber("periodic front right position", m_frontRight.getPosition().distanceMeters);
-    SmartDashboard.putNumber("periodic rear left position", m_rearLeft.getPosition().distanceMeters);
-    SmartDashboard.putNumber("periodic rear right position", m_rearRight.getPosition().distanceMeters);
 
-
-    SmartDashboard.putNumber("periodic front left angle", m_frontLeft.getPosition().angle.getDegrees());
-    // Gyro log (spain without the a followed by spain without the s)
-    SmartDashboard.putNumber("Gyro angle", m_gyro.getYaw() % 360);
-    // SmartDashboard.putNumber("Gyro pitch", Gyro.pitch % 360);
-    // SmartDashboard.putNumber("Gyro roll", Gyro.roll % 360);
-    // pitchRate = derivativeCalculator.calculate(getGyroPitch());
-    // Drive input log
-    SmartDashboard.putNumber("Right Front Drive Input", m_frontRight.getDriveBusVoltage());
-    SmartDashboard.putNumber("Left Front Drive Input", m_frontLeft.getDriveBusVoltage());
-    SmartDashboard.putNumber("Right Rear Drive Input", m_rearRight.getDriveBusVoltage());
-    SmartDashboard.putNumber("Left Rear Drive Input", m_rearLeft.getDriveBusVoltage());
-    // Drive output log
-    SmartDashboard.putNumber("Right Front Drive Output", m_frontRight.getDriveOutput());
-    SmartDashboard.putNumber("Left Front Drive Output", m_frontLeft.getDriveOutput());
-    SmartDashboard.putNumber("Right Rear Drive Output", m_rearRight.getDriveOutput());
-    SmartDashboard.putNumber("Left Rear Drive Output", m_rearLeft.getDriveOutput());
 
     // updates inputs for each module
     m_frontLeft.updateInputs();
@@ -176,7 +141,6 @@ public class DriveSubsystem extends SubsystemBase {
     m_rearRight.updateInputs();
 
     field2d.setRobotPose(getPose());
-    SmartDashboard.putNumber("robot pose", getPose().getRotation().getDegrees());
 
     frontLeftField2dModule.setPose(getPose().transformBy(new Transform2d(
         Constants.DriveConstants.FRONT_LEFT_OFFSET,
@@ -203,11 +167,14 @@ public class DriveSubsystem extends SubsystemBase {
     };
     swerveModuleStatePublisher.set(swerveModuleStates);
 
+    if (DriverStation.isAutonomous()){
+      System.out.println("Mahee is annoying");
+    } 
+    if (Robot.isSimulation()) {
     double angleChange = Constants.DriveConstants.kDriveKinematics.toChassisSpeeds(swerveModuleStates).omegaRadiansPerSecond * (1/Constants.CodeConstants.kMainLoopFrequency);
     lastAngle = lastAngle.plus(Rotation2d.fromRadians(angleChange));
-    m_gyro.setYaw(lastAngle.getRadians());
+    m_gyro.setYaw(lastAngle.getRadians());}
   }
-  // Log empty setpoint states when disabled
 
   /**
    * Returns the currently-estimated pose of the robot.
@@ -278,87 +245,28 @@ public class DriveSubsystem extends SubsystemBase {
    * @param rotRate       Angular rate of the robot.
    * @param fieldRelative Whether the provided x and y speeds are relative to the
    *                      field.
-   * @param rateLimit     Whether to enable rate limiting for smoother control.
    */
-  public void drive(double xSpeed, double ySpeed, double rotRate, boolean fieldRelative, boolean rateLimit) {
+  public void drive(double xSpeed, double ySpeed, double rotRate, boolean fieldRelative) {
 
     double newRotRate = 0;
     double xSpeedCommanded;
     double ySpeedCommanded;
     double currentAngle = (m_gyro.getYaw());
 
-    if (currentAngle == 0) {
-      desiredAngle = 0;
-      newRotRate = rotRate;
-    }
-
-    else if (rotRate == 0) {
-      newRotRate = 0;
-
-      if (Math.abs(desiredAngle - currentAngle) > Math.toRadians(0.1)) {
-        newRotRate = 3 * (desiredAngle - currentAngle) / (2 * Math.PI);
-      }
-    } else {
       newRotRate = rotRate;
       desiredAngle = currentAngle;
-    }
-    SmartDashboard.putNumber("desired angle", desiredAngle);
-    SmartDashboard.putNumber("current angle", currentAngle);
-    SmartDashboard.putNumber("rotRate", rotRate);
-    SmartDashboard.putNumber("rotation rate", newRotRate);
-
-    if (rateLimit) {
-      // Convert XY to polar for rate limiting
-      double inputTranslationDir = Math.atan2(ySpeed, xSpeed);
-      double inputTranslationMag = Math.sqrt(Math.pow(xSpeed, 2) + Math.pow(ySpeed, 2));
-
-      // Calculate the direction slew rate based on an estimate of the lateral
-      // acceleration
-      double directionSlewRate;
-      if (m_currentTranslationMag != 0.0) {
-        directionSlewRate = Math.abs(DriveConstants.kDirectionSlewRate / m_currentTranslationMag);
-      } else {
-        directionSlewRate = 500.0; // some high number that means the slew rate is effectively instantaneous
-      }
-
-      double currentTime = WPIUtilJNI.now() * 1e-6;
-      double elapsedTime = currentTime - m_prevTime;
-      double angleDif = SwerveUtils.AngleDifference(inputTranslationDir, m_currentTranslationDir);
-      if (angleDif < 0.45 * Math.PI) {
-        m_currentTranslationDir = SwerveUtils.StepTowardsCircular(m_currentTranslationDir, inputTranslationDir,
-            directionSlewRate * elapsedTime);
-        m_currentTranslationMag = m_magLimiter.calculate(inputTranslationMag);
-      } else if (angleDif > 0.85 * Math.PI) {
-        if (m_currentTranslationMag > 1e-4) { // some small number to avoid floating-point errors with equality checking
-          // keep currentTranslationDir unchanged
-          m_currentTranslationMag = m_magLimiter.calculate(0.0);
-        } else {
-          m_currentTranslationDir = SwerveUtils.WrapAngle(m_currentTranslationDir + Math.PI);
-          m_currentTranslationMag = m_magLimiter.calculate(inputTranslationMag);
-        }
-      } else {
-        m_currentTranslationDir = SwerveUtils.StepTowardsCircular(m_currentTranslationDir, inputTranslationDir,
-            directionSlewRate * elapsedTime);
-        m_currentTranslationMag = m_magLimiter.calculate(0.0);
-      }
-      m_prevTime = currentTime;
-
-      xSpeedCommanded = m_currentTranslationMag * Math.cos(m_currentTranslationDir);
-      ySpeedCommanded = m_currentTranslationMag * Math.sin(m_currentTranslationDir);
-      m_currentRotationRate = m_rotRateLimiter.calculate(newRotRate);
-
-    } else {
+  
       xSpeedCommanded = xSpeed;
       ySpeedCommanded = ySpeed;
       m_currentRotationRate = newRotRate;
-    }
+  
 
     // Convert the commanded speeds into the correct units for the drivetrain
     double xSpeedDelivered = xSpeedCommanded * DriveConstants.kMaxSpeedMetersPerSecond;
     double ySpeedDelivered = ySpeedCommanded * DriveConstants.kMaxSpeedMetersPerSecond;
     double rotRateDelivered = m_currentRotationRate * DriveConstants.kMaxAngularSpeed;
-
     
+
     relativeRobotSpeeds = fieldRelative
             ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotRateDelivered,
                 Rotation2d.fromRadians(m_gyro.getYaw()))
@@ -384,6 +292,9 @@ public class DriveSubsystem extends SubsystemBase {
     m_rearRight.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
   }
 
+  /**
+   * Sets all wheels to 0.
+   */
   public void setZero() {
     m_frontLeft.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(0)));
     m_frontRight.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(0)));
@@ -422,24 +333,6 @@ public class DriveSubsystem extends SubsystemBase {
     return Rotation2d.fromRadians(m_gyro.getYaw()).getDegrees();
   }
 
-  /**
-   * Returns the turn rate of the robot.
-   *
-   * @return The turn rate of the robot, in degrees per second
-   */
-  // public double getTurnRate() {
-  // return ahrs.getRate() * (DriveConstants.kGyroReversed ? -1.0 : 1.0);
-  // }
-
-  // public double getGyroPitch() {
-  // return -Gyro.pitch;
-  // }
-
-  // public double getGyroPitchRate()
-  // {
-  // return pitchRate;
-  // }
-
   // Returns the distance and angle of each module
   private SwerveModulePosition[] getModulePositions() {
     SwerveModulePosition[] positions = new SwerveModulePosition[4];
@@ -457,6 +350,10 @@ public class DriveSubsystem extends SubsystemBase {
 
 
   public void setRobotRelativeSpeeds(ChassisSpeeds speeds) {
-    this.drive(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, speeds.omegaRadiansPerSecond, false, false);
+    this.drive(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, speeds.omegaRadiansPerSecond, false);
   }
+
+  //makes sure odometry's (0,0) is the same as global (0,0) (according to PhotonVision)
+  
+
 }

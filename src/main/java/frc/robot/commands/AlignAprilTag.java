@@ -71,9 +71,9 @@ public class AlignAprilTag extends Command {
   public void execute() {
     // TODO: how fast can we get to an angle accurately (get help from subsystems people); start by feeding it faster rotate speeds
     if (posTurn == true) {
-      driveSubsystem.drive(0,0,0.1,true,true);
+      driveSubsystem.drive(0,0,0.1,true);
     } else {
-      driveSubsystem.drive(0,0,-0.1,true,true);
+      driveSubsystem.drive(0,0,-0.1,true);
     }
 
   }
