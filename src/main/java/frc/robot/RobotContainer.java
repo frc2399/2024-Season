@@ -204,6 +204,7 @@ public class RobotContainer {
     // Arm default command; do nothing but with gravity compensation so it stays
     // where it is.
     // Setpoint is in RADIANS
+    m_arm.setEncoderPosition(m_arm.getAbsoluteEncoderPosition());
     m_arm.setDefaultCommand(new RunCommand(() -> m_arm.setSpeedGravityCompensation(0), m_arm));
 
     // default command for drivetrain: drive based on controller inputs
@@ -304,7 +305,7 @@ public class RobotContainer {
     return new SequentialCommandGroup(
         new ConditionalCommand(new InstantCommand(() -> {
         }), new InstantCommand(() -> arm.enable()), () -> arm.isEnabled()),
-        new InstantCommand(() -> arm.setEncoderPosition(arm.getAbsoluteEncoderPosition())),
+        //new InstantCommand(() -> arm.setEncoderPosition(arm.getAbsoluteEncoderPosition())),
         new RunCommand(() -> arm.setGoal(target), arm));
   }
 

@@ -93,7 +93,7 @@ public class RealIndexer implements IndexerIO {
 
     @Override
     public boolean isStalling() {
-        return ((Math.abs(getCurrent()) > Constants.NEO550_CURRENT_LIMIT));
+        return (Math.abs(getCurrent()) > 10);
     }
 
 }
