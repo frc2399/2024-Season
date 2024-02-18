@@ -1,5 +1,6 @@
 package frc.robot.subsystems.vision;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.photonvision.EstimatedRobotPose;
@@ -10,8 +11,10 @@ import org.photonvision.simulation.PhotonCameraSim;
 import org.photonvision.simulation.SimCameraProperties;
 import org.photonvision.simulation.VisionSystemSim;
 import org.photonvision.targeting.PhotonPipelineResult;
+import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -20,13 +23,17 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.VisionConstants;
+import frc.robot.RobotContainer;
 import frc.robot.subsystems.drive.DriveSubsystem;
+
 
 public class VisionSim extends SubsystemBase implements VisionIO {
 
     // A vision system sim labelled as "main" in NetworkTables
     PhotonCamera camera = new PhotonCamera("simulated_camera");
-
+    final double ANGULAR_P = 0.8; // TODO: tune
+    final double ANGULAR_D = 0.0;
+    PIDController keepPointedController = new PIDController(ANGULAR_P, 0, ANGULAR_D);
     VisionSystemSim visionSim = new VisionSystemSim("front_camera");
     public static AprilTagFieldLayout aprilTagFieldLayout;
     // Simulated Vision System.
@@ -138,6 +145,40 @@ public class VisionSim extends SubsystemBase implements VisionIO {
     // allows the camera instance into other commands
     public PhotonCamera getCamera() {
         return camera;
+    }
+// TODO: sim implementation
+    @Override
+    public Boolean hasTargets() {
+        return getCameraResult().hasTargets(); 
+    }
+
+    @Override
+    public PhotonTrackedTarget bestTarget() {
+        return getCameraResult().getBestTarget();
+    }
+
+    @Override
+    public List<PhotonTrackedTarget> getTargets() {
+        return getCameraResult().getTargets();
+    }
+
+    @Override
+    public double keepPointedAtSpeaker() {
+        boolean seesSpeaker = false;
+      double yawDiff = 0.0;
+      for (PhotonTrackedTarget result : getCameraResult().getTargets()) {
+        if (result.getFiducialId() == RobotContainer.aprilTagAssignment.speakerID) {
+          seesSpeaker = true;
+          //yaw in radians bc p values get too big
+          yawDiff = ((result.getYaw()*Math.PI)/180);
+          SmartDashboard.putBoolean("Sees speaker: ", true);
+          break; //saves a tiny bit of processing power possibly
+        }
+      }
+      if (!seesSpeaker) {
+        SmartDashboard.putBoolean("Sees speaker: ", false);
+      }
+      return (keepPointedController.calculate(yawDiff, 0));
     }
 
 }

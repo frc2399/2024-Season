@@ -18,6 +18,7 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.XboxController.Axis;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -26,9 +27,11 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
+import frc.robot.Constants.VisionConstants;
 import frc.robot.Robot.RobotType;
 import frc.robot.commands.AimAtTargetCommand;
 import frc.robot.commands.AlignAprilTag;
@@ -82,17 +85,17 @@ public class RobotContainer {
 
                 // Configure default commands
                 m_robotDrive.setDefaultCommand(
-                                // The left stick controls translation of the robot.
-                                // Turning is controlled by the X axis of the right stick.
-                                new RunCommand(
-                                                () -> m_robotDrive.drive(
-                                                                -MathUtil.applyDeadband(m_driverController.getLeftY(),
-                                                                                OIConstants.kDriveDeadband),
-                                                                -MathUtil.applyDeadband(m_driverController.getLeftX(),
-                                                                                OIConstants.kDriveDeadband),
-                                                                -MathUtil.applyDeadband(m_driverController.getRightX(),
-                                                                                OIConstants.kDriveDeadband),
-                                                                fieldOrientedDrive, false),
+                        // The left stick controls translation of the robot.
+                        // Turning is controlled by the X axis of the right stick.
+                        new RunCommand(
+                                () -> m_robotDrive.drive(
+                                        -MathUtil.applyDeadband(m_driverController.getLeftY(),
+                                                OIConstants.kDriveDeadband),
+                                        -MathUtil.applyDeadband(m_driverController.getLeftX(),
+                                                OIConstants.kDriveDeadband),
+                                        -MathUtil.applyDeadband(m_driverController.getRightX(),
+                                                OIConstants.kDriveDeadband),
+                                        fieldOrientedDrive, false),
                                                 m_robotDrive));
                 // new RunCommand(
                 // () -> m_robotDrive.drive(
@@ -135,13 +138,25 @@ public class RobotContainer {
 
                 //new JoystickButton(m_driverController, XboxController.Button.kRightBumper.value)
                   //              .whileTrue(new AimAtTargetCommand(m_robotDrive, m_vision));
-
+                new Trigger(() -> m_driverController.getRawAxis(Axis.kRightTrigger.value) > 0.1)
+        .whileTrue(new AimAtTargetCommand(m_robotDrive, m_vision));
+    
                 new JoystickButton(m_driverController, XboxController.Button.kLeftBumper.value).
     onTrue(new InstantCommand( () -> System.out.println(m_gyro.getYaw())));
 
-     new JoystickButton(m_driverController, XboxController.Button.kRightBumper.value)
+        new JoystickButton(m_driverController, XboxController.Button.kRightBumper.value)
               .onTrue(new AlignAprilTag(m_robotDrive, vision, m_robotDrive.getPose()));   
-
+              new Trigger(() -> m_driverController.getRawAxis(Axis.kLeftTrigger.value) > 0.1).
+              whileTrue(new RunCommand( () -> m_robotDrive.drive(
+                -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
+                -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),
+                m_vision.keepPointedAtSpeaker(),
+                fieldOrientedDrive, false), m_robotDrive)).
+              onFalse(new RunCommand(() -> m_robotDrive.drive(
+                -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
+                -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),
+                -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband),
+                fieldOrientedDrive, false), m_robotDrive));
         }
 
         /**
@@ -236,4 +251,36 @@ public class RobotContainer {
                 }
                 vision = new Vision(m_vision);
         }
+
+        public class aprilTagAssignment { 
+                public static int facingSourceLeftID;
+                public static int facingSourceRightID;
+                public static int speakerID;
+                public static int speakerOffsetID;
+                public static int stageBackID;
+                public static int facingAwayFromSpeakerStageLeftID;
+                public static int facingAwayFromSpeakerStageRightID;
+                public static int ampID;
+  
+                static void assignAprilTags() {
+                if (VisionConstants.isBlueAlliance) {
+                        facingSourceLeftID = 1;
+                        facingSourceRightID = 2;
+                        speakerID = 7;
+                        speakerOffsetID = 8;
+                        stageBackID = 14;
+                        facingAwayFromSpeakerStageLeftID = 15;
+                        facingAwayFromSpeakerStageRightID = 16;
+                        ampID = 6;
+                } else {
+                        facingSourceLeftID = 10;
+                        facingSourceRightID = 9;
+                        speakerID = 4;
+                        speakerOffsetID = 3;
+                        stageBackID = 13;
+                        facingAwayFromSpeakerStageLeftID = 11;
+                        facingAwayFromSpeakerStageRightID = 12;
+                        ampID = 5;
+                        }}
+                }
 }

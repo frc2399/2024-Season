@@ -3,18 +3,26 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot.subsystems.vision;
+import java.util.List;
 import java.util.Optional;
 
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonPipelineResult;
+import org.photonvision.targeting.PhotonTrackedTarget;
 
 /** Add your docs here. */
 public interface VisionIO {
     public void periodic();
     public PhotonPipelineResult getCameraResult();
     public Optional<EstimatedRobotPose> getCameraEst();
+    public Boolean hasTargets();
+    public PhotonTrackedTarget bestTarget();
+    public List<PhotonTrackedTarget> getTargets();
     public void enableUpdatePoseWithVisionReading ();
     public void disableUpdatePoseWithVisionReading ();
-    public PhotonCamera getCamera () ;
+    public PhotonCamera getCamera();
+    public double keepPointedAtSpeaker();
+
+
 }
