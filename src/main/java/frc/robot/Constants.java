@@ -27,9 +27,9 @@ public final class Constants {
 
   public static final int NEO550_CURRENT_LIMIT = 20;
   public static final int NEO_CURRENT_LIMIT = 50;
-  public static final int NEO_MAX_SPEED_RPM = 5676; 
-  //MPS = (GearRatio * 2πr * RPM) / 60
-  public static final double NEO_MAX_SPEED_MPS = 2 * Math.PI * 0.0508 * NEO_MAX_SPEED_RPM * (1 / 60); 
+  public static final int NEO_MAX_SPEED_RPM = 5676;
+  // MPS = (GearRatio * 2πr * RPM) / 60
+  public static final double NEO_MAX_SPEED_MPS = 2 * Math.PI * 0.0508 * NEO_MAX_SPEED_RPM * (1 / 60);
   public static final double NEO550_MAX_SPEED_RPM = 11000;
   public static final double ENCODER_METERS = (2 * (Math.PI) * 0.375);
   public static final double ENCODER_VELOCITY_MPS = (2 * (Math.PI) * 0.375) / 60;
@@ -56,16 +56,19 @@ public final class Constants {
         new Translation2d(-kWheelBase / 2, -kTrackWidth / 2));
 
     // Angular offsets of the modules relative to the chassis in radians
-    // public static final double kFrontLeftChassisAngularOffset = -Math.PI / 2 + 3.6128315516282616;
-    // public static final double kFrontRightChassisAngularOffset = 0 + 5.855928706291374;
-    // public static final double kBackLeftChassisAngularOffset = Math.PI + 3.248406803811846;
-    // public static final double kBackRightChassisAngularOffset = Math.PI / 2 + 2.2556635252774715;
+    // public static final double kFrontLeftChassisAngularOffset = -Math.PI / 2 +
+    // 3.6128315516282616;
+    // public static final double kFrontRightChassisAngularOffset = 0 +
+    // 5.855928706291374;
+    // public static final double kBackLeftChassisAngularOffset = Math.PI +
+    // 3.248406803811846;
+    // public static final double kBackRightChassisAngularOffset = Math.PI / 2 +
+    // 2.2556635252774715;
 
     public static final double kFrontLeftChassisAngularOffset = -Math.PI / 2;
     public static final double kFrontRightChassisAngularOffset = 0;
     public static final double kBackLeftChassisAngularOffset = Math.PI;
     public static final double kBackRightChassisAngularOffset = Math.PI / 2;
-
 
     // SPARK MAX CAN IDs
     public static final int kFrontLeftDrivingCanId = 11;
@@ -82,23 +85,27 @@ public final class Constants {
   }
 
   public static final class ModuleConstants {
-    // The MAXSwerve module can be configured with one of three pinion gears: 12T, 13T, or 14T.
-    // This changes the drive speed of the module (a pinion gear with more teeth will result in a
+    // The MAXSwerve module can be configured with one of three pinion gears: 12T,
+    // 13T, or 14T.
+    // This changes the drive speed of the module (a pinion gear with more teeth
+    // will result in a
     // robot that drives faster).
     public static final int kDrivingMotorPinionTeeth = 14;
 
-    // Invert the turning encoder, since the output shaft rotates in the opposite direction of
+    // Invert the turning encoder, since the output shaft rotates in the opposite
+    // direction of
     // the steering motor in the MAXSwerve Module.
     public static final boolean kTurningEncoderInverted = true;
-    //testing lol
+    // testing lol
     public static final boolean kDrivingEncoderInverted = false;
 
     // Calculations required for driving motor conversion factors and feed forward
     public static final double kDrivingMotorFreeSpeedRps = NeoMotorConstants.kFreeSpeedRpm / 60;
     public static final double kWheelDiameterMeters = Units.inchesToMeters(3.0);
     public static final double kWheelCircumferenceMeters = kWheelDiameterMeters * Math.PI;
-    // 45 teeth on the wheel's bevel gear, 22 teeth on the first-stage spur gear, 15 teeth on the bevel pinion
-    //This is also the gear ratio (14T)
+    // 45 teeth on the wheel's bevel gear, 22 teeth on the first-stage spur gear, 15
+    // teeth on the bevel pinion
+    // This is also the gear ratio (14T)
     public static final double kDrivingMotorReduction = (45.0 * 22) / (kDrivingMotorPinionTeeth * 15);
     public static final double kDriveWheelFreeSpeedRps = (kDrivingMotorFreeSpeedRps * kWheelCircumferenceMeters)
         / kDrivingMotorReduction;
@@ -152,7 +159,7 @@ public final class Constants {
 
   public static final class IndexerConstants {
 
-    public static final int INDEXER_MOTOR_ID = 5; //I put 5 at random. Find actual motor ID. 
+    public static final int INDEXER_MOTOR_ID = 5; // I put 5 at random. Find actual motor ID.
     public static final double INDEXER_SLEW_RATE = 10;
   }
 
@@ -163,7 +170,7 @@ public final class Constants {
 
     // arm min and max angles in radians
     public static final double MAX_ARM_ANGLE = Math.PI / 4 * 3;
-    //initial offset -5 degrees
+    // initial offset -5 degrees
     public static final double MIN_ARM_ANGLE = 0;
     // arm mass in kg
     public static final double ARM_MASS = 2.72155;
@@ -171,7 +178,7 @@ public final class Constants {
     public static final double ARM_LENGTH = 0.65;
 
     // arm angles for intaking and shooting in different positions, in radians
-    //intake angle same as initial offset
+    // intake angle same as initial offset
     public static final double INTAKE_ANGLE = 0;
     public static final double SPEAKER_SUBWOOFER_ANGLE = -0.66;
     public static final double SPEAKER_PODIUM_ANGLE = -0.06;
@@ -179,20 +186,22 @@ public final class Constants {
 
     public static final double TURTLE_ANGLE = 0.5;
 
-    // 1 4-1 gearbox, 2 3-1 gearboxes, then a 4-1 reduction from the sprocket/chain; 4^2 * 3^2 = 144
+    // 1 4-1 gearbox, 2 3-1 gearboxes, then a 4-1 reduction from the sprocket/chain;
+    // 4^2 * 3^2 = 144
     public static final double RADIANS_PER_REVOLUTION = 2 * Math.PI / 144;
     // initial offset is 0.711 + (0.287) - (0.308)
-    
+
     public static final double INITIAL_OFFSET = 0.660;
 
-    //can be 2 degrees off from goal setpoints and still considered at goal; made higher so arm.atGoal() in placeConeOnNode cmd will execute in auton
+    // can be 2 degrees off from goal setpoints and still considered at goal; made
+    // higher so arm.atGoal() in placeConeOnNode cmd will execute in auton
     public static final double ANGLE_TOLERANCE_AUTON = Units.degreesToRadians(2);
 
     public static final double SPEAKER_SUBWOOFER_STRAIGHT_ANGLE = 0;
 
     public static final double SPEAKER_SUBWOOFER_SIDE_ANGLE = 0;
 
-    }
+  }
 
   public static final class ClimberConstants {
 
@@ -213,7 +222,6 @@ public final class Constants {
     public static final double CLIMBER_RADIUS = 0.375; 
 
     public static final double SETPOINT_RANGE = 0.05; 
-
 
   }
 
@@ -240,5 +248,16 @@ public final class Constants {
 
   public static final class NeoMotorConstants {
     public static final double kFreeSpeedRpm = 5676;
+  }
+
+  public static final class LEDConstants {
+    public static final int RED_CHANNEL = 2;
+    public static final int GREEN_CHANNEL = 1;
+    public static final int BLUE_CHANNEL = 3;
+    public static final int WHITE_CHANNEL = 0;
+    public static final int[] blue2399 = { 0, 100, 255 };
+    public static final int[] pink2399 = { 255, 50, 200 };
+    public static final int[] isIntookedGreen = {112, 243, 121};
+
   }
 }
