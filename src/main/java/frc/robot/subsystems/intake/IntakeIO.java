@@ -10,5 +10,4 @@ public interface IntakeIO {
     public void setRightCurrentLimit(int current);
     public void periodicUpdate();
     public void setSpeed(double speed);
-    public boolean isIntooked();
 }

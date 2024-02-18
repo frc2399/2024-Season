@@ -1,11 +1,12 @@
 package frc.robot.subsystems.Indexer;
 
+import com.revrobotics.CANSparkBase.ControlType;
+import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
-import com.revrobotics.CANSparkBase.ControlType;
-import com.revrobotics.CANSparkLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.Constants.IndexerConstants; //doesn't exist yet but put in later
@@ -17,6 +18,10 @@ public class RealIndexer implements IndexerIO {
     public static RelativeEncoder indexerEncoder;
     public static SparkPIDController indexerController;
     private double slewRate = 0.2;
+    public boolean isIntooked = false;
+    public boolean isSensorOverriden = false;
+    private static DigitalInput indexerSensorTop;
+    private static DigitalInput indexerSensorBottom;
 
     public RealIndexer()
     {
@@ -28,6 +33,8 @@ public class RealIndexer implements IndexerIO {
         indexerController = indexerMotorController.getPIDController();
         indexerController.setFeedbackDevice(indexerEncoder);
         indexerController.setFF(0.0001);
+        indexerSensorTop = new DigitalInput(IndexerConstants.INDEXER_SENSOR_CHANNEL_TOP);
+        indexerSensorBottom = new DigitalInput(IndexerConstants.INDEXER_SENSOR_CHANNEL_BOTTOM);
         //indexController.setP(1);
     }
 
@@ -65,7 +72,35 @@ public class RealIndexer implements IndexerIO {
 
     @Override
     public void periodicUpdate() {
-       
+        SmartDashboard.putBoolean("isIntooked:", isIntooked);
+        SmartDashboard.putBoolean("getIsBeamBroken", getIsBeamBroken());
+    }
+
+    @Override
+    public void setIsIntooked(boolean intooked) {
+        isIntooked = intooked;
+    }
+
+    public void setIsSensorOverriden(boolean override) {
+        isSensorOverriden = override;
+    }
+
+    public boolean getIsSensorOverriden() {
+        return isSensorOverriden;
+    }
+
+    @Override
+    public boolean getIsBeamBroken() {
+        if (isSensorOverriden) {
+            return false;
+        } else {
+            return indexerSensorBottom.get();
+        }
+    }
+
+    @Override
+    public boolean getIsIntooked() {
+        return isIntooked;
     }
 
 }

@@ -11,6 +11,7 @@ public class SimIndexer implements IndexerIO {
     public static SimEncoder indexerEncoderSim;
     private DCMotorSim indexerMotorSim;
     private PIDController pidController;
+    public boolean isIntooked = false;
 
     public SimIndexer() {
         indexerEncoderSim = new SimEncoder("indexer");
@@ -19,7 +20,11 @@ public class SimIndexer implements IndexerIO {
         SmartDashboard.putNumber("indexer sim velocity", 0);
         pidController = new PIDController(1, 0,0);
     }
-
+    
+    public void setIsIntooked(boolean intooked) {
+        isIntooked = intooked;
+    }
+    
     public void setMotor(double speed) {
         indexerMotorSim.setInput(speed);
     }
@@ -46,5 +51,23 @@ public class SimIndexer implements IndexerIO {
 
     public void periodicUpdate() {
         SmartDashboard.putNumber("indexer/current (A)", getCurrent());
+    }
+
+    public boolean getIsBeamBroken() {
+        return false; 
+    }
+
+    @Override
+    public void setIsSensorOverriden(boolean override) {
+    }
+
+    @Override
+    public boolean getIsIntooked() {
+        return false;
+    }
+
+    @Override
+    public boolean getIsSensorOverriden() {
+        return false;
     }
 }

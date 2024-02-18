@@ -7,11 +7,9 @@ package frc.robot.subsystems.arm;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDSubsystem;
-import frc.robot.RobotContainer;
 import frc.robot.Constants.ArmConstants;
 import frc.utils.PIDUtil;
 
@@ -83,7 +81,7 @@ public class Arm extends ProfiledPIDSubsystem {
   public void setSpeedGravityCompensation(double speed) {
     // calls set speed function in the file that does armIO.setSpeed after capping
     // speed
-    setSpeed(speed + gravityCompensation * Math.cos(getEncoderPosition()));
+    setSpeed(speed + gravityCompensation * Math.sin(getEncoderPosition()));
   }
 
   public double getArmCurrent() {
@@ -92,13 +90,13 @@ public class Arm extends ProfiledPIDSubsystem {
 
   @Override
   protected void useOutput(double output, State setpoint) {
-    // SmartDashboard.putNumber("arm/setpoint pos", setpoint.position);
-    // SmartDashboard.putNumber("arm/setpoint vel", setpoint.velocity);
+    SmartDashboard.putNumber("arm/setpoint pos", setpoint.position);
+    SmartDashboard.putNumber("arm/setpoint vel", setpoint.velocity);
 
     // Calculate the feedforward from the setpoint
     double speed = feedForward * setpoint.velocity;
     // accounts for gravity in speed
-    speed += gravityCompensation * Math.cos(getEncoderPosition());
+    speed += gravityCompensation * Math.sin(getEncoderPosition());
     // Add PID output to speed to account for error in arm
     speed += output;
     // calls set speed function in the file that does armIO.setSpeed after capping

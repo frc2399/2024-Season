@@ -73,10 +73,5 @@ public class SimIntake implements IntakeIO {
         leftPidController.calculate(getLeftEncoderSpeed(), speed);
         rightPidController.calculate(getRightEncoderSpeed(), speed);
     }
-
-    @Override
-    public boolean isIntooked() {
-    //TODO need to simulate the intake sensor
-        return true;
-    }
+    
 }

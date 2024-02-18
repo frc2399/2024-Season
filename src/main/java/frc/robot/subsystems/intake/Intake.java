@@ -4,7 +4,6 @@
 
 package frc.robot.subsystems.intake;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Intake extends SubsystemBase {
@@ -44,10 +43,6 @@ public class Intake extends SubsystemBase {
     intakeIO.setRightCurrentLimit(current);
   }
 
-  public boolean isIntooked()
-{
-  return intakeIO.isIntooked();
-}
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
