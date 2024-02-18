@@ -2,6 +2,7 @@ package frc.robot.subsystems.arm;
 
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.SparkAbsoluteEncoder.Type;
 import com.revrobotics.SparkPIDController;
@@ -15,6 +16,7 @@ public class RealArm implements ArmIO {
     private static CANSparkMax armMotorControllerLeft;
     private static CANSparkMax armMotorControllerRight;
     public static AbsoluteEncoder armAbsoluteEncoderRight;
+    public static RelativeEncoder armEncoderRight;
     // private final SparkPIDController armPIDControllerRight;
 
     public RealArm() {
@@ -24,37 +26,44 @@ public class RealArm implements ArmIO {
 
         armMotorControllerRight = MotorUtil.createSparkMAX(ArmConstants.ARM_MOTOR_ID_RIGHT, MotorType.kBrushless,
                 Constants.NEO_CURRENT_LIMIT,
-                true, true, 0.75);
+                true, true, 0);
 
         armAbsoluteEncoderRight = armMotorControllerRight.getAbsoluteEncoder(Type.kDutyCycle);
+        armEncoderRight = armMotorControllerRight.getEncoder();
+        
         // armPIDControllerRight = armMotorControllerRight.getPIDController();
         // armPIDControllerRight.setFeedbackDevice(armAbsoluteEncoderRight);
 
-        armAbsoluteEncoderRight.setPositionConversionFactor(ArmConstants.RADIANS_PER_REVOLUTION);
-        armAbsoluteEncoderRight.setVelocityConversionFactor(ArmConstants.RADIANS_PER_REVOLUTION / 60);
+        armAbsoluteEncoderRight.setPositionConversionFactor(ArmConstants.ABSOLUTE_RADIANS_PER_REVOLUTION);
+        armAbsoluteEncoderRight.setVelocityConversionFactor(ArmConstants.ABSOLUTE_RADIANS_PER_REVOLUTION / 60);
         armAbsoluteEncoderRight.setInverted(true);
         armAbsoluteEncoderRight.setZeroOffset(-Math.PI / 2);
+        armEncoderRight.setPositionConversionFactor(ArmConstants.RADIANS_PER_REVOLUTION);
+        armEncoderRight.setVelocityConversionFactor(ArmConstants.RADIANS_PER_REVOLUTION / 60);
+        
 
         armMotorControllerLeft = MotorUtil.createSparkMAX(ArmConstants.ARM_MOTOR_ID_LEFT, MotorType.kBrushless,
             Constants.NEO_CURRENT_LIMIT,
-            false, true, 0.75);
+            false, true, 0);
         armMotorControllerLeft.follow(armMotorControllerRight, true);
+        armEncoderRight.setPosition(armAbsoluteEncoderRight.getPosition());
         // armAbsoluteEncoderRight.setPosition(ArmConstants.INITIAL_OFFSET);
     }
 
     public double getAbsoluteEncoderPosition() {
-        return -(armAbsoluteEncoderRight.getPosition() - 0.88) * 2 * Math.PI / 3;
+        return armAbsoluteEncoderRight.getPosition();
     }
 
     @Override
     public void periodicUpdate() {
         SmartDashboard.putNumber("arm position", getEncoderPosition());
+        SmartDashboard.putNumber("arm absolute position", getAbsoluteEncoderPosition());
     }
 
     @Override
     public double getEncoderPosition() {
         // return getAbsoluteEncoderPosition();
-        return armAbsoluteEncoderRight.getPosition();
+        return armEncoderRight.getPosition();
     }
 
     @Override
@@ -75,6 +84,11 @@ public class RealArm implements ArmIO {
     @Override
     public double getArmCurrent() {
         return armMotorControllerRight.getOutputCurrent();
+    }
+
+    @Override
+    public void setEncoderPosition(double angle) {
+       armEncoderRight.setPosition(angle);
     }
 
 }

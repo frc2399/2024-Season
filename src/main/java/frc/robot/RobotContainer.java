@@ -238,9 +238,9 @@ public class RobotContainer {
     m_driverController.leftBumper().whileTrue(
       //new SequentialCommandGroup(
         //new InstantCommand(() -> m_indexer.setIsIntooked(false)),
-        new RunCommand(() -> m_shooter.setMotor(0.3)))
+        new RunCommand(() -> m_shooter.setMotor(.8)))
         //)
-        ;
+        ; 
 
     // driver right bumper: auto-shoot
     m_driverController.rightBumper().and(() -> !isInClimberMode).onTrue(autoShoot());
@@ -300,9 +300,14 @@ public class RobotContainer {
     !isInClimberMode).whileTrue(makeSetSpeedGravityCompensationCommand(m_arm,
     -0.1)).onFalse(makeSetSpeedGravityCompensationCommand(m_arm, 0));
 
-    m_operatorController.a().onTrue(makeSetPositionCommand(m_arm, Units.degreesToRadians(25)));
+    //Basic intake angle
+    m_operatorController.a().and(() -> !isInClimberMode).onTrue(makeSetPositionCommand(m_arm, 0.320));
     
-    m_operatorController.b().onTrue(makeSetPositionCommand(m_arm, Units.degreesToRadians(60)));
+    //Podium shot angle
+    m_operatorController.b().and(() -> !isInClimberMode).onTrue(makeSetPositionCommand(m_arm, 0.616));
+
+    //amp angle
+    m_operatorController.y().and(() -> !isInClimberMode).onTrue(makeSetPositionCommand(m_arm, 1.4));
 
 
 
@@ -316,12 +321,13 @@ public class RobotContainer {
         () -> m_indexer.setIsSensorOverriden(!m_indexer.getIsSensorOverriden())));
   }
 
-  public static Command makeSetPositionCommand(ProfiledPIDSubsystem base,
+  public static Command makeSetPositionCommand(Arm arm,
       double target) {
     return new SequentialCommandGroup(
         new ConditionalCommand(new InstantCommand(() -> {
-        }), new InstantCommand(() -> base.enable()), () -> base.isEnabled()),
-        new RunCommand(() -> base.setGoal(target), base));
+        }), new InstantCommand(() -> arm.enable()), () -> arm.isEnabled()),
+        new InstantCommand(() -> arm.setEncoderPosition(arm.getAbsoluteEncoderPosition())),
+        new RunCommand(() -> arm.setGoal(target), arm));
   }
 
   private Command makeSetSpeedGravityCompensationCommand(Arm a, double speed) {

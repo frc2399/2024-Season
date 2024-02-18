@@ -12,4 +12,8 @@ public interface ArmIO {
     public void periodicUpdate();
 
     public double getArmCurrent();
+
+    public double getAbsoluteEncoderPosition();
+
+    public void setEncoderPosition(double angle);
 }

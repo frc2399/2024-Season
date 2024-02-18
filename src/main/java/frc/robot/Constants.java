@@ -171,8 +171,9 @@ public final class Constants {
     public static final double TURTLE_ANGLE = Units.degreesToRadians(14);
 
     // 1 4-1 gearbox, 2 3-1 gearboxes, then a 4-1 reduction from the sprocket/chain; 4^2 * 3^2 = 144
-    //public static final double RADIANS_PER_REVOLUTION = 2 * Math.PI / 144;
-    public static final double RADIANS_PER_REVOLUTION = 2 * Math.PI / 4;
+    public static final double RADIANS_PER_REVOLUTION = 2 * Math.PI / 144;
+    //absolute encoder only needs the sprocket/chain reduction, since it comes after the gearboxes
+    public static final double ABSOLUTE_RADIANS_PER_REVOLUTION = 2 * Math.PI / 4;
     // initial offset is 0.711 + (0.287) - (0.308)
     
     public static final double INITIAL_OFFSET = Units.degreesToRadians(14);

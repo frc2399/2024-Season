@@ -23,12 +23,12 @@ public class Arm extends ProfiledPIDSubsystem {
   // private static final double kpPos = 0.8;
 
   // Trapezoidal profile constants and variables
-  private static final double max_vel = 4.1; // rad/s (NEO specs / gear ratio, converted into rad/s)
-  private static final double max_accel = 3; // rad/s/s
+  private static final double max_vel = 3.9; // rad/s (NEO specs / gear ratio, converted into rad/s ~ 4.1, give it a slightly lower one to make it acheivable)
+  private static final double max_accel = 2.7; // rad/s/s
   private static final Constraints constraints = new Constraints(max_vel, max_accel);
   private static double gravityCompensation = 0.025;
-  private static double feedForward = 1/max_vel ;
-   private static double kpPos = 0.8;
+  private static double feedForward = 1;
+  private static double kpPos = 3.0;
   private static double kd = 0.01;
 
   public Arm(ArmIO io) {
@@ -126,4 +126,14 @@ public class Arm extends ProfiledPIDSubsystem {
   public void setkG(double kG) {
     gravityCompensation = kG;
   }
+
+  public double getAbsoluteEncoderPosition() {
+    // TODO Auto-generated method stub
+    return armIO.getAbsoluteEncoderPosition();
+  }
+
+public void setEncoderPosition(double angle) {
+    // TODO Auto-generated method stub
+    armIO.setEncoderPosition(angle);
+}
 }

@@ -64,5 +64,17 @@ public class SimArm implements ArmIO{
     @Override
     public double getArmCurrent() {
         return armSim.getCurrentDrawAmps();
+    }
+
+    @Override
+    public double getAbsoluteEncoderPosition() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getAbsoluteEncoderPosition'");
+    }
+
+    @Override
+    public void setEncoderPosition(double angle) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setEncoderPosition'");
     } 
 }
