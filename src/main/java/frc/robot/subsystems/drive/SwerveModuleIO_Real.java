@@ -6,7 +6,10 @@ import com.revrobotics.SparkAbsoluteEncoder.Type;
 import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkBase.ControlType;
 
+import frc.robot.Constants;
+import frc.robot.Constants.IndexerConstants;
 import frc.robot.Constants.SwerveModuleConstants;
+import frc.utils.MotorUtil;
 
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkLowLevel.MotorType;
@@ -29,14 +32,11 @@ public class SwerveModuleIO_Real implements SwerveModuleIO {
          String name) {
 
       this.name = name;
-
-      m_drivingSparkMax = new CANSparkMax(drivingCANId, MotorType.kBrushless);
-      m_turningSparkMax = new CANSparkMax(turningCANId, MotorType.kBrushless);
-
-      // Factory reset, so we get the SPARKS MAX to a known state before configuring
-      // them. This is useful in case a SPARK MAX is swapped out.
-      m_drivingSparkMax.restoreFactoryDefaults();
-      m_turningSparkMax.restoreFactoryDefaults();
+      
+   m_drivingSparkMax =MotorUtil.createSparkMAX(drivingCANId, MotorType.kBrushless, 
+            Constants.NEO_CURRENT_LIMIT, SwerveModuleConstants.kDrivingEncoderInverted, true, 0);
+   m_turningSparkMax =MotorUtil.createSparkMAX(turningCANId, MotorType.kBrushless, 
+            Constants.NEO550_CURRENT_LIMIT, true, 0);
 
       m_drivingSparkMax.enableVoltageCompensation(12);
       m_turningSparkMax.enableVoltageCompensation(12);
@@ -91,10 +91,6 @@ public class SwerveModuleIO_Real implements SwerveModuleIO {
       m_turningPIDController.setOutputRange(SwerveModuleConstants.kTurningMinOutput,
             SwerveModuleConstants.kTurningMaxOutput);
 
-      m_drivingSparkMax.setIdleMode(SwerveModuleConstants.kDrivingMotorIdleMode);
-      m_turningSparkMax.setIdleMode(SwerveModuleConstants.kTurningMotorIdleMode);
-      m_drivingSparkMax.setSmartCurrentLimit(SwerveModuleConstants.kDrivingMotorCurrentLimit);
-      m_turningSparkMax.setSmartCurrentLimit(SwerveModuleConstants.kTurningMotorCurrentLimit);
 
       this.chassisAngularOffset = chassisAngularOffset;
       m_drivingEncoder.setPosition(0);

@@ -165,12 +165,14 @@ public class RobotContainer {
         new SwerveModule(m_rearRightIO), m_gyro);
   }
 
-  // sets up auton commands
-  private void setUpAuton() {
-    NamedCommands.registerCommand("shoot", outtakeAndShootAfterDelay());
-    NamedCommands.registerCommand("aim to target", Commands.print("aimed to target!"));
-    m_autoChooser = AutoBuilder.buildAutoChooser();
-    SmartDashboard.putData("Autos/Selector", m_autoChooser);
+  //sets up auton commands
+  private void setUpAuton(){
+        NamedCommands.registerCommand("intake", Commands.print("intake")); //sensorIntakeCommand());
+        NamedCommands.registerCommand("shoot", Commands.print("shoot")); //autoShoot());
+        NamedCommands.registerCommand("AimToTarget", Commands.print("aimed to target!"));
+        NamedCommands.registerCommand("SetArmPosition", Commands.print("set arm position"));
+        m_autoChooser = AutoBuilder.buildAutoChooser();
+        SmartDashboard.putData("Autos/Selector", m_autoChooser);
   }
 
   // Configure default commands
