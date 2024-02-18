@@ -10,7 +10,6 @@ public class automaticClimberCommand extends Command {
   private double setpoint;
 
   public automaticClimberCommand(Climber climber, double setpoint) {
-    // Use addRequirements() here to declare subsystem dependencies.
     this.climber = climber;
     this.setpoint = setpoint;
     addRequirements(climber);

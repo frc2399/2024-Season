@@ -4,7 +4,6 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-//import frc.robot.subsystems.indexer.SimIndexer;
 import frc.utils.SimEncoder;
 
 public class SimIndexer implements IndexerIO {
@@ -18,13 +17,13 @@ public class SimIndexer implements IndexerIO {
         indexerMotorSim = new DCMotorSim(DCMotor.getNeo550(1), 1, 1);
         SmartDashboard.putNumber("indexer current sim", 0);
         SmartDashboard.putNumber("indexer sim velocity", 0);
-        pidController = new PIDController(1, 0,0);
+        pidController = new PIDController(1, 0, 0);
     }
-    
+
     public void setIsIntooked(boolean intooked) {
         isIntooked = intooked;
     }
-    
+
     public void setMotor(double speed) {
         indexerMotorSim.setInput(speed);
     }
@@ -54,11 +53,7 @@ public class SimIndexer implements IndexerIO {
     }
 
     public boolean getIsBeamBroken() {
-        return false; 
-    }
-
-    @Override
-    public void setIsSensorOverriden(boolean override) {
+        return false;
     }
 
     @Override
@@ -67,7 +62,7 @@ public class SimIndexer implements IndexerIO {
     }
 
     @Override
-    public boolean getIsSensorOverriden() {
+    public boolean isStalling() {
         return false;
     }
 }

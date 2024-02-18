@@ -10,9 +10,9 @@ import frc.utils.SimEncoder;
 public class SwerveModuleIO_Sim implements SwerveModuleIO {
 
    // Simualaion Motors
-   private DCMotorSim driveMotor = new DCMotorSim(DCMotor.getNEO(1), Constants.ModuleConstants.kDrivingMotorReduction,
+   private DCMotorSim driveMotor = new DCMotorSim(DCMotor.getNEO(1), Constants.SwerveModuleConstants.kDrivingMotorReduction,
          0.025);
-   private DCMotorSim turnMotor = new DCMotorSim(DCMotor.getNeo550(1), Constants.ModuleConstants.kTurningMotorReduction,
+   private DCMotorSim turnMotor = new DCMotorSim(DCMotor.getNeo550(1), Constants.SwerveModuleConstants.kTurningMotorReduction,
          0.025);
 
    private SimEncoder m_turningEncoder;

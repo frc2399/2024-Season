@@ -34,9 +34,6 @@ import frc.robot.subsystems.gyro.GyroIO;
 
 public class DriveSubsystem extends SubsystemBase {
 
-  // The gyro sensor
-  // private final AHRS ahrs = new AHRS(SPI.Port.kMXP, (byte) 66);
-
   // Odometry
   private SwerveDrivePoseEstimator m_poseEstimator;
   
@@ -106,8 +103,7 @@ public class DriveSubsystem extends SubsystemBase {
             new ReplanningConfig()),
 
         () -> {
-          // Basically flips the path for path planner depending on alliance(Origin is
-          // Blue Alliance)
+          // Basically flips the path for path planner depending on alliance(Origin is Blue Alliance)
 
           var alliance = DriverStation.getAlliance();
 
@@ -176,11 +172,7 @@ public class DriveSubsystem extends SubsystemBase {
     m_gyro.setYaw(lastAngle.getRadians());}
   }
 
-  /**
-   * Returns the currently-estimated pose of the robot.
-   *
-   * @return The pose.
-   */
+  /** Returns the currently-estimated pose of the robot. */
   public Pose2d getPose() {
     return m_poseEstimator.getEstimatedPosition();
   }
@@ -200,11 +192,7 @@ public class DriveSubsystem extends SubsystemBase {
     }
   }
 
-  /**
-   * Resets the odometry to the specified pose.
-   *
-   * @param pose The pose to which to set the odometry.
-   */
+  /** Resets the odometry to the specified pose. */
   public void resetOdometry(Pose2d pose) {
     m_poseEstimator.resetPosition(
         Rotation2d.fromDegrees(m_gyro.getYaw()),
