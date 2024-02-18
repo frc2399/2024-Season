@@ -318,4 +318,18 @@ public class DriveSubsystem extends SubsystemBase {
   public void setRobotRelativeSpeeds(ChassisSpeeds speeds) {
     this.drive(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, speeds.omegaRadiansPerSecond, false);
   }
+
+  //makes sure odometry's (0,0) is the same as global (0,0) (according to PhotonVision)
+  public void alignOrigins(Pose2d pose) {
+    poseEstimator.resetPosition(
+        Rotation2d.fromDegrees(m_gyro.getYaw()),
+        new SwerveModulePosition[] {
+            m_frontLeft.getPosition(),
+            m_frontRight.getPosition(),
+            m_rearLeft.getPosition(),
+            m_rearRight.getPosition()
+        },
+        pose);
+  }
+
 }

@@ -6,7 +6,14 @@ package frc.robot;
 
 import com.revrobotics.CANSparkMax;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
 
@@ -230,5 +237,19 @@ public final class Constants {
 
   public static final class NeoMotorConstants {
     public static final double kFreeSpeedRpm = 5676;
+  }
+
+  public static final class VisionConstants {
+    public static final AprilTagFieldLayout kFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
+    public static final Transform3d camToRobot = new Transform3d(
+        new Translation3d(Units.inchesToMeters(5), Units.inchesToMeters(5.25), Units.inchesToMeters(0)),
+        new Rotation3d(0.0, 0.0, 0.0));
+        // TODO: measure camera height
+    //these need to be changed on Comp Bot
+    public static final Transform2d camToRobot2d = new Transform2d(5.0,5.25,new Rotation2d(0));
+    public static final double xOffsetToRobot = 0;
+    public static final double yOffsetToRobot = 0;
+    public static final double zOffsetToRobot = 0;
+    public static final boolean isBlueAlliance = true; // FIXME: udpate before every match
   }
 }
