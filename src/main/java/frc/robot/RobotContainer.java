@@ -229,7 +229,7 @@ public class RobotContainer {
     m_driverController.leftBumper().whileTrue(
         // new SequentialCommandGroup(
         // new RunCommand(() -> m_indexer.setIsIntooked(false)),
-        new RunCommand(() -> m_shooter.setMotor(m_arm.getSpeedFromArmHeight())))
+        new RunCommand(() -> m_shooter.setMotor(m_arm.getSpeedFromArmHeight()), m_shooter))
     // )
     ;
 
@@ -287,7 +287,7 @@ public class RobotContainer {
         .onFalse(makeSetSpeedGravityCompensationCommand(m_arm, 0));
 
     // operater a: arm to intake/subwoofer angle
-    m_operatorController.a().and(() -> !isInClimberMode).onTrue(makeSetPositionCommand(m_arm, 0.320));
+    m_operatorController.a().and(() -> !isInClimberMode).onTrue(makeSetPositionCommand(m_arm, 0.335));
 
     // operator b: arm to podium shot angle
     m_operatorController.b().and(() -> !isInClimberMode).onTrue(makeSetPositionCommand(m_arm, 0.662));
