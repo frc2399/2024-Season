@@ -324,7 +324,7 @@ public class RobotContainer {
       double target) {
     return new SequentialCommandGroup(
         new ConditionalCommand(new InstantCommand(() -> {
-        }), new InstantCommand(() -> arm.enable()), () -> arm.isEnabled()),
+        }), new InstantCommand(() -> arm.enable(), arm), () -> arm.isEnabled()),
         // new InstantCommand(() ->
         // arm.setEncoderPosition(arm.getAbsoluteEncoderPosition())),
         new RunCommand(() -> arm.setGoal(target), arm));
@@ -332,16 +332,16 @@ public class RobotContainer {
 
   private Command makeSetSpeedGravityCompensationCommand(Arm a, double speed) {
     return new SequentialCommandGroup(
-        new InstantCommand(() -> a.disable()),
+        new InstantCommand(() -> a.disable(), a),
         new RunCommand(() -> a.setSpeedGravityCompensation(speed), a));
   }
 
   private Command setIntakeSpeed(Intake i, double speed) {
-    return new InstantCommand(() -> i.setMotor(speed));
+    return new InstantCommand(() -> i.setMotor(speed), i);
   }
 
   private Command setIndexerSpeed(Indexer i, double speed) {
-    return new InstantCommand(() -> i.setMotor(speed));
+    return new InstantCommand(() -> i.setMotor(speed), i);
   }
 
   private Command shootAfterDelay() {
