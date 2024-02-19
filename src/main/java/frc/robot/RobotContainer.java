@@ -102,7 +102,7 @@ public class RobotContainer {
     setUpSubsystems();
     configureDefaultCommands();
     configureButtonBindings();
-   // setUpAuton();
+    // setUpAuton();
   }
 
   /**
@@ -238,12 +238,15 @@ public class RobotContainer {
 
     // driver a: automatic intaking
     m_driverController.rightTrigger().whileTrue(new automaticIntakeAndIndexer(m_indexer,
-        m_intake)).onFalse(setIndexerAndIntakeSpeed(m_indexer, m_intake, 0));
+        m_intake)).onFalse(intakeWithHeightRestriction());
 
-    // driver right trigger: manual intake
-    m_driverController.rightTrigger().whileTrue(new ParallelCommandGroup(
-        new RunCommand(() -> m_intake.setMotor(0.8), m_intake),
-        new RunCommand(() -> m_indexer.setMotor(0.8), m_indexer)));
+    // driver right trigger: manual intake, uncomment if necessary
+    //m_driverController.rightTrigger().whileTrue(new ParallelCommandGroup(
+        //new RunCommand(() -> m_intake.setMotor(0.8), m_intake),
+        //new RunCommand(() -> m_indexer.setMotor(0.8), m_indexer)));
+
+    //driver right trigger: manual intake with arm height restriction
+    m_driverController.rightTrigger().whileTrue(intakeWithHeightRestriction());
 
     // driver left trigger: outtake
     m_driverController.leftTrigger().whileTrue(new ParallelCommandGroup(
@@ -298,6 +301,14 @@ public class RobotContainer {
 
     // operator y: arm to amp angle
     m_operatorController.y().and(() -> !isInClimberMode).onTrue(makeSetPositionCommand(m_arm, 1.4));
+
+    //operator left trigger: intake
+    m_operatorController.leftTrigger().and(() -> !isInClimberMode).whileTrue(intakeWithHeightRestriction());
+
+    //operator right trigger: outtake
+    m_operatorController.rightTrigger().and(() -> !isInClimberMode).whileTrue(new ParallelCommandGroup(
+        new RunCommand(() -> m_intake.setMotor(-0.3), m_intake),
+        new RunCommand(() -> m_indexer.setMotor(-0.3), m_indexer)));
   }
 
   public static Command makeSetPositionCommand(Arm arm,
@@ -305,7 +316,8 @@ public class RobotContainer {
     return new SequentialCommandGroup(
         new ConditionalCommand(new InstantCommand(() -> {
         }), new InstantCommand(() -> arm.enable()), () -> arm.isEnabled()),
-        //new InstantCommand(() -> arm.setEncoderPosition(arm.getAbsoluteEncoderPosition())),
+        // new InstantCommand(() ->
+        // arm.setEncoderPosition(arm.getAbsoluteEncoderPosition())),
         new RunCommand(() -> arm.setGoal(target), arm));
   }
 
@@ -323,19 +335,13 @@ public class RobotContainer {
     return new InstantCommand(() -> i.setMotor(speed));
   }
 
-  private Command setIndexerAndIntakeSpeed(Indexer indexer, Intake intake, double speed) {
-    return new ParallelCommandGroup(
-        new InstantCommand(() -> intake.setMotor(speed)),
-        new InstantCommand(() -> indexer.setMotor(speed)));
-  }
-
   private Command shootAfterDelay() {
     return new ParallelCommandGroup(
-            new SequentialCommandGroup(
-                new WaitCommand(0.5),
-                new RunCommand(() -> m_indexer.setMotor(Constants.IndexerConstants.INDEXER_IN_SPEED), m_indexer),
-                new RunCommand(() -> m_indexer.setIsIntooked(false), m_indexer)),
-            new RunCommand(() -> m_shooter.setMotor(0.8), m_shooter)).withTimeout(1);
+        new SequentialCommandGroup(
+            new WaitCommand(0.5),
+            new RunCommand(() -> m_indexer.setMotor(Constants.IndexerConstants.INDEXER_IN_SPEED), m_indexer),
+            new RunCommand(() -> m_indexer.setIsIntooked(false), m_indexer)),
+        new RunCommand(() -> m_shooter.setMotor(0.8), m_shooter)).withTimeout(1);
   }
 
   private Command outtakeAndShootAfterDelay() {
@@ -348,4 +354,14 @@ public class RobotContainer {
                 new RunCommand(() -> m_indexer.setIsIntooked(false), m_indexer)),
             new RunCommand(() -> m_shooter.setMotor(0.8), m_shooter)).withTimeout(1));
   }
+
+private Command intakeWithHeightRestriction() {
+    return new ConditionalCommand(
+      new ParallelCommandGroup(
+        new RunCommand(() -> m_intake.setMotor(Constants.IntakeConstants.INTAKING_SPEED), m_intake), 
+        new RunCommand(() -> m_indexer.setMotor(Constants.IndexerConstants.INDEXER_IN_SPEED), m_indexer)), 
+      new ParallelCommandGroup(
+        new RunCommand(() -> m_intake.setMotor(0)),
+        new RunCommand(() -> m_indexer.setMotor(0))), () -> m_arm.getEncoderPosition() < 0.35);
+}
 }
