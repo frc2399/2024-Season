@@ -70,6 +70,7 @@ public class RealIndexer implements IndexerIO {
     public void periodicUpdate() {
         SmartDashboard.putBoolean("isIntooked:", isIntooked);
         SmartDashboard.putBoolean("getIsBeamBroken", getIsBeamBroken());
+        SmartDashboard.putNumber("indexer current", getCurrent());
     }
 
     @Override
@@ -93,7 +94,7 @@ public class RealIndexer implements IndexerIO {
 
     @Override
     public boolean isStalling() {
-        return ((Math.abs(getCurrent()) > Constants.NEO550_CURRENT_LIMIT));
+        return (Math.abs(getCurrent()) > 10);
     }
 
 }

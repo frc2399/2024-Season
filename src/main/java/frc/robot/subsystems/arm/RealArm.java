@@ -27,6 +27,7 @@ public class RealArm implements ArmIO {
             false, true, 0);
 
         //make the encoders
+        //.044
         armAbsoluteEncoderRight = armMotorControllerRight.getAbsoluteEncoder(Type.kDutyCycle);
         armEncoderRight = armMotorControllerRight.getEncoder();
 
@@ -34,7 +35,7 @@ public class RealArm implements ArmIO {
         armAbsoluteEncoderRight.setPositionConversionFactor(ArmConstants.ABSOLUTE_RADIANS_PER_REVOLUTION);
         armAbsoluteEncoderRight.setVelocityConversionFactor(ArmConstants.ABSOLUTE_RADIANS_PER_REVOLUTION / 60);
         armAbsoluteEncoderRight.setInverted(true);
-        armAbsoluteEncoderRight.setZeroOffset(-Math.PI / 2);
+        armAbsoluteEncoderRight.setZeroOffset(0.033 + Math.PI / 2);
         armEncoderRight.setPositionConversionFactor(ArmConstants.RADIANS_PER_REVOLUTION);
         armEncoderRight.setVelocityConversionFactor(ArmConstants.RADIANS_PER_REVOLUTION / 60);
         armEncoderRight.setPosition(armAbsoluteEncoderRight.getPosition());
@@ -51,6 +52,7 @@ public class RealArm implements ArmIO {
     public void periodicUpdate() {
         SmartDashboard.putNumber("arm position", getEncoderPosition());
         SmartDashboard.putNumber("arm absolute position", getAbsoluteEncoderPosition());
+        SmartDashboard.putNumber("Arm zero offset", armAbsoluteEncoderRight.getZeroOffset());
     }
 
     @Override
@@ -60,7 +62,7 @@ public class RealArm implements ArmIO {
 
     @Override
     public double getEncoderSpeed() {
-        return armAbsoluteEncoderRight.getVelocity();
+        return armEncoderRight.getVelocity();
     }
 
     @Override
