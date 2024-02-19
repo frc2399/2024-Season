@@ -149,9 +149,9 @@ public class VisionReal extends SubsystemBase implements VisionIO {
       );
       dist = speakerDist.getNorm();
       if (dist <= boundary) {
-        return (eightySlope * Units.metersToInches(dist) + eightyIntercept);
+        return (Math.atan(eightySlope * Units.metersToInches(dist) + eightyIntercept));
       } else {
-        return (hundredSlope * Units.metersToInches(dist) + hundredIntercept);
+        return (Math.atan(hundredSlope * Units.metersToInches(dist) + hundredIntercept));
       }
     }
 }

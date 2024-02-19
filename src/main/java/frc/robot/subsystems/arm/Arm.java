@@ -114,5 +114,10 @@ public void setEncoderPosition(double angle) {
     }
     return speedFromArmHeight;
     }
+  
+
+    //5.33E-03*x + 0.206 - https://docs.google.com/spreadsheets/d/1TCEiHto6ypUku9VXPN79PGwONyrlhI2SbMsfn337yTw/edit#gid=0
+    // inverse tan of function above to get angle
+
 
 }

@@ -4,10 +4,14 @@
 
 package frc.robot;
 
+import java.util.Optional;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -279,25 +283,32 @@ public class RobotContainer {
                 public static int ampID;
   
                 static void assignAprilTags() {
-                if (VisionConstants.isBlueAlliance) {
-                        facingSourceLeftID = 1;
-                        facingSourceRightID = 2;
-                        speakerID = 7;
-                        speakerOffsetID = 8;
-                        stageBackID = 14;
-                        facingAwayFromSpeakerStageLeftID = 15;
-                        facingAwayFromSpeakerStageRightID = 16;
-                        ampID = 6;
-                } else {
-                        facingSourceLeftID = 10;
-                        facingSourceRightID = 9;
-                        speakerID = 4;
-                        speakerOffsetID = 3;
-                        stageBackID = 13;
-                        facingAwayFromSpeakerStageLeftID = 11;
-                        facingAwayFromSpeakerStageRightID = 12;
-                        ampID = 5;
-                        }}
+                    Optional<Alliance> ally = DriverStation.getAlliance();
+                    if (ally.isPresent()) {
+                        if (ally.get() == Alliance.Red) {
+                            facingSourceLeftID = 10;
+                            facingSourceRightID = 9;
+                            speakerID = 4;
+                            speakerOffsetID = 3;
+                            stageBackID = 13;
+                            facingAwayFromSpeakerStageLeftID = 11;
+                            facingAwayFromSpeakerStageRightID = 12;
+                            ampID = 5;
+                     }
+                    }
+                        else {
+                            facingSourceLeftID = 1;
+                            facingSourceRightID = 2;
+                            speakerID = 7;
+                            speakerOffsetID = 8;
+                            stageBackID = 14;
+                            facingAwayFromSpeakerStageLeftID = 15;
+                            facingAwayFromSpeakerStageRightID = 16;
+                            ampID = 6;
+                        }
+                
+                        
+                        }
                 }
 
   private void configureButtonBindings() {

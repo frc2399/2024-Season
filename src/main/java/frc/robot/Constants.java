@@ -255,14 +255,13 @@ public final class Constants {
     public static final boolean isBlueAlliance = true; // FIXME: udpate before every match
     // TODO: pull from FMS
 
-    // TODO: cannot test without better model that sets intercept above 0
-    public static final double eightyModelSlope = 0.008182;
-    public static final double eightyModelIntercept = -0.1562;
-    public static final double eightyModelRange = Units.feetToMeters(14);
-    public static final double hundredModelSlope = 0.0008596;
-    public static final double hundredModelIntercept = 0.6907;
-
-    //possible todo: model for 100% speed
+     //5.33E-03*x + 0.206 - https://docs.google.com/spreadsheets/d/1TCEiHto6ypUku9VXPN79PGwONyrlhI2SbMsfn337yTw/edit#gid=0
+    // inverse tan of function above to get angle
+    public static final double eightyModelSlope = Units.inchesToMeters(0.00533);
+    public static final double eightyModelIntercept = Units.inchesToMeters(0.206);
+    public static final double eightyModelRange = Units.feetToMeters(12);
+    public static final double hundredModelSlope = Units.inchesToMeters(0.00533);
+    public static final double hundredModelIntercept = Units.inchesToMeters(0.206);
 
   }
 
