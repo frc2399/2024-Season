@@ -141,6 +141,7 @@ public final class Constants {
     public static final double SUBWOOFER_SPEED = 0.7;
     public static final double SHOOTER_FEEDFORWRD = 0.03;
     public static final double SHOOTER_PVALUE = 0.01;
+    public static final double SHOOT_MAX_SPEED_RPS = NEO_MAX_SPEED_RPM / 60;
   }
 
   public static final class IndexerConstants {

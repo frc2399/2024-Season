@@ -25,7 +25,7 @@ public class Arm extends ProfiledPIDSubsystem {
   private static final Constraints constraints = new Constraints(max_vel, max_accel);
   private static double gravityCompensation = 0.025;
   private static double feedForward = 1/max_vel;
-  private static double kpPos = 1.5;
+  private static double kpPos = 3.0;
   private static double kd = 0.01;
 
   public Arm(ArmIO io) {

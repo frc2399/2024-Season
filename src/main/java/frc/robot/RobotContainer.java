@@ -229,23 +229,22 @@ public class RobotContainer {
     m_driverController.leftBumper().whileTrue(
         // new SequentialCommandGroup(
         // new RunCommand(() -> m_indexer.setIsIntooked(false)),
-        new RunCommand(() -> m_shooter.setMotor(m_arm.getSpeedFromArmHeight())))
+        new RunCommand(() -> m_shooter.setMotor(m_arm.getSpeedFromArmHeight()), m_shooter))
     // )
     ;
 
     // driver right bumper: auto-shoot
-    m_driverController.rightBumper().onTrue(outtakeAndShootAfterDelay());
+    m_driverController.rightBumper().onTrue(shootAfterDelay());
 
     // driver a: automatic intaking
     m_driverController.rightTrigger().whileTrue(new automaticIntakeAndIndexer(m_indexer,
-        m_intake)).onFalse(intakeWithHeightRestriction());
-
+        m_intake));
     // driver right trigger: manual intake, uncomment if necessary
-    //m_driverController.rightTrigger().whileTrue(new ParallelCommandGroup(
-        //new RunCommand(() -> m_intake.setMotor(0.8), m_intake),
-        //new RunCommand(() -> m_indexer.setMotor(0.8), m_indexer)));
+    // m_driverController.rightTrigger().whileTrue(new ParallelCommandGroup(
+    // new RunCommand(() -> m_intake.setMotor(0.8), m_intake),
+    // new RunCommand(() -> m_indexer.setMotor(0.8), m_indexer)));
 
-    //driver right trigger: manual intake with arm height restriction
+    // driver right trigger: manual intake with arm height restriction
     m_driverController.rightTrigger().whileTrue(intakeWithHeightRestriction());
 
     // driver left trigger: outtake
@@ -259,7 +258,7 @@ public class RobotContainer {
 
   private void configureButtonBindingsOperatorClimber() {
 
-     m_operatorController.povCenter().onTrue(new InstantCommand(
+    m_operatorController.povCenter().onTrue(new InstantCommand(
         () -> fieldOrientedDrive = !fieldOrientedDrive));
 
     // operater left trigger: climber mode: left climber up
@@ -288,7 +287,7 @@ public class RobotContainer {
     m_operatorController.x().onTrue(new InstantCommand(() -> isInClimberMode = !isInClimberMode, m_climber));
 
   }
-  
+
   private void configureButtonBindingsOperatorNotClimber() {
     // operator right trigger: manual arm up
     m_operatorController.rightTrigger().and(() -> !isInClimberMode)
@@ -303,18 +302,18 @@ public class RobotContainer {
         .onFalse(makeSetSpeedGravityCompensationCommand(m_arm, 0));
 
     // operater a: arm to intake/subwoofer angle
-    m_operatorController.a().and(() -> !isInClimberMode).onTrue(makeSetPositionCommand(m_arm, 0.320));
+    m_operatorController.a().and(() -> !isInClimberMode).onTrue(makeSetPositionCommand(m_arm, 0.335));
 
     // operator b: arm to podium shot angle
-    m_operatorController.b().and(() -> !isInClimberMode).onTrue(makeSetPositionCommand(m_arm, 0.616));
+    m_operatorController.b().and(() -> !isInClimberMode).onTrue(makeSetPositionCommand(m_arm, 0.662));
 
     // operator y: arm to amp angle
     m_operatorController.y().and(() -> !isInClimberMode).onTrue(makeSetPositionCommand(m_arm, 1.4));
 
-    //operator left trigger: intake
+    // operator left trigger: intake
     m_operatorController.leftTrigger().and(() -> !isInClimberMode).whileTrue(intakeWithHeightRestriction());
 
-    //operator right trigger: outtake
+    // operator right trigger: outtake
     m_operatorController.rightTrigger().and(() -> !isInClimberMode).whileTrue(new ParallelCommandGroup(
         new RunCommand(() -> m_intake.setMotor(-0.3), m_intake),
         new RunCommand(() -> m_indexer.setMotor(-0.3), m_indexer)));
@@ -334,6 +333,18 @@ public class RobotContainer {
     return new SequentialCommandGroup(
         new InstantCommand(() -> a.disable(), a),
         new RunCommand(() -> a.setSpeedGravityCompensation(speed), a));
+  }
+
+  private Command intakeForTime(Intake intake, Indexer indexer) {
+    return new ParallelCommandGroup(
+        new RunCommand(() -> intake.setMotor(.8)).withTimeout(1.5),
+        new RunCommand(() -> indexer.setMotor(0.8)).withTimeout(1.5));
+  }
+
+  private Command setIndexerAndIntakeSpeed(Indexer indexer, Intake intake, double speed) {
+    return new ParallelCommandGroup(
+        new InstantCommand(() -> intake.setMotor(speed)),
+        new InstantCommand(() -> indexer.setMotor(speed)));
   }
 
   private Command shootAfterDelay() {
@@ -356,13 +367,14 @@ public class RobotContainer {
             new RunCommand(() -> m_shooter.setMotor(0.8), m_shooter)).withTimeout(1));
   }
 
-private Command intakeWithHeightRestriction() {
+  private Command intakeWithHeightRestriction() {
     return new ConditionalCommand(
-      new ParallelCommandGroup(
-        new RunCommand(() -> m_intake.setMotor(Constants.IntakeConstants.INTAKING_SPEED), m_intake), 
-        new RunCommand(() -> m_indexer.setMotor(Constants.IndexerConstants.INDEXER_IN_SPEED), m_indexer)), 
-      new ParallelCommandGroup(
-        new RunCommand(() -> m_intake.setMotor(0), m_intake),
-        new RunCommand(() -> m_indexer.setMotor(0), m_indexer)), () -> m_arm.getEncoderPosition() < 0.35);
-}
+        new ParallelCommandGroup(
+            new RunCommand(() -> m_intake.setMotor(Constants.IntakeConstants.INTAKING_SPEED), m_intake),
+            new RunCommand(() -> m_indexer.setMotor(Constants.IndexerConstants.INDEXER_IN_SPEED), m_indexer)),
+        new ParallelCommandGroup(
+            new RunCommand(() -> m_intake.setMotor(0), m_intake),
+            new RunCommand(() -> m_indexer.setMotor(0), m_indexer)),
+        () -> m_arm.getEncoderPosition() < 0.35);
+  }
 }

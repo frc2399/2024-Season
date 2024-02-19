@@ -5,6 +5,8 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel.MotorType;
+
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.Constants.ShooterConstants;
 import frc.utils.MotorUtil;
@@ -18,9 +20,9 @@ public class RealShooter implements ShooterIO {
     public static SparkPIDController shooterHighController;
     public static SparkPIDController shooterLowController;
 
-    public double feedforward = 0.03;
+    public double feedforward = 0.011;
     public double pvalue = 0.01;
-    private double slewRate = 0.2;
+    private double slewRate = 0;
 
     public RealShooter()
     {
@@ -33,19 +35,30 @@ public class RealShooter implements ShooterIO {
         // initialize motor encoder
         shooterLowEncoder = shooterMotorControllerLow.getEncoder();
         shooterHighEncoder = shooterMotorControllerHigh.getEncoder();
+        shooterHighEncoder.setVelocityConversionFactor(1/60.0); //convert to rps
+        shooterLowEncoder.setVelocityConversionFactor(1/60.0); //convert to rps
 
-        //initialize PID controllers, set gains
+        //initialize PID controllers, set feedback device
         shooterHighController = shooterMotorControllerHigh.getPIDController();
         shooterLowController = shooterMotorControllerLow.getPIDController();
         shooterHighController.setFeedbackDevice(shooterHighEncoder);
         shooterLowController.setFeedbackDevice(shooterLowEncoder);
+        //shooter cannot go backwards
+        shooterHighController.setOutputRange(0, 1);
+        shooterLowController.setOutputRange(0, 1);
+        //set gains for PID controllers
+        shooterHighController.setFF(feedforward);
+        shooterHighController.setP(pvalue);
+        shooterLowController.setFF(feedforward);
+        shooterLowController.setP(pvalue);
     }
 
     //Basic shooting command
     @Override
     public void setMotor(double shootSpeed) {
-        shooterHighController.setReference(shootSpeed, ControlType.kDutyCycle);
-        shooterLowController.setReference(shootSpeed, ControlType.kDutyCycle);   
+        shooterHighController.setReference(shootSpeed * ShooterConstants.SHOOT_MAX_SPEED_RPS, ControlType.kVelocity);
+        shooterLowController.setReference(shootSpeed * ShooterConstants.SHOOT_MAX_SPEED_RPS, ControlType.kVelocity);   
+        SmartDashboard.putNumber("Shooter goal", shootSpeed * ShooterConstants.SHOOT_MAX_SPEED_RPS);
     }
 
     //Shooting command, but using PID
@@ -72,6 +85,7 @@ public class RealShooter implements ShooterIO {
 
     @Override
     public void periodicUpdate() {  
+        SmartDashboard.putNumber("Shooter speed", getEncoderSpeed());
     }
 
 }
