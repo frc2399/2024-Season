@@ -102,7 +102,7 @@ public class RobotContainer {
     setUpSubsystems();
     configureDefaultCommands();
     configureButtonBindings();
-    setUpAuton();
+   // setUpAuton();
   }
 
   /**
@@ -234,7 +234,7 @@ public class RobotContainer {
     ;
 
     // driver right bumper: auto-shoot
-    m_driverController.rightBumper().onTrue(shootAfterDelay());
+    m_driverController.rightBumper().onTrue(outtakeAndShootAfterDelay());
 
     // driver a: automatic intaking
     m_driverController.rightTrigger().whileTrue(new automaticIntakeAndIndexer(m_indexer,
@@ -331,31 +331,21 @@ public class RobotContainer {
 
   private Command shootAfterDelay() {
     return new ParallelCommandGroup(
+            new SequentialCommandGroup(
+                new WaitCommand(0.5),
+                new RunCommand(() -> m_indexer.setMotor(Constants.IndexerConstants.INDEXER_IN_SPEED), m_indexer),
+                new RunCommand(() -> m_indexer.setIsIntooked(false), m_indexer)),
+            new RunCommand(() -> m_shooter.setMotor(0.8), m_shooter)).withTimeout(1);
+  }
+
+  private Command outtakeAndShootAfterDelay() {
+    return new SequentialCommandGroup(
+        new RunCommand(() -> m_indexer.setMotor(-0.1), m_intake).withTimeout(0.25),
         new ParallelCommandGroup(
             new SequentialCommandGroup(
                 new WaitCommand(0.5),
                 new RunCommand(() -> m_indexer.setMotor(Constants.IndexerConstants.INDEXER_IN_SPEED), m_indexer),
                 new RunCommand(() -> m_indexer.setIsIntooked(false), m_indexer)),
-            new RunCommand(() -> m_shooter.setMotor(0.8), m_shooter)),
-        new WaitCommand(1)).andThen(new RunCommand(() -> {
-          m_shooter.setMotor(0);
-          m_indexer.setMotor(0);
-        }));
-  }
-
-  private Command outtakeAndShootAfterDelay() {
-    return new ParallelCommandGroup(
-        new RunCommand(() -> m_indexer.setMotor(-Constants.IndexerConstants.INDEXER_IN_SPEED), m_intake),
-        new ParallelCommandGroup(
-            new ParallelCommandGroup(
-                new SequentialCommandGroup(
-                    new WaitCommand(0.5),
-                    new RunCommand(() -> m_indexer.setMotor(Constants.IndexerConstants.INDEXER_IN_SPEED), m_indexer),
-                    new RunCommand(() -> m_indexer.setIsIntooked(false), m_indexer)),
-                new RunCommand(() -> m_shooter.setMotor(0.8), m_shooter)),
-            new WaitCommand(1)).andThen(new RunCommand(() -> {
-              m_shooter.setMotor(0);
-              m_indexer.setMotor(0);
-            })));
+            new RunCommand(() -> m_shooter.setMotor(0.8), m_shooter)).withTimeout(1));
   }
 }

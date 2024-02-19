@@ -17,20 +17,21 @@ public class automaticIntakeAndIndexer extends Command {
         addRequirements(intake);
         timer = new Timer();
         timer.reset();
+        timer.stop();
     }
 
     @Override
     public void execute() {
         if (indexer.isStalling()) {
             timer.start();
-            if(timer.get() > 0.1) {
-                indexer.setIsIntooked(true);
-                indexer.setMotor(0);
-                intake.setMotor(0); }
         } else {
             intake.setMotor(.3);
             indexer.setMotor(.3);
         }
+        if(timer.get() > 0.1) {
+            indexer.setIsIntooked(true);
+            indexer.setMotor(0);
+            intake.setMotor(0); }
     }
 
     @Override
