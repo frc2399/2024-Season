@@ -60,7 +60,7 @@ public class RealArm implements ArmIO {
 
     @Override
     public double getEncoderSpeed() {
-        return armAbsoluteEncoderRight.getVelocity();
+        return armEncoderRight.getVelocity();
     }
 
     @Override
