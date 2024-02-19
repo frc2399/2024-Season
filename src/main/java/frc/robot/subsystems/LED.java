@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.intake.Intake;
-import frc.robot.util.LEDController;
+import frc.utils.LEDController;
 
 public class LED extends SubsystemBase {
     LEDController red = new LEDController(Constants.LEDConstants.RED_CHANNEL);
