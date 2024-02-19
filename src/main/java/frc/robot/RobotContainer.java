@@ -246,7 +246,7 @@ public class RobotContainer {
         //new RunCommand(() -> m_indexer.setMotor(0.8), m_indexer)));
 
     //driver right trigger: manual intake with arm height restriction
-    m_driverController.rightTrigger().whileTrue(intakeWithHeightRestriction());
+    m_driverController.rightTrigger().whileTrue(intakeWithHeightRestriction()).onFalse(setIndexerAndIntakeSpeed(m_indexer, m_intake, 0));
 
     // driver left trigger: outtake
     m_driverController.leftTrigger().whileTrue(new ParallelCommandGroup(
@@ -302,11 +302,12 @@ public class RobotContainer {
     // operator y: arm to amp angle
     m_operatorController.y().and(() -> !isInClimberMode).onTrue(makeSetPositionCommand(m_arm, 1.4));
 
-    //operator left trigger: intake
-    m_operatorController.leftTrigger().and(() -> !isInClimberMode).whileTrue(intakeWithHeightRestriction());
+    //operator right bumper: intake
+    m_operatorController.rightBumper().and(() -> !isInClimberMode).whileTrue(intakeWithHeightRestriction()).onFalse(setIndexerAndIntakeSpeed(m_indexer, m_intake, 0));
 
-    //operator right trigger: outtake
-    m_operatorController.rightTrigger().and(() -> !isInClimberMode).whileTrue(new ParallelCommandGroup(
+
+    //operator left bumper: outtake
+    m_operatorController.leftBumper().and(() -> !isInClimberMode).whileTrue(new ParallelCommandGroup(
         new RunCommand(() -> m_intake.setMotor(-0.3), m_intake),
         new RunCommand(() -> m_indexer.setMotor(-0.3), m_indexer)));
   }
@@ -361,7 +362,13 @@ private Command intakeWithHeightRestriction() {
         new RunCommand(() -> m_intake.setMotor(Constants.IntakeConstants.INTAKING_SPEED), m_intake), 
         new RunCommand(() -> m_indexer.setMotor(Constants.IndexerConstants.INDEXER_IN_SPEED), m_indexer)), 
       new ParallelCommandGroup(
-        new RunCommand(() -> m_intake.setMotor(0)),
-        new RunCommand(() -> m_indexer.setMotor(0))), () -> m_arm.getEncoderPosition() < 0.35);
+        new RunCommand(() -> m_intake.setMotor(0), m_intake),
+        new RunCommand(() -> m_indexer.setMotor(0), m_indexer)), () -> m_arm.getEncoderPosition() < 0.35);
+}
+
+private Command setIndexerAndIntakeSpeed(Indexer indexer, Intake intake, double speed) {
+  return new ParallelCommandGroup(
+      new InstantCommand(() -> intake.setMotor(speed), m_intake),
+      new InstantCommand(() -> indexer.setMotor(speed), m_indexer));
 }
 }
