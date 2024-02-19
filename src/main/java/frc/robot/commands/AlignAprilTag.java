@@ -6,30 +6,21 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.vision.Vision;
-import frc.robot.Constants.VisionConstants;
-
-import java.util.Optional;
-
-import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
-import frc.robot.subsystems.gyro.GyroIOPigeon2;
 
 public class AlignAprilTag extends Command {
   private final DriveSubsystem driveSubsystem;
   private final Vision vision;
   private Boolean posTurn;
-  private final Pose2d currentPose;
   double angleInDegrees;
   Rotation2d targetAngle;
   /** Creates a new AlignAprilTag. */
-  public AlignAprilTag(DriveSubsystem m_driveSubsystem, Vision m_visionSubsystem, Pose2d poseEstimate) {
+  public AlignAprilTag(DriveSubsystem m_driveSubsystem, Vision m_visionSubsystem) {
     //makes the global variables the same as the ones intook from the call
     driveSubsystem = m_driveSubsystem;
-    currentPose = poseEstimate;
     vision = m_visionSubsystem;
     addRequirements(m_driveSubsystem, m_visionSubsystem);
   }

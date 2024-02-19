@@ -54,6 +54,9 @@ public class VisionReal extends SubsystemBase implements VisionIO {
     // This method will be called once per scheduler run
     //SmartDashboard.putBoolean("Camera is connected", camera.isConnected());
     //SmartDashboard.putBoolean("Pose Updates Enabled?: ", updatePoseWithVisionReadings);
+    if (!updatePoseWithVisionReadings) {
+      return;
+    }
     Optional<EstimatedRobotPose> pose = getCameraEst();
     //System.out.println(CamEstimator.update());
     //if (!updatePoseWithVisionReadings) {
@@ -122,12 +125,12 @@ public class VisionReal extends SubsystemBase implements VisionIO {
           seesSpeaker = true;
           //yaw in radians bc p values get too small
           yawDiff = ((result.getYaw()*Math.PI)/180);
-          SmartDashboard.putBoolean("Sees speaker: ", true);
+          SmartDashboard.putBoolean("Sees speaker (only true when in keep pointed mode): ", true);
           break; //saves a tiny bit of processing power possibly
         }
       }
       if (!seesSpeaker) {
-        SmartDashboard.putBoolean("Sees speaker: ", false);
+        SmartDashboard.putBoolean("Sees speaker (only true when in keep pointed mode): ", false);
       }
       return (keepPointedController.calculate(yawDiff, 0));
     }

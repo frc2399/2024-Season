@@ -26,8 +26,6 @@ import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.Robot.RobotType;
-import frc.robot.commands.AimAtTargetCommand;
-import frc.robot.commands.AlignAprilTag;
 import frc.robot.commands.automaticClimberCommand;
 import frc.robot.commands.automaticIntakeAndIndexer;
 import frc.robot.subsystems.LED;
@@ -113,6 +111,7 @@ public class RobotContainer {
     configureDefaultCommands();
     configureButtonBindings();
     setUpAuton();
+    aprilTagAssignment.assignAprilTags();
   }
 
   public Command getAutonomousCommand() {
@@ -332,6 +331,22 @@ public class RobotContainer {
 
     // driver b: reset gyro
     m_driverController.b().onTrue(new InstantCommand(() -> m_gyro.setYaw(0.0)));
+
+    //driver a: auto-turn to speaker + align arm height
+    m_driverController.a().whileTrue(
+        new ParallelCommandGroup(
+            new RunCommand(() -> 
+            m_robotDrive.drive(
+            -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
+            -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),
+            m_vision.keepPointedAtSpeaker(aprilTagAssignment.speakerID),
+            fieldOrientedDrive), m_robotDrive), 
+            makeSetPositionCommand(m_arm, m_vision.keepPointedAtSpeaker(aprilTagAssignment.speakerID)))).
+        onFalse(new RunCommand(() -> m_robotDrive.drive(
+          -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
+          -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),
+          -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband),
+          fieldOrientedDrive), m_robotDrive));
 
     // operater left trigger: climber mode: left climber up
     m_operatorController.leftTrigger().and(() -> isInClimberMode).whileTrue(new RunCommand(

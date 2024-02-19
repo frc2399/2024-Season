@@ -9,7 +9,7 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.drive.DriveSubsystem;
-import frc.robot.subsystems.vision.VisionIO;
+import frc.robot.subsystems.vision.Vision;
 
 public class AimAtTargetCommand extends Command {
 
@@ -17,14 +17,13 @@ public class AimAtTargetCommand extends Command {
     final double ANGULAR_D = 0.0;
     PIDController turnController = new PIDController(ANGULAR_P, 0, ANGULAR_D);
     private DriveSubsystem drive;
-    private VisionIO vision;
+    private Vision vision;
 
     /** Creates a new AimAtTargetCommand. */
-    public AimAtTargetCommand(DriveSubsystem drive, VisionIO vision) {
+    public AimAtTargetCommand(DriveSubsystem drive, Vision vision) {
         this.drive = drive;
         this.vision = vision;
-        addRequirements(drive);
-        // Use addRequirements() here to declare subsystem dependencies.
+        addRequirements(drive, vision);
     }
 
     // Called when the command is initially scheduled.
