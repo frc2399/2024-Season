@@ -234,11 +234,7 @@ public class RobotContainer {
     ;
 
     // driver right bumper: auto-shoot
-    m_driverController.rightBumper().onTrue(outtakeAndShootAfterDelay());
-
-    // driver a: automatic intaking
-    m_driverController.rightTrigger().whileTrue(new automaticIntakeAndIndexer(m_indexer,
-        m_intake)).onFalse(setIndexerAndIntakeSpeed(m_indexer, m_intake, 0));
+    m_driverController.rightBumper().onTrue(shootAfterDelay());
 
     // driver right trigger: manual intake
     m_driverController.rightTrigger().whileTrue(new ParallelCommandGroup(
@@ -321,6 +317,13 @@ public class RobotContainer {
 
   private Command setIndexerSpeed(Indexer i, double speed) {
     return new InstantCommand(() -> i.setMotor(speed));
+  }
+
+  private Command intakeForTime(Intake intake, Indexer indexer) {
+    return new ParallelCommandGroup(
+        new RunCommand(() -> intake.setMotor(.8)).withTimeout(1.5),
+        new RunCommand(() -> indexer.setMotor(0.8)).withTimeout(1.5)
+    );
   }
 
   private Command setIndexerAndIntakeSpeed(Indexer indexer, Intake intake, double speed) {
