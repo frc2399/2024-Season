@@ -215,9 +215,9 @@ public class RobotContainer {
         // Turning is controlled by the X axis of the right stick.
         new RunCommand(
             () -> m_robotDrive.drive(
-                -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
-                -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),
-                -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband),
+                -MathUtil.applyDeadband(Math.pow(m_driverController.getLeftY(), 3), OIConstants.kDriveDeadband),
+                -MathUtil.applyDeadband(Math.pow(m_driverController.getLeftX(), 3), OIConstants.kDriveDeadband),
+                -MathUtil.applyDeadband(Math.pow(m_driverController.getRightX(), 3), OIConstants.kDriveDeadband),
                 fieldOrientedDrive),
             m_robotDrive));
 
@@ -336,14 +336,6 @@ public class RobotContainer {
         new RunCommand(() -> a.setSpeedGravityCompensation(speed), a));
   }
 
-  private Command setIntakeSpeed(Intake i, double speed) {
-    return new InstantCommand(() -> i.setMotor(speed), i);
-  }
-
-  private Command setIndexerSpeed(Indexer i, double speed) {
-    return new InstantCommand(() -> i.setMotor(speed), i);
-  }
-
   private Command shootAfterDelay() {
     return new ParallelCommandGroup(
         new SequentialCommandGroup(
@@ -370,7 +362,7 @@ private Command intakeWithHeightRestriction() {
         new RunCommand(() -> m_intake.setMotor(Constants.IntakeConstants.INTAKING_SPEED), m_intake), 
         new RunCommand(() -> m_indexer.setMotor(Constants.IndexerConstants.INDEXER_IN_SPEED), m_indexer)), 
       new ParallelCommandGroup(
-        new RunCommand(() -> m_intake.setMotor(0)),
-        new RunCommand(() -> m_indexer.setMotor(0))), () -> m_arm.getEncoderPosition() < 0.35);
+        new RunCommand(() -> m_intake.setMotor(0), m_intake),
+        new RunCommand(() -> m_indexer.setMotor(0), m_indexer)), () -> m_arm.getEncoderPosition() < 0.35);
 }
 }
