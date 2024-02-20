@@ -71,6 +71,7 @@ public final class Constants {
   }
 
   public static final class SwerveModuleConstants {
+    //THIS IS 13 ON COMP BOT
     public static final int kDrivingMotorPinionTeeth = 14;
 
     // Invert the turning encoder, since the output shaft rotates in the opposite
