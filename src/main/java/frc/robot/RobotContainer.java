@@ -35,12 +35,15 @@ import frc.robot.commands.automaticIntakeAndIndexer;
 import frc.robot.subsystems.LED;
 import frc.robot.subsystems.Indexer.Indexer;
 import frc.robot.subsystems.Indexer.IndexerIO;
+import frc.robot.subsystems.Indexer.RealIndexer;
 import frc.robot.subsystems.Indexer.SimIndexer;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.arm.ArmIO;
+import frc.robot.subsystems.arm.RealArm;
 import frc.robot.subsystems.arm.SimArm;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.climber.ClimberIO;
+import frc.robot.subsystems.climber.ClimberReal;
 import frc.robot.subsystems.climber.ClimberSim;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.drive.SwerveModule;
@@ -114,150 +117,145 @@ public class RobotContainer {
     setUpSubsystems();
     configureDefaultCommands();
     configureButtonBindings();
-    setUpAuton();
+    // setUpAuton();
     aprilTagAssignment.assignAprilTags();
   }
 
   public Command getAutonomousCommand() {
     return m_autoChooser.getSelected();
-  } 
+  }
+
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
    * @return the command to run in autonomous
    */
 
+  /**
+   * Use this method to define your button->command mappings. Buttons can be
+   * created by
+   * instantiating a {@link edu.wpi.first.wpilibj.GenericHID} or one of its
+   * subclasses ({@link
+   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then calling
+   * passing it to a
+   * {@link JoystickButton}.
+   */
 
-        /**
-         * Use this method to define your button->command mappings. Buttons can be
-         * created by
-         * instantiating a {@link edu.wpi.first.wpilibj.GenericHID} or one of its
-         * subclasses ({@link
-         * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then calling
-         * passing it to a
-         * {@link JoystickButton}.
-         */
-        
-        // // Create config for trajectory
-        // TrajectoryConfig config = new TrajectoryConfig(
-        // AutoConstants.kMaxSpeedMetersPerSecond,
-        // AutoConstants.kMaxAccelerationMetersPerSecondSquared)
-        // // Add kinematics to ensure max speed is actually obeyed
-        // .setKinematics(DriveConstants.kDriveKinematics);
+  // // Create config for trajectory
+  // TrajectoryConfig config = new TrajectoryConfig(
+  // AutoConstants.kMaxSpeedMetersPerSecond,
+  // AutoConstants.kMaxAccelerationMetersPerSecondSquared)
+  // // Add kinematics to ensure max speed is actually obeyed
+  // .setKinematics(DriveConstants.kDriveKinematics);
 
-  
+  // // Position controllers
+  // new PIDController(AutoConstants.kPXController, 0, 0),
+  // new PIDController(AutoConstants.kPYController, 0, 0),
+  // thetaController,
+  // m_robotDrive::setModuleStates,
+  // m_robotDrive);
 
-        // // Position controllers
-        // new PIDController(AutoConstants.kPXController, 0, 0),
-        // new PIDController(AutoConstants.kPYController, 0, 0),
-        // thetaController,
-        // m_robotDrive::setModuleStates,
-        // m_robotDrive);
+  // // Reset odometry to the starting pose of the trajectory.
+  // m_robotDrive.resetOdometry(exampleTrajectory.getInitialPose());
 
-        // // Reset odometry to the starting pose of the trajectory.
-        // m_robotDrive.resetOdometry(exampleTrajectory.getInitialPose());
+  // // Run path following command, then stop at the end.
+  // return swerveControllerCommand.andThen(() -> m_robotDrive.drive(0, 0, 0,
+  // false, false));
+  // }
 
-        // // Run path following command, then stop at the end.
-        // return swerveControllerCommand.andThen(() -> m_robotDrive.drive(0, 0, 0,
-        // false, false));
-        // }
-         
-        private void setUpSubsystems() {
-                if (Robot.robotType == RobotType.SIMULATION) {
-                        indexerIO = new SimIndexer();
-                        shooterIO = new SimShooter();
-                        intakeIO = new SimIntake();
-                        climberIO = new ClimberSim();
-                        armIO = new SimArm();
-                        m_gyro = new GyroIOSim();
-                        m_frontLeftIO = new SwerveModuleIO_Sim("front left");
-                        m_frontRightIO = new SwerveModuleIO_Sim("front right");
-                        m_rearLeftIO = new SwerveModuleIO_Sim("rear left");
-                        m_rearRightIO = new SwerveModuleIO_Sim("rear right");
+  private void setUpSubsystems() {
+    if (Robot.robotType == RobotType.SIMULATION) {
+      indexerIO = new SimIndexer();
+      shooterIO = new SimShooter();
+      intakeIO = new SimIntake();
+      climberIO = new ClimberSim();
+      armIO = new SimArm();
+      m_gyro = new GyroIOSim();
+      m_frontLeftIO = new SwerveModuleIO_Sim("front left");
+      m_frontRightIO = new SwerveModuleIO_Sim("front right");
+      m_rearLeftIO = new SwerveModuleIO_Sim("rear left");
+      m_rearRightIO = new SwerveModuleIO_Sim("rear right");
+      visionIO = new VisionSim(m_robotDrive);
 
-                        m_gyro = new GyroIOSim();
+      m_gyro = new GyroIOSim();
 
-                } else {
-                                        
-                    m_frontLeftIO = new SwerveModuleIO_Real(DriveConstants.kFrontLeftDrivingCanId,
-                        DriveConstants.kFrontLeftTurningCanId, DriveConstants.kFrontLeftChassisAngularOffset,
-                        "front left");
-                    m_frontRightIO = new SwerveModuleIO_Real(DriveConstants.kFrontRightDrivingCanId,
-                        DriveConstants.kFrontRightTurningCanId, DriveConstants.kFrontRightChassisAngularOffset,
-                        "front right");
-                    m_rearLeftIO = new SwerveModuleIO_Real(DriveConstants.kRearLeftDrivingCanId,
-                        DriveConstants.kRearLeftTurningCanId, DriveConstants.kRearLeftChassisAngularOffset,
-                        "rear left");
-                    m_rearRightIO = new SwerveModuleIO_Real(DriveConstants.kRearRightDrivingCanId,
-                        DriveConstants.kRearRightTurningCanId, DriveConstants.kRearRightChassisAngularOffset,
-                        "rear right");
-                    
+    } else {
 
-                    m_climber = new Climber(climberIO);
-                    m_arm = new Arm(armIO);
-                    m_shooter = new Shooter(shooterIO);
-                    m_indexer = new Indexer(indexerIO);
-                    m_intake = new Intake(intakeIO);
-                    m_led = new LED(m_climber);
-                    m_vision = new Vision(visionIO);
+      m_frontLeftIO = new SwerveModuleIO_Real(DriveConstants.kFrontLeftDrivingCanId,
+          DriveConstants.kFrontLeftTurningCanId, DriveConstants.kFrontLeftChassisAngularOffset,
+          "front left");
+      m_frontRightIO = new SwerveModuleIO_Real(DriveConstants.kFrontRightDrivingCanId,
+          DriveConstants.kFrontRightTurningCanId, DriveConstants.kFrontRightChassisAngularOffset,
+          "front right");
+      m_rearLeftIO = new SwerveModuleIO_Real(DriveConstants.kRearLeftDrivingCanId,
+          DriveConstants.kRearLeftTurningCanId, DriveConstants.kRearLeftChassisAngularOffset,
+          "rear left");
+      m_rearRightIO = new SwerveModuleIO_Real(DriveConstants.kRearRightDrivingCanId,
+          DriveConstants.kRearRightTurningCanId, DriveConstants.kRearRightChassisAngularOffset,
+          "rear right");
+      
+      indexerIO = new RealIndexer();
+      shooterIO = new RealShooter();
+      intakeIO = new RealIntake();
+      climberIO = new ClimberSim();
+      armIO = new RealArm();
+      m_gyro = new GyroIOPigeon2();
+      visionIO = new VisionReal();
+     
+    }
 
-                    m_robotDrive = new DriveSubsystem(
-                        new SwerveModule(m_frontLeftIO),
-                        new SwerveModule(m_frontRightIO),
-                        new SwerveModule(m_rearLeftIO),
-                        new SwerveModule(m_rearRightIO), m_gyro);
-                }
-                m_robotDrive = new DriveSubsystem(
-                                new SwerveModule(m_frontLeftIO),
-                                new SwerveModule(m_frontRightIO),
-                                new SwerveModule(m_rearLeftIO),
-                                new SwerveModule(m_rearRightIO), m_gyro);
+    m_climber = new Climber(climberIO);
+      m_arm = new Arm(armIO);
+      m_shooter = new Shooter(shooterIO);
+      m_indexer = new Indexer(indexerIO);
+      m_intake = new Intake(intakeIO);
+      m_led = new LED(m_climber);
+      m_vision = new Vision(visionIO);
 
-                                if (Robot.robotType == RobotType.SIMULATION) {
-                        visionIO = new VisionSim(m_robotDrive);
-                } else {
-                        visionIO = new VisionReal();
-                }
+    m_robotDrive = new DriveSubsystem(
+        new SwerveModule(m_frontLeftIO),
+        new SwerveModule(m_frontRightIO),
+        new SwerveModule(m_rearLeftIO),
+        new SwerveModule(m_rearRightIO), m_gyro);
+  }
+
+  public class aprilTagAssignment {
+    public static int facingSourceLeftID;
+    public static int facingSourceRightID;
+    public static int speakerID;
+    public static int speakerOffsetID;
+    public static int stageBackID;
+    public static int facingAwayFromSpeakerStageLeftID;
+    public static int facingAwayFromSpeakerStageRightID;
+    public static int ampID;
+
+    static void assignAprilTags() {
+      Optional<Alliance> ally = DriverStation.getAlliance();
+      if (ally.isPresent()) {
+        if (ally.get() == Alliance.Red) {
+          facingSourceLeftID = 10;
+          facingSourceRightID = 9;
+          speakerID = 4;
+          speakerOffsetID = 3;
+          stageBackID = 13;
+          facingAwayFromSpeakerStageLeftID = 11;
+          facingAwayFromSpeakerStageRightID = 12;
+          ampID = 5;
         }
+      } else {
+        facingSourceLeftID = 1;
+        facingSourceRightID = 2;
+        speakerID = 7;
+        speakerOffsetID = 8;
+        stageBackID = 14;
+        facingAwayFromSpeakerStageLeftID = 15;
+        facingAwayFromSpeakerStageRightID = 16;
+        ampID = 6;
+      }
 
-      public class aprilTagAssignment { 
-                public static int facingSourceLeftID;
-                public static int facingSourceRightID;
-                public static int speakerID;
-                public static int speakerOffsetID;
-                public static int stageBackID;
-                public static int facingAwayFromSpeakerStageLeftID;
-                public static int facingAwayFromSpeakerStageRightID;
-                public static int ampID;
-  
-                static void assignAprilTags() {
-                    Optional<Alliance> ally = DriverStation.getAlliance();
-                    if (ally.isPresent()) {
-                        if (ally.get() == Alliance.Red) {
-                            facingSourceLeftID = 10;
-                            facingSourceRightID = 9;
-                            speakerID = 4;
-                            speakerOffsetID = 3;
-                            stageBackID = 13;
-                            facingAwayFromSpeakerStageLeftID = 11;
-                            facingAwayFromSpeakerStageRightID = 12;
-                            ampID = 5;
-                     }
-                    }
-                        else {
-                            facingSourceLeftID = 1;
-                            facingSourceRightID = 2;
-                            speakerID = 7;
-                            speakerOffsetID = 8;
-                            stageBackID = 14;
-                            facingAwayFromSpeakerStageLeftID = 15;
-                            facingAwayFromSpeakerStageRightID = 16;
-                            ampID = 6;
-                        }
-                
-                        
-                        }
-                }
+    }
+  }
+
   // sets up auton commands
   private void setUpAuton() {
     NamedCommands.registerCommand("intake", Commands.print("intake")); // sensorIntakeCommand());
@@ -342,21 +340,20 @@ public class RobotContainer {
     // driver b: reset gyro
     m_driverController.b().onTrue(new InstantCommand(() -> m_gyro.setYaw(0.0)));
 
-    //driver a: auto-turn to speaker + align arm height
+    // driver a: auto-turn to speaker + align arm height
     m_driverController.a().whileTrue(
         new ParallelCommandGroup(
-            new RunCommand(() -> 
-            m_robotDrive.drive(
+            new RunCommand(() -> m_robotDrive.drive(
+                -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
+                -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),
+                m_vision.keepPointedAtSpeaker(aprilTagAssignment.speakerID),
+                fieldOrientedDrive), m_robotDrive),
+            makeSetPositionCommand(m_arm, m_vision.keepPointedAtSpeaker(aprilTagAssignment.speakerID))))
+        .onFalse(new RunCommand(() -> m_robotDrive.drive(
             -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
             -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),
-            m_vision.keepPointedAtSpeaker(aprilTagAssignment.speakerID),
-            fieldOrientedDrive), m_robotDrive), 
-            makeSetPositionCommand(m_arm, m_vision.keepPointedAtSpeaker(aprilTagAssignment.speakerID)))).
-        onFalse(new RunCommand(() -> m_robotDrive.drive(
-          -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
-          -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),
-          -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband),
-          fieldOrientedDrive), m_robotDrive));
+            -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband),
+            fieldOrientedDrive), m_robotDrive));
 
     // operater left trigger: climber mode: left climber up
     m_operatorController.leftTrigger().and(() -> isInClimberMode).whileTrue(new RunCommand(
@@ -410,7 +407,8 @@ public class RobotContainer {
     return new SequentialCommandGroup(
         new ConditionalCommand(new InstantCommand(() -> {
         }), new InstantCommand(() -> arm.enable()), () -> arm.isEnabled()),
-        //new InstantCommand(() -> arm.setEncoderPosition(arm.getAbsoluteEncoderPosition())),
+        // new InstantCommand(() ->
+        // arm.setEncoderPosition(arm.getAbsoluteEncoderPosition())),
         new RunCommand(() -> arm.setGoal(target), arm));
   }
 
@@ -431,8 +429,7 @@ public class RobotContainer {
   private Command intakeForTime(Intake intake, Indexer indexer) {
     return new ParallelCommandGroup(
         new RunCommand(() -> intake.setMotor(.8)).withTimeout(1.5),
-        new RunCommand(() -> indexer.setMotor(0.8)).withTimeout(1.5)
-    );
+        new RunCommand(() -> indexer.setMotor(0.8)).withTimeout(1.5));
   }
 
   private Command setIndexerAndIntakeSpeed(Indexer indexer, Intake intake, double speed) {
@@ -443,11 +440,11 @@ public class RobotContainer {
 
   private Command shootAfterDelay() {
     return new ParallelCommandGroup(
-            new SequentialCommandGroup(
-                new WaitCommand(0.5),
-                new RunCommand(() -> m_indexer.setMotor(Constants.IndexerConstants.INDEXER_IN_SPEED), m_indexer),
-                new RunCommand(() -> m_indexer.setIsIntooked(false), m_indexer)),
-            new RunCommand(() -> m_shooter.setMotor(0.8), m_shooter)).withTimeout(1);
+        new SequentialCommandGroup(
+            new WaitCommand(0.5),
+            new RunCommand(() -> m_indexer.setMotor(Constants.IndexerConstants.INDEXER_IN_SPEED), m_indexer),
+            new RunCommand(() -> m_indexer.setIsIntooked(false), m_indexer)),
+        new RunCommand(() -> m_shooter.setMotor(0.8), m_shooter)).withTimeout(1);
   }
 
   private Command outtakeAndShootAfterDelay() {
@@ -461,4 +458,3 @@ public class RobotContainer {
             new RunCommand(() -> m_shooter.setMotor(0.8), m_shooter)).withTimeout(1));
   }
 }
-
