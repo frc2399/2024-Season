@@ -207,8 +207,23 @@ public class DriveSubsystem extends SubsystemBase {
     double ySpeedCommanded;
     double currentAngle = (m_gyro.getYaw());
 
+      // //Account for edge case when gyro resets
+    if (currentAngle == 0) {
+      desiredAngle = 0;
+    }
+
+    //Apply correction if needed
+    if (rotRate == 0 && (xSpeed != 0 || ySpeed != 0)) {
+      newRotRate = 0;
+      // correction algorithm
+      if (Math.abs(desiredAngle - currentAngle) > Math.toRadians(1)) {
+        newRotRate = (2.0 * (desiredAngle - currentAngle)) % (2 * Math.PI) / (2 * Math.PI);
+      }
+    }
+    else {
       newRotRate = rotRate;
       desiredAngle = currentAngle;
+    }
   
       xSpeedCommanded = xSpeed;
       ySpeedCommanded = ySpeed;
