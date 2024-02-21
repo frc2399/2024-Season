@@ -104,7 +104,7 @@ public class RobotContainer {
     configureButtonBindingsDriver();
     configureButtonBindingsOperatorClimber();
     configureButtonBindingsOperatorNotClimber();
-    // setUpAuton();
+    setUpAuton();
   }
 
   /**
@@ -170,7 +170,7 @@ public class RobotContainer {
   // sets up auton commands
   private void setUpAuton() {
     NamedCommands.registerCommand("intake", Commands.print("intake")); // sensorIntakeCommand());
-    NamedCommands.registerCommand("shoot", Commands.print("shoot")); // autoShoot());
+    NamedCommands.registerCommand("shoot", Commands.print("/n/n/n/n/n/n/n/nshoot/n/n/n/n/n/n/n/n")); // autoShoot());
     NamedCommands.registerCommand("AimToTarget", Commands.print("aimed to target!"));
     NamedCommands.registerCommand("SetArmPosition", Commands.print("set arm position"));
     m_autoChooser = AutoBuilder.buildAutoChooser();
