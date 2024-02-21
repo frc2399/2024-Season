@@ -164,6 +164,7 @@ public class RobotContainer {
   // }
 
   private void setUpSubsystems() {
+
     if (Robot.robotType == RobotType.SIMULATION) {
       indexerIO = new SimIndexer();
       shooterIO = new SimShooter();
@@ -175,9 +176,14 @@ public class RobotContainer {
       m_frontRightIO = new SwerveModuleIO_Sim("front right");
       m_rearLeftIO = new SwerveModuleIO_Sim("rear left");
       m_rearRightIO = new SwerveModuleIO_Sim("rear right");
-      visionIO = new VisionSim(m_robotDrive);
 
-      m_gyro = new GyroIOSim();
+      m_robotDrive = new DriveSubsystem(
+      new SwerveModule(m_frontLeftIO),
+      new SwerveModule(m_frontRightIO),
+      new SwerveModule(m_rearLeftIO),
+      new SwerveModule(m_rearRightIO), m_gyro);
+
+      visionIO = new VisionSim(m_robotDrive);
 
     } else {
 
@@ -201,6 +207,12 @@ public class RobotContainer {
       armIO = new RealArm();
       m_gyro = new GyroIOPigeon2();
       visionIO = new VisionReal();
+
+      m_robotDrive = new DriveSubsystem(
+      new SwerveModule(m_frontLeftIO),
+      new SwerveModule(m_frontRightIO),
+      new SwerveModule(m_rearLeftIO),
+      new SwerveModule(m_rearRightIO), m_gyro);
      
     }
 
@@ -211,12 +223,6 @@ public class RobotContainer {
       m_intake = new Intake(intakeIO);
       m_led = new LED(m_climber);
       m_vision = new Vision(visionIO);
-
-    m_robotDrive = new DriveSubsystem(
-        new SwerveModule(m_frontLeftIO),
-        new SwerveModule(m_frontRightIO),
-        new SwerveModule(m_rearLeftIO),
-        new SwerveModule(m_rearRightIO), m_gyro);
   }
 
   public class aprilTagAssignment {
@@ -313,7 +319,7 @@ public class RobotContainer {
   }
 
   private void configureButtonBindings() {
-    m_operatorController.povCenter().onTrue(new InstantCommand(
+   m_operatorController.povCenter().onTrue(new InstantCommand(
         () -> fieldOrientedDrive = !fieldOrientedDrive));
 
     // driver left bumper: manual shoot
@@ -340,8 +346,8 @@ public class RobotContainer {
     // driver b: reset gyro
     m_driverController.b().onTrue(new InstantCommand(() -> m_gyro.setYaw(0.0)));
 
-    // driver a: auto-turn to speaker + align arm height
-    m_driverController.a().whileTrue(
+    // driver y: auto-turn to speaker + align arm height
+    m_driverController.y().whileTrue(
         new ParallelCommandGroup(
             new RunCommand(() -> m_robotDrive.drive(
                 -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
@@ -355,52 +361,64 @@ public class RobotContainer {
             -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband),
             fieldOrientedDrive), m_robotDrive));
 
+    m_driverController.a().whileTrue(
+      new RunCommand(() -> m_robotDrive.drive(
+                -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
+                -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),
+                m_vision.keepPointedAtSpeaker(aprilTagAssignment.speakerID),
+                fieldOrientedDrive), m_robotDrive))
+        .onFalse(new RunCommand(() -> m_robotDrive.drive(
+            -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
+            -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),
+            -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband),
+            fieldOrientedDrive), m_robotDrive));
+
     // operater left trigger: climber mode: left climber up
     m_operatorController.leftTrigger().and(() -> isInClimberMode).whileTrue(new RunCommand(
-        () -> m_climber.setLeftSpeed(0.2), m_climber));
+       () -> m_climber.setLeftSpeed(0.2), m_climber));
 
     // operater right trigger: climber mode: right climber up
-    m_operatorController.rightTrigger().and(() -> isInClimberMode).whileTrue(new RunCommand(
-        () -> m_climber.setRightSpeed(0.2), m_climber));
+  m_operatorController.rightTrigger().and(() -> isInClimberMode).whileTrue(new RunCommand(
+      () -> m_climber.setRightSpeed(0.2), m_climber));
 
     // operater left bumper: climber mode: left climber down
-    m_operatorController.leftBumper().and(() -> isInClimberMode).whileTrue(new RunCommand(
-        () -> m_climber.setLeftSpeed(-0.2), m_climber));
+   m_operatorController.leftBumper().and(() -> isInClimberMode).whileTrue(new RunCommand(
+         () -> m_climber.setLeftSpeed(-0.2), m_climber));
 
-    // operater right bumper: climber mode: right climber down
-    m_operatorController.rightBumper().and(() -> isInClimberMode).whileTrue(new RunCommand(
-        () -> m_climber.setRightSpeed(-0.2), m_climber));
+  //   // operater right bumper: climber mode: right climber down
+     m_operatorController.rightBumper().and(() -> isInClimberMode).whileTrue(new RunCommand(
+         () -> m_climber.setRightSpeed(-0.2), m_climber));
 
-    // operator x: switch operator controller modes
-    m_operatorController.x().onTrue(new InstantCommand(() -> isInClimberMode = !isInClimberMode, m_climber));
+  //   // operator x: switch operator controller modes
+     m_operatorController.x().onTrue(new InstantCommand(() -> isInClimberMode = !isInClimberMode, m_climber));
 
-    // operator b (climber mode): automatic climber up
-    m_operatorController.b().and(() -> isInClimberMode).onTrue(new automaticClimberCommand(m_climber, 0.4));
+  //   // operator b (climber mode): automatic climber up
+     m_operatorController.b().and(() -> isInClimberMode).onTrue(new automaticClimberCommand(m_climber, 0.4));
 
-    // operator a (climber mode): automatic climber down
-    m_operatorController.a().and(() -> isInClimberMode).onTrue(new automaticClimberCommand(m_climber, 0));
+  //   // operator a (climber mode): automatic climber down
+     m_operatorController.a().and(() -> isInClimberMode).onTrue(new automaticClimberCommand(m_climber, 0));
 
-    // operator right trigger: manual arm up
-    m_operatorController.rightTrigger().and(() -> !isInClimberMode)
-        .whileTrue(makeSetSpeedGravityCompensationCommand(m_arm,
-            0.1))
-        .onFalse(makeSetSpeedGravityCompensationCommand(m_arm, 0));
+  //   // operator right trigger: manual arm up
+     m_operatorController.rightTrigger().and(() -> !isInClimberMode)
+         .whileTrue(makeSetSpeedGravityCompensationCommand(m_arm,
+             0.1))
+         .onFalse(makeSetSpeedGravityCompensationCommand(m_arm, 0));
 
-    // operator left trigger: manual arm down
-    m_operatorController.leftTrigger().and(() -> !isInClimberMode)
-        .whileTrue(makeSetSpeedGravityCompensationCommand(m_arm,
-            -0.1))
-        .onFalse(makeSetSpeedGravityCompensationCommand(m_arm, 0));
+  //   // operator left trigger: manual arm down
+     m_operatorController.leftTrigger().and(() -> !isInClimberMode)
+         .whileTrue(makeSetSpeedGravityCompensationCommand(m_arm,
+             -0.1))
+         .onFalse(makeSetSpeedGravityCompensationCommand(m_arm, 0));
 
-    // operater a: arm to intake/subwoofer angle
-    m_operatorController.a().and(() -> !isInClimberMode).onTrue(makeSetPositionCommand(m_arm, 0.335));
+  //   // operater a: arm to intake/subwoofer angle
+     m_operatorController.a().and(() -> !isInClimberMode).onTrue(makeSetPositionCommand(m_arm, 0.335));
 
-    // operator b: arm to podium shot angle
-    m_operatorController.b().and(() -> !isInClimberMode).onTrue(makeSetPositionCommand(m_arm, 0.662));
+  //   // operator b: arm to podium shot angle
+     m_operatorController.b().and(() -> !isInClimberMode).onTrue(makeSetPositionCommand(m_arm, 0.662));
 
-    // operator y: arm to amp angle
-    m_operatorController.y().and(() -> !isInClimberMode).onTrue(makeSetPositionCommand(m_arm, 1.4));
-  }
+  //   // operator y: arm to amp angle
+     m_operatorController.y().and(() -> !isInClimberMode).onTrue(makeSetPositionCommand(m_arm, 1.4));
+   }
 
   public static Command makeSetPositionCommand(Arm arm,
       double target) {

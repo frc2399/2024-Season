@@ -7,6 +7,7 @@ import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+import org.photonvision.PhotonUtils;
 import org.photonvision.simulation.PhotonCameraSim;
 import org.photonvision.simulation.SimCameraProperties;
 import org.photonvision.simulation.VisionSystemSim;
@@ -15,9 +16,12 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -25,6 +29,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.drive.DriveSubsystem;
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
 
 
 public class VisionSim extends SubsystemBase implements VisionIO {
@@ -55,7 +60,9 @@ public class VisionSim extends SubsystemBase implements VisionIO {
 
     private static PhotonPoseEstimator camPoseEstimator;
     private boolean updatePoseWithVisionReadings = true;
+    private static AprilTagFieldLayout kFieldLayout;
 
+    public Pose2d robotPose;
 
     private DriveSubsystem drive;
 
@@ -64,7 +71,7 @@ public class VisionSim extends SubsystemBase implements VisionIO {
         this.drive = drive ;
         
         visionSim.addAprilTags(VisionConstants.kFieldLayout);
-
+        kFieldLayout = VisionConstants.kFieldLayout;
         // Get the built-in Field2d used by this VisionSystemSim
         visionSim.getDebugField();
 
@@ -104,8 +111,23 @@ public class VisionSim extends SubsystemBase implements VisionIO {
         // This method will be called once per scheduler run
         // SmartDashboard.putBoolean("Camera is connected", camera.isConnected());
         SmartDashboard.putBoolean("Pose Updates Enabled?: ", updatePoseWithVisionReadings);
-        camPoseEstimator.update();
-
+        Optional<EstimatedRobotPose> pose = getCameraEst();
+        if (pose.isPresent()) {
+    var result = camera.getLatestResult();
+     if (result.hasTargets()) {
+      //System.out.println(pose);
+      PhotonTrackedTarget target = bestTarget();
+      //the robot pose is estimating field to robot using photon utils
+      // if (robotPose != null) { // TODO: better way w/ less processing power - maybe smth in the init idk
+      // prevRobotPose = robotPose;
+      // }
+      robotPose = PhotonUtils.estimateFieldToRobot(
+        new Transform2d(
+          new Translation2d(pose.get().estimatedPose.getX(), pose.get().estimatedPose.getY()), 
+          pose.get().estimatedPose.getRotation().toRotation2d()),
+         kFieldLayout.getTagPose(target.getFiducialId()).get().toPose2d(), VisionConstants.camToRobot2d);
+     }
+    }
         visionSim.update(drive.getPose());
 
         // System.out.println("working!!!");
@@ -177,8 +199,26 @@ public class VisionSim extends SubsystemBase implements VisionIO {
         return (keepPointedController.calculate(yawDiff, 0));
     }
 
-    public double keepArmAtAngle(int SpeakerID) {
-        return 0.0;
+    public double keepArmAtAngle(int SpeakerID) {    
+      final double eightySlope = VisionConstants.eightyModelSlope;
+      final double eightyIntercept = VisionConstants.eightyModelIntercept;
+      final double hundredSlope = VisionConstants.hundredModelSlope;
+      final double hundredIntercept = VisionConstants.hundredModelIntercept;
+      final double boundary = VisionConstants.eightyModelRange;
+      final int desiredSpeakerTag = SpeakerID;
+      double dist;
+      Translation2d speakerDist = new Translation2d(
+        robotPose.getX() - VisionConstants.kFieldLayout.getTagPose(desiredSpeakerTag).get().toPose2d().getX(),
+        robotPose.getY() - VisionConstants.kFieldLayout.getTagPose(desiredSpeakerTag).get().toPose2d().getY()
+      );
+      dist = speakerDist.getNorm();
+      System.out.println(Units.metersToInches(dist));
+      System.out.println(Math.atan(eightySlope * Units.metersToInches(dist) + eightyIntercept));
+      if (dist <= boundary) {
+        return (Math.atan(eightySlope * Units.metersToInches(dist) + eightyIntercept));
+      } else {
+        return (Math.atan(hundredSlope * Units.metersToInches(dist) + hundredIntercept));
+      }
     }
 
 }

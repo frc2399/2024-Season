@@ -32,7 +32,7 @@ public class VisionReal extends SubsystemBase implements VisionIO {
     private static PhotonPoseEstimator CamEstimator;
     private boolean updatePoseWithVisionReadings = true;
     public Pose2d robotPose;
-    public Pose2d prevRobotPose;
+    // public Pose2d prevRobotPose;
     final double ANGULAR_P = 0.8; // TODO: tune
     final double ANGULAR_D = 0.0;
     ProfiledPIDController keepPointedController = new ProfiledPIDController(
@@ -67,9 +67,9 @@ public class VisionReal extends SubsystemBase implements VisionIO {
       //System.out.println(pose);
       PhotonTrackedTarget target = bestTarget();
       //the robot pose is estimating field to robot using photon utils
-      if (robotPose != null) { // TODO: better way w/ less processing power - maybe smth in the init idk
-        prevRobotPose = robotPose;
-      }
+      // if (robotPose != null) { // TODO: better way w/ less processing power - maybe smth in the init idk
+      // prevRobotPose = robotPose;
+      // }
       robotPose = PhotonUtils.estimateFieldToRobot(
         new Transform2d(
           new Translation2d(pose.get().estimatedPose.getX(), pose.get().estimatedPose.getY()), 
