@@ -20,8 +20,8 @@ public class Arm extends ProfiledPIDSubsystem {
   public static double speedFromArmHeight;
 
   // Trapezoidal profile constants and variables
-  private static final double max_vel = 3.9; // rad/s (NEO specs / gear ratio, converted into rad/s ~ 4.1, give it a slightly lower one to make it acheivable)
-  private static final double max_accel = 2.7; // rad/s/s
+  private static final double max_vel = 2; // rad/s (NEO specs / gear ratio, converted into rad/s ~ 4.1, give it a slightly lower one to make it acheivable)
+  private static final double max_accel = 2; // rad/s/s
   private static final Constraints constraints = new Constraints(max_vel, max_accel);
   private static double gravityCompensation = 0.025;
   private static double feedForward = 1/max_vel;
