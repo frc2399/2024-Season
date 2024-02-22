@@ -311,10 +311,10 @@ public class RobotContainer {
     m_operatorController.y().and(() -> !isInClimberMode).onTrue(makeSetPositionCommand(m_arm, 1.4));
 
     // operator left trigger: intake
-    m_operatorController.leftTrigger().and(() -> !isInClimberMode).whileTrue(intakeWithHeightRestriction());
+    m_operatorController.rightBumper().and(() -> !isInClimberMode).whileTrue(intakeWithHeightRestriction());
 
     // operator right trigger: outtake
-    m_operatorController.rightTrigger().and(() -> !isInClimberMode).whileTrue(new ParallelCommandGroup(
+    m_operatorController.leftBumper().and(() -> !isInClimberMode).whileTrue(new ParallelCommandGroup(
         new RunCommand(() -> m_intake.setMotor(-0.3), m_intake),
         new RunCommand(() -> m_indexer.setMotor(-0.3), m_indexer)));
   }
@@ -353,7 +353,7 @@ public class RobotContainer {
             new WaitCommand(0.5),
             new RunCommand(() -> m_indexer.setMotor(Constants.IndexerConstants.INDEXER_IN_SPEED), m_indexer),
             new RunCommand(() -> m_indexer.setIsIntooked(false), m_indexer)),
-        new RunCommand(() -> m_shooter.setMotor(0.8), m_shooter)).withTimeout(1);
+        new RunCommand(() -> m_shooter.setMotor(m_arm.getSpeedFromArmHeight()), m_shooter)).withTimeout(0.75);
   }
 
   private Command outtakeAndShootAfterDelay() {
