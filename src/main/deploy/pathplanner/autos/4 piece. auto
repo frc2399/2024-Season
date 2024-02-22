@@ -1,0 +1,141 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.6462099401133327,
+      "y": 6.59632066845979
+    },
+    "rotation": 10.48
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "AutoShoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "3 to C"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "AimToTarget"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "SetArmPosition"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AutoShoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Copy of 3 to C"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "strafing center line to B"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "strafing b to center line"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "AimToTarget"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "SetArmPosition"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AutoShoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Copy of center line to center b"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "A line to a"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Copy of a to center line"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "AimToTarget"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "SetArmPosition"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AutoShoot"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
