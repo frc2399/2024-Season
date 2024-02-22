@@ -147,7 +147,12 @@ public class VisionReal extends SubsystemBase implements VisionIO {
         robotPose.getX() - VisionConstants.kFieldLayout.getTagPose(desiredSpeakerTag).get().toPose2d().getX(),
         robotPose.getY() - VisionConstants.kFieldLayout.getTagPose(desiredSpeakerTag).get().toPose2d().getY()
       );
+
       dist = speakerDist.getNorm();
+
+      System.out.println(Units.metersToInches(dist));
+      System.out.println(Math.atan(eightySlope * Units.metersToInches(dist) + eightyIntercept));
+      
       if (dist <= boundary) {
         return (Math.atan(eightySlope * Units.metersToInches(dist) + eightyIntercept));
       } else {
