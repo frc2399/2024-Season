@@ -212,6 +212,8 @@ public class DriveSubsystem extends SubsystemBase {
       desiredAngle = 0;
     }
 
+    
+
     //Apply correction if needed
     if (rotRate == 0 && (xSpeed != 0 || ySpeed != 0)) {
       newRotRate = 0;
@@ -319,7 +321,13 @@ public class DriveSubsystem extends SubsystemBase {
 
 
   public void setRobotRelativeSpeeds(ChassisSpeeds speeds) {
-    this.drive(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, speeds.omegaRadiansPerSecond, false);
+    var swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(speeds);
+    SwerveDriveKinematics.desaturateWheelSpeeds(
+        swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
+    m_frontLeft.setDesiredState(swerveModuleStates[0]);
+    m_frontRight.setDesiredState(swerveModuleStates[1]);
+    m_rearLeft.setDesiredState(swerveModuleStates[2]);
+    m_rearRight.setDesiredState(swerveModuleStates[3]);
   }
 
   //makes sure odometry's (0,0) is the same as global (0,0) (according to PhotonVision)

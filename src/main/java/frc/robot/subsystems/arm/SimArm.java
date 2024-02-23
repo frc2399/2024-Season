@@ -79,12 +79,12 @@ public class SimArm implements ArmIO{
     @Override
     public double getAbsoluteEncoderPosition() {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getAbsoluteEncoderPosition'");
+        return 0;
     }
 
     @Override
     public void setEncoderPosition(double angle) {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setEncoderPosition'");
+        return;
     } 
 }

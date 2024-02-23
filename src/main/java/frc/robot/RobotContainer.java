@@ -173,6 +173,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("shoot", Commands.print("/n/n/n/n/n/n/n/nshoot/n/n/n/n/n/n/n/n")); // autoShoot());
     NamedCommands.registerCommand("AimToTarget", Commands.print("aimed to target!"));
     NamedCommands.registerCommand("SetArmPosition", Commands.print("set arm position"));
+    NamedCommands.registerCommand("AutoShoot", Commands.print("/n/n/n/n/n/n/n/nshoot/n/n/n/n/n/n/n/n")); // autoShoot());
     m_autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Autos/Selector", m_autoChooser);
   }
