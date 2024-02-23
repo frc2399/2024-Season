@@ -311,12 +311,10 @@ public class RobotContainer {
     m_operatorController.y().and(() -> !isInClimberMode).onTrue(makeSetPositionCommand(m_arm, 1.4));
 
     // operator left trigger: intake
-    m_operatorController.rightBumper().and(() -> !isInClimberMode).whileTrue(intakeWithHeightRestriction());
+    m_operatorController.rightBumper().and(() -> !isInClimberMode).whileTrue(new RunCommand(() -> m_indexer.setMotor(0.3)));
 
     // operator right trigger: outtake
-    m_operatorController.leftBumper().and(() -> !isInClimberMode).whileTrue(new ParallelCommandGroup(
-        new RunCommand(() -> m_intake.setMotor(-0.3), m_intake),
-        new RunCommand(() -> m_indexer.setMotor(-0.3), m_indexer)));
+    m_operatorController.leftBumper().and(() -> !isInClimberMode).whileTrue(new RunCommand(() -> m_indexer.setMotor(-0.3), m_indexer).withTimeout(0.15));
   }
 
   public static Command makeSetPositionCommand(Arm arm,
