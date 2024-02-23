@@ -238,12 +238,8 @@ public class RobotContainer {
     m_driverController.rightBumper().onTrue(shootAfterDelay());
 
     // driver a: automatic intaking
-    m_driverController.rightTrigger().whileTrue(new automaticIntakeAndIndexer(m_indexer,
-        m_intake));
-    // driver right trigger: manual intake, uncomment if necessary
-    // m_driverController.rightTrigger().whileTrue(new ParallelCommandGroup(
-    // new RunCommand(() -> m_intake.setMotor(0.8), m_intake),
-    // new RunCommand(() -> m_indexer.setMotor(0.8), m_indexer)));
+    //m_driverController.rightTrigger().whileTrue(new automaticIntakeAndIndexer(m_indexer,
+        //m_intake));
 
     // driver right trigger: manual intake with arm height restriction
     m_driverController.rightTrigger().whileTrue(intakeWithHeightRestriction());
