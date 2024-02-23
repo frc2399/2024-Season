@@ -105,9 +105,9 @@ public void setEncoderPosition(double angle) {
   public double getSpeedFromArmHeight() {
     if (getEncoderPosition() <= 0.37) {
       speedFromArmHeight = Constants.ShooterConstants.SUBWOOFER_SPEED;
-    } else if (getEncoderPosition() > 0.37 & getEncoderPosition() <= 0.8) {
+    } else if (getEncoderPosition() > 0.37 & getEncoderPosition() <= 0.76) {
       speedFromArmHeight = Constants.ShooterConstants.SPEAKER_SPEED;
-    } else if (getEncoderPosition() > 0.8 & getEncoderPosition() <= 1) {
+    } else if (getEncoderPosition() > 0.76 & getEncoderPosition() <= 1) {
       speedFromArmHeight = Constants.ShooterConstants.FAR_AWAY_SPEED;
     } else if (getEncoderPosition() > 1) {
         speedFromArmHeight = Constants.ShooterConstants.AMP_SPEED;
