@@ -23,7 +23,6 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -116,6 +115,7 @@ public class VisionReal extends SubsystemBase implements VisionIO {
 
     public double keepPointedAtSpeaker(int SpeakerID) {
       int speakerID = SpeakerID;
+      SmartDashboard.putNumber("speaker ID from VisionReal (should be 7) ", speakerID);
       boolean seesSpeaker = false;
       double yawDiff = 0.0;
       for (PhotonTrackedTarget result : getCameraResult().getTargets()) {
@@ -124,12 +124,14 @@ public class VisionReal extends SubsystemBase implements VisionIO {
           //yaw in radians bc p values get too small
           yawDiff = ((result.getYaw()*Math.PI)/180);
           SmartDashboard.putBoolean("Sees speaker (only true when in keep pointed mode): ", true);
+          SmartDashboard.putNumber("YawDiff", yawDiff);
           break; //saves a tiny bit of processing power possibly
         }
       }
       if (!seesSpeaker) {
         SmartDashboard.putBoolean("Sees speaker (only true when in keep pointed mode): ", false);
       }
+      System.out.println(keepPointedController.calculate(yawDiff, 0));
       return (keepPointedController.calculate(yawDiff, 0));
     }
 
