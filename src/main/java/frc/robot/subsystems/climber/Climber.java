@@ -11,8 +11,9 @@ public class Climber extends SubsystemBase {
     }
 
     public boolean isInClimberMode(){
-        return true; 
+        return true;
     }
+
 
     public void setLeftSpeed(double speed) {
         climberIO.setLeftSpeed(speed);
@@ -38,5 +39,17 @@ public class Climber extends SubsystemBase {
     public void peridoic(){
         climberIO.periodicUpdate(); 
     }
+
+    public double getLeftEncoderPosition(){
+        return 0.0;
+    }
+
+    public double getRightEncoderPosition(){
+        return 0.0;
+    }
+    
+
+
+
 
 }

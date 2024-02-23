@@ -4,19 +4,28 @@
 
 package frc.robot.subsystems.Indexer;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Indexer extends SubsystemBase {
 
   private IndexerIO indexerIO;
-  public static boolean isIntooked = false;
+  public boolean isIntooked = false;
 
   /** Creates a new Indexer. */
   public Indexer(IndexerIO io) {
-    
     indexerIO = io;
-        
+  }
+
+  public void setIsIntooked(boolean intooked) {
+    indexerIO.setIsIntooked(intooked);
+  }
+
+  public boolean getIsIntooked() {
+    return indexerIO.getIsIntooked();
+  }
+
+  public double getCurrent() {
+    return indexerIO.getCurrent();
   }
 
   public void setMotor(double indexerSpeed) {
@@ -27,7 +36,7 @@ public class Indexer extends SubsystemBase {
     indexerIO.setSpeed(speed);
   }
 
-  //returns speed of the indexer
+  // returns speed of the indexer
   public double getEncoderSpeed() {
     return indexerIO.getEncoderSpeed();
   }
@@ -36,9 +45,16 @@ public class Indexer extends SubsystemBase {
     indexerIO.setCurrentLimit(current);
   }
 
+  public boolean getIsBeamBroken() {
+    return indexerIO.getIsBeamBroken();
+  }
+
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
     indexerIO.periodicUpdate();
+  }
+
+  public boolean isStalling() {
+    return indexerIO.isStalling();
   }
 }

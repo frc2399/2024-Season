@@ -17,6 +17,10 @@ public class ClimberSim implements ClimberIO {
 
     }
 
+    public boolean isInClimberMode(){
+        return true;
+    }
+
     public boolean isLeftExtended() {
         return true;
     }

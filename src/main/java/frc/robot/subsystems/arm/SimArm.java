@@ -13,6 +13,7 @@ public class SimArm implements ArmIO{
     private SimEncoder armEncoderSim;
     private SingleJointedArmSim armSim;
     private double armPower;
+    public static double speedFromArmHeight;
 
     public SimArm() {
         armEncoderSim = new SimEncoder("Elevator");
@@ -42,11 +43,6 @@ public class SimArm implements ArmIO{
     }
 
     @Override
-    public void setPosition(double position) {
-        armEncoderSim.setDistance(position);
-    }
-
-    @Override
     public void periodicUpdate(){
         // sets input for elevator motor in simulation
         armSim.setInput(armPower * RobotController.getBatteryVoltage());
@@ -64,5 +60,32 @@ public class SimArm implements ArmIO{
     @Override
     public double getArmCurrent() {
         return armSim.getCurrentDrawAmps();
+    }
+
+    @Override
+    public double getSpeedFromArmHeight() {
+        if (getEncoderPosition() < 0.4) {
+            speedFromArmHeight = 0.7;
+          } else if (getEncoderPosition() < 0.8 & getEncoderPosition() > 0.4) {
+            speedFromArmHeight = 0.8;
+          } else if (getEncoderPosition() < 1 & getEncoderPosition() > 0.8) {
+            speedFromArmHeight = 1;
+          } else if (getEncoderPosition() > 1) {
+              speedFromArmHeight = 0.3;
+          }
+          return speedFromArmHeight;
+    }
+
+    @Override
+    public double getAbsoluteEncoderPosition() {
+        // TODO Auto-generated method stub
+        //throw new UnsupportedOperationException("Unimplemented method 'getAbsoluteEncoderPosition'");
+        return 0;
+    }
+
+    @Override
+    public void setEncoderPosition(double angle) {
+        // TODO Auto-generated method stub
+       // throw new UnsupportedOperationException("Unimplemented method 'setEncoderPosition'");
     } 
 }
