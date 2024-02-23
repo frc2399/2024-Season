@@ -18,6 +18,7 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.VisionConstants;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -35,11 +36,8 @@ public class VisionReal extends SubsystemBase implements VisionIO {
     // public Pose2d prevRobotPose;
     final double ANGULAR_P = 0.8; // TODO: tune
     final double ANGULAR_D = 0.0;
-    ProfiledPIDController keepPointedController = new ProfiledPIDController(
-      ANGULAR_P, 0, ANGULAR_D, 
-      new TrapezoidProfile.Constraints(
-        Units.degreesToRadians(540.0), 
-        Units.degreesToRadians(540.0)));
+    PIDController keepPointedController = new PIDController(
+      ANGULAR_P, 0, ANGULAR_D);
 
   /** Creates a new Vision. */
   public VisionReal() {
@@ -152,7 +150,7 @@ public class VisionReal extends SubsystemBase implements VisionIO {
 
       System.out.println(Units.metersToInches(dist));
       System.out.println(Math.atan(eightySlope * Units.metersToInches(dist) + eightyIntercept));
-      
+
       if (dist <= boundary) {
         return (Math.atan(eightySlope * Units.metersToInches(dist) + eightyIntercept));
       } else {

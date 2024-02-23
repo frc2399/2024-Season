@@ -243,7 +243,7 @@ public final class Constants {
     public static final AprilTagFieldLayout kFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
     public static final Transform3d camToRobot = new Transform3d(
         new Translation3d(Units.inchesToMeters(5), Units.inchesToMeters(14.25), Units.inchesToMeters(0)),
-        new Rotation3d(0.0, 15.0, 0.0));
+        new Rotation3d(0.0, Units.degreesToRadians(15.0), 0.0));
         // TODO: measure camera height
     //these need to be changed on Comp Bot
     public static final Transform2d camToRobot2d = new Transform2d(
