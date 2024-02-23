@@ -105,7 +105,7 @@ public class RobotContainer {
     configureButtonBindingsDriver();
     configureButtonBindingsOperatorClimber();
     configureButtonBindingsOperatorNotClimber();
-    // setUpAuton();
+    setUpAuton();
   }
 
   /**
@@ -171,7 +171,7 @@ public class RobotContainer {
   // sets up auton commands
   private void setUpAuton() {
     NamedCommands.registerCommand("intake", Commands.print("intake")); // sensorIntakeCommand());
-    NamedCommands.registerCommand("shoot", Commands.print("shoot")); // autoShoot());
+    NamedCommands.registerCommand("shoot", Commands.print("/n/n/n/n/n/n/n/nshoot/n/n/n/n/n/n/n/n")); // autoShoot());
     NamedCommands.registerCommand("AimToTarget", Commands.print("aimed to target!"));
     NamedCommands.registerCommand("SetArmPosition", Commands.print("set arm position"));
     m_autoChooser = AutoBuilder.buildAutoChooser();
@@ -312,12 +312,10 @@ public class RobotContainer {
     m_operatorController.y().and(() -> !isInClimberMode).onTrue(makeSetPositionCommand(m_arm, 1.4));
 
     // operator left trigger: intake
-    m_operatorController.leftTrigger().and(() -> !isInClimberMode).whileTrue(intakeWithHeightRestriction());
+    m_operatorController.rightBumper().and(() -> !isInClimberMode).whileTrue(new RunCommand(() -> m_indexer.setMotor(0.3)));
 
     // operator right trigger: outtake
-    m_operatorController.rightTrigger().and(() -> !isInClimberMode).whileTrue(new ParallelCommandGroup(
-        new RunCommand(() -> m_intake.setMotor(-0.3), m_intake),
-        new RunCommand(() -> m_indexer.setMotor(-0.3), m_indexer)));
+    m_operatorController.leftBumper().and(() -> !isInClimberMode).whileTrue(new RunCommand(() -> m_indexer.setMotor(-0.3), m_indexer).withTimeout(0.15));
   }
 
   public static Command makeSetPositionCommand(Arm arm,
@@ -354,7 +352,7 @@ public class RobotContainer {
             new WaitCommand(0.5),
             new RunCommand(() -> m_indexer.setMotor(Constants.IndexerConstants.INDEXER_IN_SPEED), m_indexer),
             new RunCommand(() -> m_indexer.setIsIntooked(false), m_indexer)),
-        new RunCommand(() -> m_shooter.setMotor(0.8), m_shooter)).withTimeout(1);
+        new RunCommand(() -> m_shooter.setMotor(m_arm.getSpeedFromArmHeight()), m_shooter)).withTimeout(0.75);
   }
 
   private Command outtakeAndShootAfterDelay() {
