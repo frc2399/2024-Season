@@ -4,8 +4,11 @@
 
 package frc.robot;
 
+import java.util.Optional;
+
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -88,7 +91,9 @@ public class Robot extends TimedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    Optional<Alliance> ally = DriverStation.getAlliance();
+    m_robotContainer.m_vision.assignAprilTags(ally);
+    //m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     // schedule the autonomous command
     if (m_autonomousCommand != null) {
@@ -106,6 +111,8 @@ public class Robot extends TimedRobot {
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
     // this line or comment it out.
+    Optional<Alliance> ally = DriverStation.getAlliance();
+    m_robotContainer.m_vision.assignAprilTags(ally);
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }

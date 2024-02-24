@@ -6,6 +6,7 @@ import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonPipelineResult;
 
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -35,12 +36,15 @@ public class Vision extends SubsystemBase {
         return io.getCamera();
     } 
 
-    public double keepPointedAtSpeaker(int speakerID) {
-        SmartDashboard.putNumber("Speaker ID from Vision (should be 7) ", speakerID);
-        return io.keepPointedAtSpeaker(speakerID);
+    public double keepPointedAtSpeaker() {
+        return io.keepPointedAtSpeaker();
     }
-    public double keepArmAtAngle(int SpeakerID) {
-        return io.keepArmAtAngle(SpeakerID);
+    public double keepArmAtAngle() {
+        return io.keepArmAtAngle();
+    }
+
+    public void assignAprilTags(Optional<Alliance> ally) {
+      io.assignAprilTags(ally);
     }
 
 }

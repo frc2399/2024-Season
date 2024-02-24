@@ -11,6 +11,8 @@ import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+
 /** Add your docs here. */
 public interface VisionIO {
     public void periodic();
@@ -22,7 +24,8 @@ public interface VisionIO {
     public void enableUpdatePoseWithVisionReading ();
     public void disableUpdatePoseWithVisionReading ();
     public PhotonCamera getCamera();
-    public double keepPointedAtSpeaker(int speakerID);
-    public double keepArmAtAngle(int SpeakerID);
+    public double keepPointedAtSpeaker();
+    public double keepArmAtAngle();
+    public void assignAprilTags(Optional<Alliance> ally);
 
 }

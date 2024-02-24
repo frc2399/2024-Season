@@ -62,10 +62,12 @@ return new SequentialCommandGroup(
         // increased error tolerance so the command will finish in auton
         double butteryErrorTolerance = 0.05;
   
-        if (Math.abs(error) <= butteryErrorTolerance)
-        {
-            return true;
-        }
+        // if (Math.abs(error) <= butteryErrorTolerance)
+        // {
+        //     return true;
+        // }
+        // return false;
+        
         return false;
         
     }
@@ -74,7 +76,7 @@ return new SequentialCommandGroup(
     @Override
     public void end(boolean interrupted) {
     
-        m_driveTrain.setSpeed(0, 0, 0);
+        //m_driveTrain.setSpeed(0, 0, 0);
 
         DataLogManager.log("DriveForwardGivenDistance ended");
     }

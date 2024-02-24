@@ -90,7 +90,7 @@ public class RobotContainer {
 
   // subsystems
   public static Shooter m_shooter;
-  public static Intake m_intake;
+//   public static Intake m_intake;
   public static Indexer m_indexer;
   public static Climber m_climber;
   public static Arm m_arm;
@@ -98,14 +98,14 @@ public class RobotContainer {
 
   // subsystem IOs
   ShooterIO shooterIO;
-  IntakeIO intakeIO;
+  //IntakeIO intakeIO;
   IndexerIO indexerIO;
   ArmIO armIO;
   ClimberIO climberIO;
   VisionIO visionIO;
 
   // auton chooser
-  private static SendableChooser<Command> m_autoChooser;
+  //private static SendableChooser<Command> m_autoChooser;
 
   // The driver and operator controllers
   CommandXboxController m_driverController = new CommandXboxController(OIConstants.kDriverControllerPort);
@@ -121,12 +121,12 @@ public class RobotContainer {
     configureButtonBindingsOperatorClimber();
     configureButtonBindingsOperatorNotClimber();
     //setUpAuton();
-    aprilTagAssignment.assignAprilTags();
+
   }
 
-  public Command getAutonomousCommand() {
-    return m_autoChooser.getSelected();
-  }
+//   public Command getAutonomousCommand() {
+//     return m_autoChooser.getSelected();
+//   }
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
@@ -171,7 +171,7 @@ public class RobotContainer {
     if (Robot.robotType == RobotType.SIMULATION) {
       indexerIO = new SimIndexer();
       shooterIO = new SimShooter();
-      intakeIO = new SimIntake();
+      //intakeIO = new SimIntake();
       climberIO = new ClimberSim();
       armIO = new SimArm();
       m_gyro = new GyroIOSim();
@@ -205,7 +205,7 @@ public class RobotContainer {
       
       indexerIO = new RealIndexer();
       shooterIO = new RealShooter();
-      intakeIO = new SimIntake();
+      //intakeIO = new SimIntake();
       climberIO = new ClimberSim();
       armIO = new RealArm();
       m_gyro = new GyroIOPigeon2();
@@ -223,57 +223,20 @@ public class RobotContainer {
       m_arm = new Arm(armIO);
       m_shooter = new Shooter(shooterIO);
       m_indexer = new Indexer(indexerIO);
-      m_intake = new Intake(intakeIO);
+    //   m_intake = new Intake(intakeIO);
       m_led = new LED(m_climber);
       m_vision = new Vision(visionIO);
   }
 
-  public class aprilTagAssignment {
-    public static int facingSourceLeftID;
-    public static int facingSourceRightID;
-    public static int speakerID;
-    public static int speakerOffsetID;
-    public static int stageBackID;
-    public static int facingAwayFromSpeakerStageLeftID;
-    public static int facingAwayFromSpeakerStageRightID;
-    public static int ampID;
-
-    static void assignAprilTags() {
-      Optional<Alliance> ally = DriverStation.getAlliance();
-      if (ally.isPresent()) {
-        if (ally.get() == Alliance.Red) {
-          facingSourceLeftID = 10;
-          facingSourceRightID = 9;
-          speakerID = 4;
-          speakerOffsetID = 3;
-          stageBackID = 13;
-          facingAwayFromSpeakerStageLeftID = 11;
-          facingAwayFromSpeakerStageRightID = 12;
-          ampID = 5;
-        }
-      } else {
-        facingSourceLeftID = 1;
-        facingSourceRightID = 2;
-        speakerID = 7;
-        speakerOffsetID = 8;
-        stageBackID = 14;
-        facingAwayFromSpeakerStageLeftID = 15;
-        facingAwayFromSpeakerStageRightID = 16;
-        ampID = 6;
-      }
-
-    }
-  }
-
   // sets up auton commands
-  private void setUpAuton() {
-    NamedCommands.registerCommand("intake", Commands.print("intake")); // sensorIntakeCommand());
-    NamedCommands.registerCommand("shoot", Commands.print("/n/n/n/n/n/n/n/nshoot/n/n/n/n/n/n/n/n")); // autoShoot());
-    NamedCommands.registerCommand("AimToTarget", Commands.print("aimed to target!"));
-    NamedCommands.registerCommand("SetArmPosition", Commands.print("set arm position"));
-    m_autoChooser = AutoBuilder.buildAutoChooser();
-    SmartDashboard.putData("Autos/Selector", m_autoChooser);
-  }
+//   private void setUpAuton() {
+//     NamedCommands.registerCommand("intake", Commands.print("intake")); // sensorIntakeCommand());
+//     NamedCommands.registerCommand("shoot", Commands.print("/n/n/n/n/n/n/n/nshoot/n/n/n/n/n/n/n/n")); // autoShoot());
+//     NamedCommands.registerCommand("AimToTarget", Commands.print("aimed to target!"));
+//     NamedCommands.registerCommand("SetArmPosition", Commands.print("set arm position"));
+//     m_autoChooser = AutoBuilder.buildAutoChooser();
+//     SmartDashboard.putData("Autos/Selector", m_autoChooser);
+//   }
 
   // Configure default commands
   private void configureDefaultCommands() {
@@ -284,10 +247,10 @@ public class RobotContainer {
             m_shooter));
 
     // default command for intake: do nothing
-    m_intake.setDefaultCommand(
-        new RunCommand(
-            () -> m_intake.setMotor(0),
-            m_intake));
+    // m_intake.setDefaultCommand(
+    //     new RunCommand(
+    //         () -> m_intake.setMotor(0),
+    //         m_intake));
 
     // default command for indexer: do nothing
     m_indexer.setDefaultCommand(
@@ -343,7 +306,7 @@ public class RobotContainer {
 
     // driver left trigger: outtake
     m_driverController.leftTrigger().whileTrue(new ParallelCommandGroup(
-       new RunCommand(() -> m_intake.setMotor(-0.3), m_intake),
+       //new RunCommand(() -> m_intake.setMotor(-0.3), m_intake),
         new RunCommand(() -> m_indexer.setMotor(-0.3), m_indexer)));
 
     // driver b: reset gyro
@@ -354,7 +317,7 @@ public class RobotContainer {
       new RunCommand(() -> m_robotDrive.drive(
                 -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
                 -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),
-                m_vision.keepPointedAtSpeaker(aprilTagAssignment.speakerID),
+                m_vision.keepPointedAtSpeaker(),
                 fieldOrientedDrive), m_robotDrive))
         .onFalse(new RunCommand(() -> m_robotDrive.drive(
             -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
@@ -396,7 +359,7 @@ public class RobotContainer {
   private void configureButtonBindingsOperatorNotClimber() {
     // operator right trigger: manual arm up
      m_operatorController.rightTrigger().whileTrue( // TODO: test + change to actual makeSetPositionCommand
-        new RunCommand(() -> SmartDashboard.putNumber("arm angle radians", m_vision.keepArmAtAngle(aprilTagAssignment.speakerID))));
+        new RunCommand(() -> SmartDashboard.putNumber("arm angle radians", m_vision.keepArmAtAngle())));
 
     // operator left trigger: manual arm down
      m_operatorController.leftTrigger().and(() -> !isInClimberMode)
@@ -460,7 +423,7 @@ public class RobotContainer {
 
   private Command outtakeAndShootAfterDelay() {
     return new SequentialCommandGroup(
-        new RunCommand(() -> m_indexer.setMotor(-0.1), m_intake).withTimeout(0.1),
+        //new RunCommand(() -> m_indexer.setMotor(-0.1), m_intake).withTimeout(0.1),
         new ParallelCommandGroup(
             new SequentialCommandGroup(
                 new WaitCommand(0.5),
@@ -472,10 +435,10 @@ public class RobotContainer {
   private Command intakeWithHeightRestriction() {
     return new ConditionalCommand(
         new ParallelCommandGroup(
-            new RunCommand(() -> m_intake.setMotor(Constants.IntakeConstants.INTAKING_SPEED), m_intake),
+            //new RunCommand(() -> m_intake.setMotor(Constants.IntakeConstants.INTAKING_SPEED), m_intake),
             new RunCommand(() -> m_indexer.setMotor(Constants.IndexerConstants.INDEXER_IN_SPEED), m_indexer)),
         new ParallelCommandGroup(
-            new RunCommand(() -> m_intake.setMotor(0), m_intake),
+            //new RunCommand(() -> m_intake.setMotor(0), m_intake),
             new RunCommand(() -> m_indexer.setMotor(0), m_indexer)),
         () -> m_arm.getEncoderPosition() < 0.35);
   }

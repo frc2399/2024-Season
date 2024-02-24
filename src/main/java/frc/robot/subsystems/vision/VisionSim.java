@@ -24,6 +24,7 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.VisionConstants;
@@ -181,35 +182,20 @@ public class VisionSim extends SubsystemBase implements VisionIO {
         return getCameraResult().getTargets();
     }
 
-    public double keepPointedAtSpeaker(int speakerID) {
-        boolean seesSpeaker = false;
-        double yawDiff = 0.0;
-        for (PhotonTrackedTarget result : getCameraResult().getTargets()) {
-            if (result.getFiducialId() == RobotContainer.aprilTagAssignment.speakerID) {
-            seesSpeaker = true;
-            //yaw in radians bc p values get too big
-            yawDiff = ((result.getYaw()*Math.PI)/180);
-            SmartDashboard.putBoolean("Sees speaker: ", true);
-            break; //saves a tiny bit of processing power possibly
-        }
-        }
-        if (!seesSpeaker) {
-            SmartDashboard.putBoolean("Sees speaker: ", false);
-        }
-        return (keepPointedController.calculate(yawDiff, 0));
+    public double keepPointedAtSpeaker() {
+       return 0.0;
     }
 
-    public double keepArmAtAngle(int SpeakerID) {    
+    public double keepArmAtAngle() {    
       final double eightySlope = VisionConstants.eightyModelSlope;
       final double eightyIntercept = VisionConstants.eightyModelIntercept;
       final double hundredSlope = VisionConstants.hundredModelSlope;
       final double hundredIntercept = VisionConstants.hundredModelIntercept;
       final double boundary = VisionConstants.eightyModelRange;
-      final int desiredSpeakerTag = SpeakerID;
       double dist;
       Translation2d speakerDist = new Translation2d(
-        robotPose.getX() - VisionConstants.kFieldLayout.getTagPose(desiredSpeakerTag).get().toPose2d().getX(),
-        robotPose.getY() - VisionConstants.kFieldLayout.getTagPose(desiredSpeakerTag).get().toPose2d().getY()
+        robotPose.getX() - VisionConstants.kFieldLayout.getTagPose(7).get().toPose2d().getX(),
+        robotPose.getY() - VisionConstants.kFieldLayout.getTagPose(7).get().toPose2d().getY()
       );
       dist = speakerDist.getNorm();
       System.out.println(Units.metersToInches(dist));
@@ -219,6 +205,11 @@ public class VisionSim extends SubsystemBase implements VisionIO {
       } else {
         return (Math.atan(hundredSlope * Units.metersToInches(dist) + hundredIntercept));
       }
+    }
+
+    @Override
+    public void assignAprilTags(Optional<Alliance> ally) {
+        
     }
 
 }

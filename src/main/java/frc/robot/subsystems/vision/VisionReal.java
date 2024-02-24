@@ -24,6 +24,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class VisionReal extends SubsystemBase implements VisionIO {
@@ -32,6 +33,16 @@ public class VisionReal extends SubsystemBase implements VisionIO {
     private static PhotonPoseEstimator CamEstimator;
     private boolean updatePoseWithVisionReadings = true;
     public Pose2d robotPose;
+
+    //apriltags
+    public  int facingSourceLeftID;
+    public  int facingSourceRightID;
+    public  int speakerID;
+    public  int speakerOffsetID;
+    public  int stageBackID;
+    public  int facingAwayFromSpeakerStageLeftID;
+    public   int facingAwayFromSpeakerStageRightID;
+    public  int ampID;
 
     //PID for the speaker-aiming method
     final double ANGULAR_P = 0.8; // TODO: tune
@@ -115,14 +126,13 @@ public class VisionReal extends SubsystemBase implements VisionIO {
     }
 
     //keeps the robot pointed at the speaker; uses PID and yaw
-    public double keepPointedAtSpeaker(int SpeakerID) {
-      int speakerID = SpeakerID;
+    public double keepPointedAtSpeaker() {
       SmartDashboard.putNumber("speaker ID from VisionReal (should be 7) ", speakerID);
       boolean seesSpeaker = false;
       double yawDiff = 0.0;
       //gets yaw to centralized speaker target
       for (PhotonTrackedTarget result : getCameraResult().getTargets()) {
-        if (result.getFiducialId() == 7) {// FIXME: any alliance
+        if (result.getFiducialId() == speakerID) {
           seesSpeaker = true;
           //yaw in radians bc p values get too small
           yawDiff = ((result.getYaw()*Math.PI)/180);
@@ -138,21 +148,20 @@ public class VisionReal extends SubsystemBase implements VisionIO {
       return (keepPointedController.calculate(yawDiff, 0));
     }
 
-    public double keepArmAtAngle(int SpeakerID) {    
+    public double keepArmAtAngle() {    
       final double eightySlope = VisionConstants.eightyModelSlope;
       final double eightyIntercept = VisionConstants.eightyModelIntercept;
       final double hundredSlope = VisionConstants.hundredModelSlope;
       final double hundredIntercept = VisionConstants.hundredModelIntercept;
       final double boundary = VisionConstants.eightyModelRange;
-      final int desiredSpeakerTag = SpeakerID;
       double dist;
       boolean seesSpeaker = false;
-      boolean targetPoseDNE = kFieldLayout.getTagPose(desiredSpeakerTag).isEmpty();
+      boolean targetPoseDNE = kFieldLayout.getTagPose(speakerID).isEmpty();
       boolean sevenPoseDNE = kFieldLayout.getTagPose(7).isEmpty();
       double desiredRadians = 0.37;
       //this should help with the debugging :)
       for (PhotonTrackedTarget result : getCameraResult().getTargets()) {
-        if (result.getFiducialId() == 7) {// FIXME: any alliance
+        if (result.getFiducialId() == speakerID) {// FIXME: any alliance
           seesSpeaker = true;
           if (sevenPoseDNE) {
             SmartDashboard.putString("Oh no", "we cannot find the ID 7's pose :(");
@@ -163,13 +172,15 @@ public class VisionReal extends SubsystemBase implements VisionIO {
           else {
             SmartDashboard.putString("Oh no", "It appears there is another bug bc it can find both of the IDs");
             //gets the translation from the robot's current (x,y) to the (x,y) of the speaker-center
-            Translation2d speakerDist = new Translation2d( // FIXME: any alliance
-              robotPose.getX() - kFieldLayout.getTagPose(7).get().getX(),
-              robotPose.getY() - kFieldLayout.getTagPose(7).get().getY()
+            Translation2d speakerDist = new Translation2d(
+              robotPose.getX() - kFieldLayout.getTagPose(speakerID).get().getX(),
+              robotPose.getY() - kFieldLayout.getTagPose(speakerID).get().getY()
             );
             
             //gets distance + calculates models (returning desired arm)
             dist = speakerDist.getNorm();
+            //accounts for model measuring from front of frame and pose being to center of robot
+            dist -= Units.inchesToMeters(15.75);
             SmartDashboard.putNumber("distance", dist);
             SmartDashboard.putNumber("radians", Math.atan(eightySlope * Units.metersToInches(dist) + eightyIntercept));
             if (dist <= boundary) {
@@ -185,4 +196,29 @@ public class VisionReal extends SubsystemBase implements VisionIO {
       }      
       return desiredRadians;
     }
-}
+
+    public void assignAprilTags(Optional<Alliance> ally) {
+        
+      if (ally.get() == Alliance.Red) {
+          facingSourceLeftID = 10;
+          facingSourceRightID = 9;
+          speakerID = 4;
+          speakerOffsetID = 3;
+          stageBackID = 13;
+          facingAwayFromSpeakerStageLeftID = 11;
+          facingAwayFromSpeakerStageRightID = 12;
+          ampID = 5;
+        } else {
+          facingSourceLeftID = 1;
+          facingSourceRightID = 2;
+          speakerID = 7;
+          speakerOffsetID = 8;
+          stageBackID = 14;
+          facingAwayFromSpeakerStageLeftID = 15;
+          facingAwayFromSpeakerStageRightID = 16;
+          ampID = 6;
+      }
+    SmartDashboard.putNumber("robotcontainer/speaker id", speakerID);
+
+    }
+  }
