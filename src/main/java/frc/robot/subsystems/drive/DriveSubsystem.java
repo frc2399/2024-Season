@@ -85,7 +85,7 @@ public class DriveSubsystem extends SubsystemBase {
         this::setRobotRelativeSpeeds,
         new HolonomicPathFollowerConfig(
             new PIDConstants(3, 0, 0), // Translation
-            new PIDConstants(0.001, 0, 0), // Rotation
+            new PIDConstants(0.975, 0, 0), // Rotation
             AutoConstants.kMaxSpeedMetersPerSecond,
             0.385, /* Distance from furthest module to robot center in meters */
             new ReplanningConfig()),
@@ -96,7 +96,7 @@ public class DriveSubsystem extends SubsystemBase {
           var alliance = DriverStation.getAlliance();
 
           if (alliance.isPresent()) {
-            return alliance.get() == DriverStation.Alliance.Red;
+            return alliance.get() == DriverStation.Alliance.Blue;
           }
           return false;
         },
