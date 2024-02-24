@@ -56,7 +56,10 @@
       },
       "open": true
     },
-    "Clients": {
+    "Connections": {
+      "open": true
+    },
+    "Server": {
       "open": true
     },
     "visible": true

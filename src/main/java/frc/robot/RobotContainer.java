@@ -237,8 +237,8 @@ public class RobotContainer {
 
     static void assignAprilTags() {
       Optional<Alliance> ally = DriverStation.getAlliance();
-      if (ally.isPresent()) {
-        if (ally.get() == Alliance.Red) {
+      if (ally.isPresent()) { // FIXME: CHANGE BACK TO RED
+        if (ally.get() == Alliance.Blue) {
           facingSourceLeftID = 10;
           facingSourceRightID = 9;
           speakerID = 4;
@@ -354,7 +354,7 @@ public class RobotContainer {
                 -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),
                 m_vision.keepPointedAtSpeaker(aprilTagAssignment.speakerID),
                 fieldOrientedDrive), m_robotDrive),
-            makeSetPositionCommand(m_arm, m_vision.keepPointedAtSpeaker(aprilTagAssignment.speakerID))))
+            new RunCommand(() -> SmartDashboard.putNumber("arm angle radians", m_vision.keepArmAtAngle(aprilTagAssignment.speakerID)))))
         .onFalse(new RunCommand(() -> m_robotDrive.drive(
             -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
             -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),

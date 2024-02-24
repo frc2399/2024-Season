@@ -31,12 +31,15 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Robot;
 import frc.robot.subsystems.gyro.GyroIO;
+import frc.robot.subsystems.vision.VisionIO;
 
 public class DriveSubsystem extends SubsystemBase {
 
   // Odometry
   private SwerveDrivePoseEstimator m_poseEstimator;
   
+  // Vision
+  private VisionIO m_vision;
 
   // swerve modules
   private SwerveModule m_frontLeft;
@@ -128,6 +131,8 @@ public class DriveSubsystem extends SubsystemBase {
             m_rearLeft.getPosition(),
             m_rearRight.getPosition()
         });
+    
+    //m_poseEstimator.addVisionMeasurement(m_vision, desiredAngle);
 
 
     // updates inputs for each module
@@ -164,7 +169,7 @@ public class DriveSubsystem extends SubsystemBase {
     swerveModuleStatePublisher.set(swerveModuleStates);
 
     if (DriverStation.isAutonomous()){
-      System.out.println("Mahee is annoying");
+      //System.out.println("Mahee is annoying");
     } 
     if (Robot.isSimulation()) {
     double angleChange = Constants.DriveConstants.kDriveKinematics.toChassisSpeeds(swerveModuleStates).omegaRadiansPerSecond * (1/Constants.CodeConstants.kMainLoopFrequency);

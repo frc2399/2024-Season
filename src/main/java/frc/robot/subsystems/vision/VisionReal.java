@@ -31,7 +31,8 @@ public class VisionReal extends SubsystemBase implements VisionIO {
     private static PhotonPoseEstimator CamEstimator;
     private boolean updatePoseWithVisionReadings = true;
     public Pose2d robotPose;
-    // public Pose2d prevRobotPose;
+
+    //PID for the speaker-aiming method
     final double ANGULAR_P = 0.8; // TODO: tune
     final double ANGULAR_D = 0.0;
     PIDController keepPointedController = new PIDController(
@@ -54,23 +55,20 @@ public class VisionReal extends SubsystemBase implements VisionIO {
       return;
     }
     Optional<EstimatedRobotPose> pose = getCameraEst();
-    //System.out.println(CamEstimator.update());
-    //if (!updatePoseWithVisionReadings) {
-      // return;}
+      
+    //makes sure that there is a new pose and that there are targets before getting a robot pose 
     if (pose.isPresent()) {
-    var result = camera.getLatestResult();
-     if (result.hasTargets()) {
-      //System.out.println(pose);
-      PhotonTrackedTarget target = bestTarget();
-      //the robot pose is estimating field to robot using photon utils
-      // if (robotPose != null) { // TODO: better way w/ less processing power - maybe smth in the init idk
-      // prevRobotPose = robotPose;
-      // }
-      robotPose = PhotonUtils.estimateFieldToRobot(
-        new Transform2d(
-          new Translation2d(pose.get().estimatedPose.getX(), pose.get().estimatedPose.getY()), 
-          pose.get().estimatedPose.getRotation().toRotation2d()),
-         kFieldLayout.getTagPose(target.getFiducialId()).get().toPose2d(), VisionConstants.camToRobot2d);
+      var result = camera.getLatestResult();
+      if (result.hasTargets()) {
+        PhotonTrackedTarget target = bestTarget();
+        //the robot pose is estimating field to robot using photon utils
+        robotPose = PhotonUtils.estimateFieldToRobot(
+          new Transform2d(
+            new Translation2d(pose.get().estimatedPose.getX(), pose.get().estimatedPose.getY()), 
+            pose.get().estimatedPose.getRotation().toRotation2d()),
+          kFieldLayout.getTagPose(target.getFiducialId()).get().toPose2d(), VisionConstants.camToRobot2d);
+        SmartDashboard.putNumber("robot pose", robotPose.getX());
+        SmartDashboard.putNumber("robot pose y", robotPose.getY());
      }
     }
   }
@@ -87,19 +85,22 @@ public class VisionReal extends SubsystemBase implements VisionIO {
       return visionest;
     }
 
+    //checks if there are targets in the current result
     public Boolean hasTargets() {
       return getCameraResult().hasTargets(); 
     }
     
+    //gets the target determined to be the 'best'   
     public PhotonTrackedTarget bestTarget() {
       return getCameraResult().getBestTarget();
     }
     
+    //gets all visible targets in list ordered from 'best' to 'worst'
     public List<PhotonTrackedTarget> getTargets() {
       return getCameraResult().getTargets();
     }
 
-  //creates functions that allow the changing of whether or not to use vision to update the pose - NEED CONDITIONS AND/OR BUTTON 
+  //creates functions that allow the changing of whether or not to use vision to update the pose - find an actual use for this at some point 
     public void enableUpdatePoseWithVisionReading () {
       updatePoseWithVisionReadings = true;
     }
@@ -112,13 +113,15 @@ public class VisionReal extends SubsystemBase implements VisionIO {
       return camera;
     }
 
+    //keeps the robot pointed at the speaker; uses PID and yaw
     public double keepPointedAtSpeaker(int SpeakerID) {
       int speakerID = SpeakerID;
       SmartDashboard.putNumber("speaker ID from VisionReal (should be 7) ", speakerID);
       boolean seesSpeaker = false;
       double yawDiff = 0.0;
+      //gets yaw to centralized speaker target
       for (PhotonTrackedTarget result : getCameraResult().getTargets()) {
-        if (result.getFiducialId() == speakerID) {
+        if (result.getFiducialId() == 7) {// FIXME: any alliance
           seesSpeaker = true;
           //yaw in radians bc p values get too small
           yawDiff = ((result.getYaw()*Math.PI)/180);
@@ -142,19 +145,34 @@ public class VisionReal extends SubsystemBase implements VisionIO {
       final double boundary = VisionConstants.eightyModelRange;
       final int desiredSpeakerTag = SpeakerID;
       double dist;
-      Translation2d speakerDist = new Translation2d(
-        robotPose.getX() - VisionConstants.kFieldLayout.getTagPose(desiredSpeakerTag).get().toPose2d().getX(),
-        robotPose.getY() - VisionConstants.kFieldLayout.getTagPose(desiredSpeakerTag).get().toPose2d().getY()
-      );
-
-      dist = speakerDist.getNorm();
-      SmartDashboard.putNumber("distance", dist);
-      SmartDashboard.putNumber("radians", Math.atan(eightySlope * Units.metersToInches(dist) + eightyIntercept));
-      
-      if (dist <= boundary) {
-        return (Math.atan(eightySlope * Units.metersToInches(dist) + eightyIntercept));
-      } else {
-        return (Math.atan(hundredSlope * Units.metersToInches(dist) + hundredIntercept));
+      boolean targetPoseDNE = kFieldLayout.getTagPose(SpeakerID).isEmpty();
+      boolean sevenPoseDNE = kFieldLayout.getTagPose(7).isEmpty();
+      //this should help with the debugging :)
+      if (sevenPoseDNE) {
+        SmartDashboard.putString("Oh no", "we cannot find the ID 7's pose :(");
+        return 1.4;
       }
+      else if (targetPoseDNE) {
+        SmartDashboard.putString("Oh no","we cannot find the speakerID's pose");
+        return 1.4;
+      }
+      else {
+        SmartDashboard.putString("Oh no", "It appears there is another bug bc it can find both of the IDs");
+        //gets the translation from the robot's current (x,y) to the (x,y) of the speaker-center
+        Translation2d speakerDist = new Translation2d( // FIXME: any alliance
+          robotPose.getX() - kFieldLayout.getTagPose(7).get().getX(),
+          robotPose.getY() - kFieldLayout.getTagPose(7).get().getY()
+        );
+        
+        //gets distance + calculates models (returning desired arm)
+        dist = speakerDist.getNorm();
+        SmartDashboard.putNumber("distance", dist);
+        SmartDashboard.putNumber("radians", Math.atan(eightySlope * Units.metersToInches(dist) + eightyIntercept));
+        if (dist <= boundary) {
+          return (Math.atan(eightySlope * Units.metersToInches(dist) + eightyIntercept));
+        } else {
+          return (Math.atan(hundredSlope * Units.metersToInches(dist) + hundredIntercept));
+        }
+    }
     }
 }
