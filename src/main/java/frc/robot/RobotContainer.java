@@ -313,7 +313,10 @@ public class RobotContainer {
     // operator right trigger: outtake
     //outtake a little bittt to get shooter up to speed
     m_operatorController.leftBumper().and(() -> !isInClimberMode).onTrue(new RunCommand(() -> m_indexer.setMotor(-0.3), m_indexer).withTimeout(0.1));
-  }
+
+    m_operatorController.axisGreaterThan(5, 0.1).whileTrue(new RunCommand(() -> m_arm.setSpeedGravityCompensation(0.1), m_arm));
+    m_operatorController.axisLessThan(5, -0.1).whileTrue(new RunCommand(() -> m_arm.setSpeedGravityCompensation(-0.1), m_arm));
+}
 
   public static Command makeSetPositionCommand(Arm arm,
       double target) {
