@@ -367,7 +367,10 @@ public class RobotContainer {
             new WaitCommand(0.5),
             new RunCommand(() -> m_indexer.setMotor(Constants.IndexerConstants.INDEXER_IN_SPEED), m_indexer),
             new RunCommand(() -> m_indexer.setIsIntooked(false), m_indexer)),
-        new RunCommand(() -> m_shooter.setMotor(m_arm.getSpeedFromArmHeight()), m_shooter)).withTimeout(0.75);
+        new RunCommand(() -> m_shooter.setMotor(m_arm.getSpeedFromArmHeight()), m_shooter).withTimeout(0.75),
+        new RunCommand(() -> m_shooter.setMotor(0)));
+
+
   }
 
   private Command outtakeAndShootAfterDelay() {
