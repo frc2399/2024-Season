@@ -349,6 +349,7 @@ public class RobotContainer {
     // driver b: reset gyro
     m_driverController.b().onTrue(new InstantCommand(() -> m_gyro.setYaw(0.0)));
 
+    //driver a: align to speaker mode
     m_driverController.a().whileTrue(
       new RunCommand(() -> m_robotDrive.drive(
                 -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
@@ -361,6 +362,10 @@ public class RobotContainer {
             -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband),
             fieldOrientedDrive), m_robotDrive));
 
+    
+  }
+
+  private void configureButtonBindingsOperatorClimber() {
     // operater left trigger: climber mode: left climber up
     m_operatorController.leftTrigger().and(() -> isInClimberMode).whileTrue(new RunCommand(
        () -> m_climber.setLeftSpeed(0.2), m_climber));
@@ -370,7 +375,7 @@ public class RobotContainer {
       () -> m_climber.setRightSpeed(0.2), m_climber));
 
     // operater left bumper: climber mode: left climber down
-   m_operatorController.leftBumper().and(() -> isInClimberMode).whileTrue(new RunCommand(
+    m_operatorController.leftBumper().and(() -> isInClimberMode).whileTrue(new RunCommand(
          () -> m_climber.setLeftSpeed(-0.2), m_climber));
 
     // operater right bumper: climber mode: right climber down
