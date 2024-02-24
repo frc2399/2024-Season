@@ -49,6 +49,14 @@ public class VisionSim extends SubsystemBase implements VisionIO {
     // final double TARGET_HEIGHT_METERS = Units.feetToMeters(5);
     // Angle between horizontal and the camera.
     final double camPitch = Units.degreesToRadians(0);
+    public  int facingSourceLeftID;
+    public  int facingSourceRightID;
+    public  int speakerID;
+    public  int speakerOffsetID;
+    public  int stageBackID;
+    public  int facingAwayFromSpeakerStageLeftID;
+    public  int facingAwayFromSpeakerStageRightID;
+    public  int ampID;
 
     double camDiagFOV = 70.0; // degrees
     // double camPitch = CAMERA_PITCH_RADIANS; // degrees
@@ -109,6 +117,7 @@ public class VisionSim extends SubsystemBase implements VisionIO {
 
     @Override
     public void periodic() {
+        SmartDashboard.putNumber("visiontesting/speakerID", speakerID);
         // This method will be called once per scheduler run
         // SmartDashboard.putBoolean("Camera is connected", camera.isConnected());
         SmartDashboard.putBoolean("Pose Updates Enabled?: ", updatePoseWithVisionReadings);
@@ -210,6 +219,28 @@ public class VisionSim extends SubsystemBase implements VisionIO {
     @Override
     public void assignAprilTags(Optional<Alliance> ally) {
         
+            if (ally.get() == Alliance.Red) {
+                facingSourceLeftID = 10;
+                facingSourceRightID = 9;
+                speakerID = 4;
+                speakerOffsetID = 3;
+                stageBackID = 13;
+                facingAwayFromSpeakerStageLeftID = 11;
+                facingAwayFromSpeakerStageRightID = 12;
+                ampID = 5;
+              } else {
+                facingSourceLeftID = 1;
+                facingSourceRightID = 2;
+                speakerID = 7;
+                speakerOffsetID = 8;
+                stageBackID = 14;
+                facingAwayFromSpeakerStageLeftID = 15;
+                facingAwayFromSpeakerStageRightID = 16;
+                ampID = 6;
+            }
+          SmartDashboard.putNumber("robotcontainer/speaker id", speakerID);
+      
+          
     }
 
 }

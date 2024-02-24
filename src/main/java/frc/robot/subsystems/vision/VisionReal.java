@@ -127,6 +127,7 @@ public class VisionReal extends SubsystemBase implements VisionIO {
 
     //keeps the robot pointed at the speaker; uses PID and yaw
     public double keepPointedAtSpeaker() {
+      SmartDashboard.putNumber("visiontesting/speakerID", speakerID);
       SmartDashboard.putNumber("speaker ID from VisionReal (should be 7) ", speakerID);
       boolean seesSpeaker = false;
       double yawDiff = 0.0;
