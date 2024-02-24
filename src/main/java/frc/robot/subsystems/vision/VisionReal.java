@@ -146,34 +146,43 @@ public class VisionReal extends SubsystemBase implements VisionIO {
       final double boundary = VisionConstants.eightyModelRange;
       final int desiredSpeakerTag = SpeakerID;
       double dist;
-      boolean targetPoseDNE = kFieldLayout.getTagPose(SpeakerID).isEmpty();
+      boolean seesSpeaker = false;
+      boolean targetPoseDNE = kFieldLayout.getTagPose(desiredSpeakerTag).isEmpty();
       boolean sevenPoseDNE = kFieldLayout.getTagPose(7).isEmpty();
+      double desiredRadians = 0.37;
       //this should help with the debugging :)
-      if (sevenPoseDNE) {
-        SmartDashboard.putString("Oh no", "we cannot find the ID 7's pose :(");
-        return 1.4;
-      }
-      else if (targetPoseDNE) {
-        SmartDashboard.putString("Oh no","we cannot find the speakerID's pose");
-        return 1.4;
-      }
-      else {
-        SmartDashboard.putString("Oh no", "It appears there is another bug bc it can find both of the IDs");
-        //gets the translation from the robot's current (x,y) to the (x,y) of the speaker-center
-        Translation2d speakerDist = new Translation2d( // FIXME: any alliance
-          robotPose.getX() - kFieldLayout.getTagPose(7).get().getX(),
-          robotPose.getY() - kFieldLayout.getTagPose(7).get().getY()
-        );
-        
-        //gets distance + calculates models (returning desired arm)
-        dist = speakerDist.getNorm();
-        SmartDashboard.putNumber("distance", dist);
-        SmartDashboard.putNumber("radians", Math.atan(eightySlope * Units.metersToInches(dist) + eightyIntercept));
-        if (dist <= boundary) {
-          return (Math.atan(eightySlope * Units.metersToInches(dist) + eightyIntercept));
-        } else {
-          return (Math.atan(hundredSlope * Units.metersToInches(dist) + hundredIntercept));
+      for (PhotonTrackedTarget result : getCameraResult().getTargets()) {
+        if (result.getFiducialId() == 7) {// FIXME: any alliance
+          seesSpeaker = true;
+          if (sevenPoseDNE) {
+            SmartDashboard.putString("Oh no", "we cannot find the ID 7's pose :(");
+          }
+          else if (targetPoseDNE) {
+            SmartDashboard.putString("Oh no","we cannot find the speakerID's pose");
+          }
+          else {
+            SmartDashboard.putString("Oh no", "It appears there is another bug bc it can find both of the IDs");
+            //gets the translation from the robot's current (x,y) to the (x,y) of the speaker-center
+            Translation2d speakerDist = new Translation2d( // FIXME: any alliance
+              robotPose.getX() - kFieldLayout.getTagPose(7).get().getX(),
+              robotPose.getY() - kFieldLayout.getTagPose(7).get().getY()
+            );
+            
+            //gets distance + calculates models (returning desired arm)
+            dist = speakerDist.getNorm();
+            SmartDashboard.putNumber("distance", dist);
+            SmartDashboard.putNumber("radians", Math.atan(eightySlope * Units.metersToInches(dist) + eightyIntercept));
+            if (dist <= boundary) {
+              desiredRadians = (Math.atan(eightySlope * Units.metersToInches(dist) + eightyIntercept));
+            } else {
+              desiredRadians = (Math.atan(hundredSlope * Units.metersToInches(dist) + hundredIntercept));
+            }
+          }
         }
-    }
+      }
+      if (!seesSpeaker) {
+        SmartDashboard.putBoolean("Sees speaker (only true when in keep pointed mode): ", false);
+      }      
+      return desiredRadians;
     }
 }
