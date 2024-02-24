@@ -211,6 +211,7 @@ public class RobotContainer {
     m_arm.setDefaultCommand(new RunCommand(() -> m_arm.setSpeedGravityCompensation(0), m_arm));
 
     // default command for drivetrain: drive based on controller inputs
+    //actually driving robot
     m_robotDrive.setDefaultCommand(
         // The left stick controls translation of the robot.
         // Turning is controlled by the X axis of the right stick.
@@ -227,12 +228,10 @@ public class RobotContainer {
   private void configureButtonBindingsDriver() {
 
     // driver left bumper: manual shoot
+    //gets arm height to assign to speed. lower arm, means cloesr to speaekr, so shoots less forecfully
     m_driverController.leftBumper().whileTrue(
-        // new SequentialCommandGroup(
-        // new RunCommand(() -> m_indexer.setIsIntooked(false)),
-        new RunCommand(() -> m_shooter.setMotor(m_arm.getSpeedFromArmHeight()), m_shooter))
-    // )
-    ;
+        new RunCommand(() -> m_shooter.setMotor(m_arm.getSpeedFromArmHeight()), m_shooter));
+    
 
     // driver right bumper: auto-shoot
     m_driverController.rightBumper().onTrue(shootAfterDelay());
@@ -242,6 +241,7 @@ public class RobotContainer {
         //m_intake));
 
     // driver right trigger: manual intake with arm height restriction
+    //only intakes if arm is lowered
     m_driverController.rightTrigger().whileTrue(intakeWithHeightRestriction());
 
     // driver left trigger: outtake
@@ -281,7 +281,7 @@ public class RobotContainer {
     m_operatorController.a().and(() -> isInClimberMode).onTrue(new automaticClimberCommand(m_climber, 0));
 
     // operator x: switch operator controller modes
-    m_operatorController.x().onTrue(new InstantCommand(() -> isInClimberMode = !isInClimberMode, m_climber));
+    m_operatorController.x().onTrue(new InstantCommand(() -> isInClimberMode = !isInClimberMode));
 
   }
 
@@ -308,10 +308,11 @@ public class RobotContainer {
     m_operatorController.y().and(() -> !isInClimberMode).onTrue(makeSetPositionCommand(m_arm, 1.4));
 
     // operator left trigger: intake
-    m_operatorController.rightBumper().and(() -> !isInClimberMode).whileTrue(new RunCommand(() -> m_indexer.setMotor(0.3)));
+    m_operatorController.rightBumper().and(() -> !isInClimberMode).whileTrue(new RunCommand(() -> m_indexer.setMotor(0.3), m_indexer));
 
     // operator right trigger: outtake
-    m_operatorController.leftBumper().and(() -> !isInClimberMode).whileTrue(new RunCommand(() -> m_indexer.setMotor(-0.3), m_indexer).withTimeout(0.15));
+    //outtake a little bittt to get shooter up to speed
+    m_operatorController.leftBumper().and(() -> !isInClimberMode).onTrue(new RunCommand(() -> m_indexer.setMotor(-0.3), m_indexer).withTimeout(0.1));
   }
 
   public static Command makeSetPositionCommand(Arm arm,
@@ -341,7 +342,7 @@ public class RobotContainer {
         new InstantCommand(() -> intake.setMotor(speed)),
         new InstantCommand(() -> indexer.setMotor(speed)));
   }
-
+//waiting 0.5 seconds to get shooter up to speed
   private Command shootAfterDelay() {
     return new ParallelCommandGroup(
         new SequentialCommandGroup(
@@ -353,7 +354,7 @@ public class RobotContainer {
 
   private Command outtakeAndShootAfterDelay() {
     return new SequentialCommandGroup(
-        new RunCommand(() -> m_indexer.setMotor(-0.1), m_intake).withTimeout(0.25),
+        new RunCommand(() -> m_indexer.setMotor(-0.1), m_intake).withTimeout(0.1),
         new ParallelCommandGroup(
             new SequentialCommandGroup(
                 new WaitCommand(0.5),
