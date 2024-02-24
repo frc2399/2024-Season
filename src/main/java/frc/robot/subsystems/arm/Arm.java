@@ -20,8 +20,8 @@ public class Arm extends ProfiledPIDSubsystem {
   public static double speedFromArmHeight;
 
   // Trapezoidal profile constants and variables
-  private static final double max_vel = 3.9; // rad/s (NEO specs / gear ratio, converted into rad/s ~ 4.1, give it a slightly lower one to make it acheivable)
-  private static final double max_accel = 2.7; // rad/s/s
+  private static final double max_vel = 2; // rad/s (NEO specs / gear ratio, converted into rad/s ~ 4.1, give it a slightly lower one to make it acheivable)
+  private static final double max_accel = 2; // rad/s/s
   private static final Constraints constraints = new Constraints(max_vel, max_accel);
   private static double gravityCompensation = 0.025;
   private static double feedForward = 1/max_vel;
@@ -105,9 +105,9 @@ public void setEncoderPosition(double angle) {
   public double getSpeedFromArmHeight() {
     if (getEncoderPosition() <= 0.37) {
       speedFromArmHeight = Constants.ShooterConstants.SUBWOOFER_SPEED;
-    } else if (getEncoderPosition() > 0.37 & getEncoderPosition() <= 0.8) {
+    } else if (getEncoderPosition() > 0.37 & getEncoderPosition() <= 0.76) {
       speedFromArmHeight = Constants.ShooterConstants.SPEAKER_SPEED;
-    } else if (getEncoderPosition() > 0.8 & getEncoderPosition() <= 1) {
+    } else if (getEncoderPosition() > 0.76 & getEncoderPosition() <= 1) {
       speedFromArmHeight = Constants.ShooterConstants.FAR_AWAY_SPEED;
     } else if (getEncoderPosition() > 1) {
         speedFromArmHeight = Constants.ShooterConstants.AMP_SPEED;

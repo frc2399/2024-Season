@@ -43,8 +43,8 @@ public class RealIndexer implements IndexerIO {
 
     public void setSpeed(double speedPercent) {
         indexerController.setReference(speedPercent * Constants.NEO550_MAX_SPEED_RPM, ControlType.kVelocity);
-        SmartDashboard.putNumber("shooter reference", speedPercent);
-        SmartDashboard.putNumber("shooter speed (RPM)", getEncoderSpeed() / Constants.NEO550_MAX_SPEED_RPM);
+        SmartDashboard.putNumber("shooter/reference", speedPercent);
+        SmartDashboard.putNumber("shooter/speed (RPM)", getEncoderSpeed() / Constants.NEO550_MAX_SPEED_RPM);
     }
 
     public double getCurrent() {
@@ -91,10 +91,4 @@ public class RealIndexer implements IndexerIO {
     public boolean getIsIntooked() {
         return isIntooked;
     }
-
-    @Override
-    public boolean isStalling() {
-        return (Math.abs(getCurrent()) > 10);
-    }
-
 }

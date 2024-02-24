@@ -71,6 +71,7 @@ public final class Constants {
   }
 
   public static final class SwerveModuleConstants {
+    //THIS IS 13 ON COMP BOT
     public static final int kDrivingMotorPinionTeeth = 14;
 
     // Invert the turning encoder, since the output shaft rotates in the opposite
@@ -138,7 +139,7 @@ public final class Constants {
     public static final double SPEAKER_SPEED = 0.8;
     public static final double AMP_SPEED = 0.3;
     public static final double FAR_AWAY_SPEED = 1;
-    public static final double SUBWOOFER_SPEED = 0.7;
+    public static final double SUBWOOFER_SPEED = 0.6;
     public static final double SHOOTER_FEEDFORWRD = 0.03;
     public static final double SHOOTER_PVALUE = 0.01;
     public static final double SHOOT_MAX_SPEED_RPS = NEO_MAX_SPEED_RPM / 60;

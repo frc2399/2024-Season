@@ -99,8 +99,8 @@ public class DriveSubsystem extends SubsystemBase {
         this::getRobotRelativeSpeeds,
         this::setRobotRelativeSpeeds,
         new HolonomicPathFollowerConfig(
-            new PIDConstants(5, 0, 0), // Translation
-            new PIDConstants(0.975, 0, 0), // Rotation
+            new PIDConstants(3, 0, 0), // Translation
+            new PIDConstants(0.001, 0, 0), // Rotation
             AutoConstants.kMaxSpeedMetersPerSecond,
             0.385, /* Distance from furthest module to robot center in meters */
             new ReplanningConfig()),
@@ -246,8 +246,23 @@ public class DriveSubsystem extends SubsystemBase {
     double ySpeedCommanded;
     double currentAngle = (m_gyro.getYaw());
 
+      // //Account for edge case when gyro resets
+    if (currentAngle == 0) {
+      desiredAngle = 0;
+    }
+
+    //Apply correction if needed
+    if (rotRate == 0 && (xSpeed != 0 || ySpeed != 0)) {
+      newRotRate = 0;
+      // correction algorithm
+      if (Math.abs(desiredAngle - currentAngle) > Math.toRadians(1)) {
+        newRotRate = (2.0 * (desiredAngle - currentAngle)) % (2 * Math.PI) / (2 * Math.PI);
+      }
+    }
+    else {
       newRotRate = rotRate;
       desiredAngle = currentAngle;
+    }
   
       xSpeedCommanded = xSpeed;
       ySpeedCommanded = ySpeed;

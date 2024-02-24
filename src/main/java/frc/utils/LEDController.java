@@ -1,4 +1,4 @@
-package frc.robot.util;
+package frc.utils;
 
 import edu.wpi.first.wpilibj.DigitalOutput;
 
