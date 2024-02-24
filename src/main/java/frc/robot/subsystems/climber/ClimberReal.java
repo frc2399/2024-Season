@@ -87,8 +87,8 @@ public class ClimberReal implements ClimberIO {
 
     public void periodicUpdate() {
         // This method will be called once per scheduler run
-        SmartDashboard.putNumber("Left Climber Height", getLeftEncoderPosition());
-        SmartDashboard.putNumber("Right Climber Hieght", getRightEncoderPosition());
+        SmartDashboard.putNumber("climber/Left Climber Height", getLeftEncoderPosition());
+        SmartDashboard.putNumber("climber/Right Climber Hieght", getRightEncoderPosition());
     }
 
     public boolean isInClimberMode(){

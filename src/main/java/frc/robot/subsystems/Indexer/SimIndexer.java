@@ -49,7 +49,7 @@ public class SimIndexer implements IndexerIO {
     }
 
     public void periodicUpdate() {
-        SmartDashboard.putNumber("indexer/current (A)", getCurrent());
+        SmartDashboard.putNumber("Driver/indexer/current (A)", getCurrent());
     }
 
     public boolean getIsBeamBroken() {
