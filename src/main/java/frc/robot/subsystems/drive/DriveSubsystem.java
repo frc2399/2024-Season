@@ -7,6 +7,7 @@ package frc.robot.subsystems.drive;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
+import com.pathplanner.lib.util.PathPlannerLogging;
 import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -85,7 +86,7 @@ public class DriveSubsystem extends SubsystemBase {
         this::setRobotRelativeSpeeds,
         new HolonomicPathFollowerConfig(
             new PIDConstants(3, 0, 0), // Translation
-            new PIDConstants(0.975, 0, 0), // Rotation
+            new PIDConstants(0.5, 0, 0), // Rotation
             AutoConstants.kMaxSpeedMetersPerSecond,
             0.385, /* Distance from furthest module to robot center in meters */
             new ReplanningConfig()),
@@ -96,12 +97,14 @@ public class DriveSubsystem extends SubsystemBase {
           var alliance = DriverStation.getAlliance();
 
           if (alliance.isPresent()) {
-            return alliance.get() == DriverStation.Alliance.Blue;
+            return alliance.get() == DriverStation.Alliance.Red;
           }
           return false;
         },
 
         this);
+
+        configurePathPlannerLogging();
   }
 
   @Override
@@ -180,8 +183,14 @@ public class DriveSubsystem extends SubsystemBase {
 
   /** Resets the odometry to the specified pose. */
   public void resetOdometry(Pose2d pose) {
+    System.out.println("angle " + m_gyro.getYaw());
+    System.out.println("front left position " + m_frontLeft.getPosition());
+    System.out.println("front right position " + m_frontRight.getPosition());
+    System.out.println("rear left position " + m_rearLeft.getPosition());
+    System.out.println("rear right position " + m_rearRight.getPosition());
+
     poseEstimator.resetPosition(
-        Rotation2d.fromDegrees(m_gyro.getYaw()),
+        Rotation2d.fromRadians(m_gyro.getYaw()),
         new SwerveModulePosition[] {
             m_frontLeft.getPosition(),
             m_frontRight.getPosition(),
@@ -343,4 +352,17 @@ public class DriveSubsystem extends SubsystemBase {
         pose);
   }
 
+   private void configurePathPlannerLogging() {        
+        PathPlannerLogging.setLogCurrentPoseCallback((pose) -> {
+            field2d.setRobotPose(pose);
+        });
+
+        PathPlannerLogging.setLogTargetPoseCallback((pose) -> {
+            field2d.getObject("ROBOT target pose").setPose(pose);
+        });
+
+        PathPlannerLogging.setLogActivePathCallback((poses) -> {
+            field2d.getObject("ROBOT path").setPoses(poses);
+        });
+    }
 }

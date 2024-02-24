@@ -175,10 +175,10 @@ public class RobotContainer {
   private void setUpAuton() {
     NamedCommands.registerCommand("intake", Commands.print("intake")); // sensorIntakeCommand());
     NamedCommands.registerCommand("Intake", Commands.print("intake")); // sensorIntakeCommand());
-    NamedCommands.registerCommand("shoot", Commands.print("/n/n/n/n/n/n/n/nshoot/n/n/n/n/n/n/n/n")); // autoShoot());
+    NamedCommands.registerCommand("shoot", shootAfterDelay());
     NamedCommands.registerCommand("AimToTarget", Commands.print("aimed to target!"));
     NamedCommands.registerCommand("SetArmPosition", Commands.print("set arm position"));
-    NamedCommands.registerCommand("AutoShoot", Commands.print("/n/n/n/n/n/n/n/nshoot/n/n/n/n/n/n/n/n")); // autoShoot());
+    NamedCommands.registerCommand("AutoShoot", shootAfterDelay());
     m_autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Autos/Selector", m_autoChooser);
   }

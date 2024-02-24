@@ -5,7 +5,7 @@
       "x": 0.66,
       "y": 4.51
     },
-    "rotation": -47.31999999999999
+    "rotation": -60.0
   },
   "command": {
     "type": "sequential",
@@ -79,7 +79,6 @@
               {
                 "type": "named",
                 "data": {
-            
                   "name": "SetArmPosition"
                 }
               }
