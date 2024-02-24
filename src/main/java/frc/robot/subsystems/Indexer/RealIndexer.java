@@ -91,4 +91,9 @@ public class RealIndexer implements IndexerIO {
     public boolean getIsIntooked() {
         return isIntooked;
     }
+
+    @Override
+    public boolean isStalling() {
+        return false;
+    }
 }
