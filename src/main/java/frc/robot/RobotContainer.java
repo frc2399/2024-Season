@@ -134,6 +134,8 @@ public class RobotContainer {
       m_rearLeftIO = new SwerveModuleIO_Sim("rear left");
       m_rearRightIO = new SwerveModuleIO_Sim("rear right");
     } else {
+
+
       intakeIO = new RealIntake();
       indexerIO = new RealIndexer();
       shooterIO = new RealShooter();
@@ -172,6 +174,7 @@ public class RobotContainer {
   // sets up auton commands
   private void setUpAuton() {
     NamedCommands.registerCommand("intake", Commands.print("intake")); // sensorIntakeCommand());
+    NamedCommands.registerCommand("Intake", Commands.print("intake")); // sensorIntakeCommand());
     NamedCommands.registerCommand("shoot", Commands.print("/n/n/n/n/n/n/n/nshoot/n/n/n/n/n/n/n/n")); // autoShoot());
     NamedCommands.registerCommand("AimToTarget", Commands.print("aimed to target!"));
     NamedCommands.registerCommand("SetArmPosition", Commands.print("set arm position"));
