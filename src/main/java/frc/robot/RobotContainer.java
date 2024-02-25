@@ -173,8 +173,8 @@ public class RobotContainer {
 
   // sets up auton commands
   private void setUpAuton() {
-    NamedCommands.registerCommand("intake", Commands.print("intake")); // sensorIntakeCommand());
-    NamedCommands.registerCommand("Intake", Commands.print("intake")); // sensorIntakeCommand());
+    NamedCommands.registerCommand("intake", intakeWithHeightRestriction());
+    NamedCommands.registerCommand("Intake",intakeWithHeightRestriction());
     NamedCommands.registerCommand("shoot", shootAfterDelay());
     NamedCommands.registerCommand("AimToTarget", Commands.print("aimed to target!"));
     NamedCommands.registerCommand("SetArmPosition", Commands.print("set arm position"));
@@ -367,8 +367,8 @@ public class RobotContainer {
             new WaitCommand(0.5),
             new RunCommand(() -> m_indexer.setMotor(Constants.IndexerConstants.INDEXER_IN_SPEED), m_indexer),
             new RunCommand(() -> m_indexer.setIsIntooked(false), m_indexer)),
-        new RunCommand(() -> m_shooter.setMotor(m_arm.getSpeedFromArmHeight()), m_shooter).withTimeout(0.75),
-        new RunCommand(() -> m_shooter.setMotor(0)));
+        new RunCommand(() -> m_shooter.setMotor(m_arm.getSpeedFromArmHeight()), m_shooter)).withTimeout(0.75);
+        
 
 
   }
