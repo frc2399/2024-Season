@@ -8,8 +8,10 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.estimator.PoseEstimator;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -181,7 +183,8 @@ public class RobotContainer {
     NamedCommands.registerCommand("SetArmPosition", makeSetPositionCommand(m_arm, 0.662));
     NamedCommands.registerCommand("AutoShoot", shootAfterDelay());
     m_autoChooser = AutoBuilder.buildAutoChooser();
-    SmartDashboard.putData("Autos/Selector", m_autoChooser);
+    Shuffleboard.getTab("Driver").add("Autos/Selector",m_autoChooser);
+
   }
 
   // Configure default commands

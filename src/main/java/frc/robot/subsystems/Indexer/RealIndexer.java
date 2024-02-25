@@ -17,7 +17,7 @@ public class RealIndexer implements IndexerIO {
     public static CANSparkMax indexerMotorController;
     public static RelativeEncoder indexerEncoder;
     public static SparkPIDController indexerController;
-    private double slewRate = 0.2;
+    private double slewRate = 0;
     public boolean isIntooked = false;
     public boolean isSensorOverriden = false;
     private static DigitalInput indexerSensorTop;

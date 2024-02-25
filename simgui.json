@@ -2,6 +2,7 @@
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",
+      "/Shuffleboard/Driver/Autos/Selector": "String Chooser",
       "/SmartDashboard/Autos/Selector": "String Chooser",
       "/SmartDashboard/Field": "Field2d"
     },
@@ -11,7 +12,7 @@
           "visible": true
         }
       },
-      "/SmartDashboard/Autos/Selector": {
+      "/Shuffleboard/Driver/Autos/Selector": {
         "window": {
           "visible": true
         }
