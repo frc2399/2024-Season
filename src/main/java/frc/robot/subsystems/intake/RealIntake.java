@@ -16,7 +16,7 @@ public class RealIntake implements IntakeIO {
     public static RelativeEncoder leftCenteringIntakeEncoder;
     public static RelativeEncoder rightCenteringIntakeEncoder;
     public static RelativeEncoder intakeEncoder;
-    private double slewRate = 0.2;
+    private double slewRate = 0.0;
 
     public RealIntake()
     {

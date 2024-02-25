@@ -105,14 +105,19 @@ public void setEncoderPosition(double angle) {
   public double getSpeedFromArmHeight() {
     if (getEncoderPosition() <= 0.37) {
       speedFromArmHeight = Constants.ShooterConstants.SUBWOOFER_SPEED;
-    } else if (getEncoderPosition() > 0.37 & getEncoderPosition() <= 0.8) {
+    } else if (getEncoderPosition() > 0.37 & getEncoderPosition() <= 0.76) {
       speedFromArmHeight = Constants.ShooterConstants.SPEAKER_SPEED;
-    } else if (getEncoderPosition() > 0.8 & getEncoderPosition() <= 1) {
+    } else if (getEncoderPosition() > 0.76 & getEncoderPosition() <= 1) {
       speedFromArmHeight = Constants.ShooterConstants.FAR_AWAY_SPEED;
     } else if (getEncoderPosition() > 1) {
         speedFromArmHeight = Constants.ShooterConstants.AMP_SPEED;
     }
     return speedFromArmHeight;
     }
+  
+
+    //5.33E-03*x + 0.206 - https://docs.google.com/spreadsheets/d/1TCEiHto6ypUku9VXPN79PGwONyrlhI2SbMsfn337yTw/edit#gid=0
+    // inverse tan of function above to get angle
+
 
 }

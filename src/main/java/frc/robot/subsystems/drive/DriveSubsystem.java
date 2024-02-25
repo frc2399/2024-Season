@@ -34,11 +34,15 @@ import frc.robot.Constants.DriveConstants;
 import frc.robot.MyVersion;
 import frc.robot.Robot;
 import frc.robot.subsystems.gyro.GyroIO;
+import frc.robot.subsystems.vision.VisionIO;
 
 public class DriveSubsystem extends SubsystemBase {
 
   // Odometry
-  private SwerveDrivePoseEstimator poseEstimator;
+  private SwerveDrivePoseEstimator m_poseEstimator;
+  
+  // Vision
+  private VisionIO m_vision;
 
   // swerve modules
   private SwerveModule m_frontLeft;
@@ -53,6 +57,7 @@ public class DriveSubsystem extends SubsystemBase {
   
   private GyroIO m_gyro;
 
+  
   private final Field2d field2d = new Field2d();
   private FieldObject2d frontLeftField2dModule = field2d.getObject("front left module");
   private FieldObject2d rearLeftField2dModule = field2d.getObject("rear left module");
@@ -74,11 +79,21 @@ public class DriveSubsystem extends SubsystemBase {
     this.m_rearLeft = m_rearLeft;
     this.m_rearRight = m_rearRight;
 
+
     SmartDashboard.putData(field2d);
 
-    poseEstimator = new SwerveDrivePoseEstimator(
-        Constants.DriveConstants.kDriveKinematics, new Rotation2d(m_gyro.getYaw()), getModulePositions(), 
-        new Pose2d());
+    // poseEstimator = new SwerveDrivePoseEstimator(
+    //     Constants.DriveConstants.kDriveKinematics, new Rotation2d(m_gyro.getYaw()), getModulePositions(), 
+    //     new Pose2d());
+    m_poseEstimator = new SwerveDrivePoseEstimator(
+      DriveConstants.kDriveKinematics,
+      Rotation2d.fromDegrees(m_gyro.getYaw()), 
+      new SwerveModulePosition[] {
+          m_frontLeft.getPosition(),
+          m_frontRight.getPosition(),
+          m_rearLeft.getPosition(),
+          m_rearRight.getPosition()}, new Pose2d (0, 0, new Rotation2d(0,0)));
+
 
 
     AutoBuilder.configureHolonomic(
@@ -114,13 +129,15 @@ public class DriveSubsystem extends SubsystemBase {
     // This will get the simulated sensor readings that we set
     // in the previous article while in simulation, but will use
     // real values on the robot itself.
-    poseEstimator.updateWithTime(Timer.getFPGATimestamp(), Rotation2d.fromRadians(m_gyro.getYaw()),
+    m_poseEstimator.updateWithTime(Timer.getFPGATimestamp(), Rotation2d.fromRadians(m_gyro.getYaw()),
         new SwerveModulePosition[] {
             m_frontLeft.getPosition(),
             m_frontRight.getPosition(),
             m_rearLeft.getPosition(),
             m_rearRight.getPosition()
         });
+    
+    //m_poseEstimator.addVisionMeasurement(m_vision, desiredAngle);
 
 
     // updates inputs for each module
@@ -156,16 +173,18 @@ public class DriveSubsystem extends SubsystemBase {
     };
     swerveModuleStatePublisher.set(swerveModuleStates);
 
-
+    if (DriverStation.isAutonomous()){
+      //System.out.println("Mahee is annoying");
+    } 
     if (Robot.isSimulation()) {
-      double angleChange = Constants.DriveConstants.kDriveKinematics.toChassisSpeeds(swerveModuleStates).omegaRadiansPerSecond * (1/Constants.CodeConstants.kMainLoopFrequency);
-      lastAngle = lastAngle.plus(Rotation2d.fromRadians(angleChange));
-      m_gyro.setYaw(lastAngle.getRadians());}
+    double angleChange = Constants.DriveConstants.kDriveKinematics.toChassisSpeeds(swerveModuleStates).omegaRadiansPerSecond * (1/Constants.CodeConstants.kMainLoopFrequency);
+    lastAngle = lastAngle.plus(Rotation2d.fromRadians(angleChange));
+    m_gyro.setYaw(lastAngle.getRadians());}
   }
 
   /** Returns the currently-estimated pose of the robot. */
   public Pose2d getPose() {
-    return poseEstimator.getEstimatedPosition();
+    return m_poseEstimator.getEstimatedPosition();
   }
 
   /** Returns the current odometry rotation. */
@@ -177,9 +196,9 @@ public class DriveSubsystem extends SubsystemBase {
   /** Resets the current odometry pose. */
   public void setPose(Pose2d pose) {
     if (RobotBase.isReal()) {
-      poseEstimator.resetPosition(new Rotation2d(m_gyro.getYaw()), getModulePositions(), pose);
+      m_poseEstimator.resetPosition(new Rotation2d(m_gyro.getYaw()), getModulePositions(), pose);
     } else {
-      poseEstimator.resetPosition(pose.getRotation(), getModulePositions(), pose);
+      m_poseEstimator.resetPosition(pose.getRotation(), getModulePositions(), pose);
     }
   }
 
@@ -191,7 +210,7 @@ public class DriveSubsystem extends SubsystemBase {
     System.out.println("rear left position " + m_rearLeft.getPosition());
     System.out.println("rear right position " + m_rearRight.getPosition());
 
-    poseEstimator.resetPosition(
+    m_poseEstimator.resetPosition(
         Rotation2d.fromRadians(m_gyro.getYaw()),
         new SwerveModulePosition[] {
             m_frontLeft.getPosition(),
@@ -201,7 +220,27 @@ public class DriveSubsystem extends SubsystemBase {
         },
         pose);
   }
+  public void updateOdometry () {
+    m_poseEstimator.update(Rotation2d.fromDegrees(m_gyro.getYaw()),
+    new SwerveModulePosition[] {
+            m_frontLeft.getPosition(),
+            m_frontRight.getPosition(),
+            m_rearLeft.getPosition(),
+            m_rearRight.getPosition()
+        });
+  }
 
+  public void alignOrigins(Pose2d pose) {
+    m_poseEstimator.resetPosition(
+        Rotation2d.fromDegrees(m_gyro.getYaw()),
+        new SwerveModulePosition[] {
+            m_frontLeft.getPosition(),
+            m_frontRight.getPosition(),
+            m_rearLeft.getPosition(),
+            m_rearRight.getPosition()
+        },
+        pose);
+  }
   /**
    * Method to drive the robot using joystick info.
    *
@@ -345,17 +384,7 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   //makes sure odometry's (0,0) is the same as global (0,0) (according to PhotonVision)
-  public void alignOrigins(Pose2d pose) {
-    poseEstimator.resetPosition(
-        Rotation2d.fromDegrees(m_gyro.getYaw()),
-        new SwerveModulePosition[] {
-            m_frontLeft.getPosition(),
-            m_frontRight.getPosition(),
-            m_rearLeft.getPosition(),
-            m_rearRight.getPosition()
-        },
-        pose);
-  }
+  
 
    private void configurePathPlannerLogging() {        
         PathPlannerLogging.setLogCurrentPoseCallback((pose) -> {

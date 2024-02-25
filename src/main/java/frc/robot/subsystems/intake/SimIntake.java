@@ -24,7 +24,7 @@ public class SimIntake implements IntakeIO {
 
     public void setMotor(double speed) {
         leftIntakeMotorSim.setInput(speed);
-        rightIntakeMotorSim.setInput(speed);
+        //rightIntakeMotorSim.setInput(speed);
     }
    
     public double getLeftCurrent() {

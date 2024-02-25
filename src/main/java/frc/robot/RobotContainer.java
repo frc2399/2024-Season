@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import java.util.Optional;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
@@ -12,6 +14,10 @@ import edu.wpi.first.math.estimator.PoseEstimator;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -22,10 +28,13 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
+import frc.robot.Constants.VisionConstants;
+import frc.robot.Robot.RobotType;
 import frc.robot.commands.automaticClimberCommand;
 import frc.robot.commands.automaticIntakeAndIndexer;
 import frc.robot.subsystems.LED;
@@ -39,6 +48,7 @@ import frc.robot.subsystems.arm.RealArm;
 import frc.robot.subsystems.arm.SimArm;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.climber.ClimberIO;
+import frc.robot.subsystems.climber.ClimberReal;
 import frc.robot.subsystems.climber.ClimberSim;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.drive.SwerveModule;
@@ -56,6 +66,10 @@ import frc.robot.subsystems.shooter.RealShooter;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterIO;
 import frc.robot.subsystems.shooter.SimShooter;
+import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.vision.VisionIO;
+import frc.robot.subsystems.vision.VisionReal;
+import frc.robot.subsystems.vision.VisionSim;
 
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -84,6 +98,7 @@ public class RobotContainer {
   public static Indexer m_indexer;
   public static Climber m_climber;
   public static Arm m_arm;
+  public static Vision m_vision;
 
   // subsystem IOs
   ShooterIO shooterIO;
@@ -91,6 +106,7 @@ public class RobotContainer {
   IndexerIO indexerIO;
   ArmIO armIO;
   ClimberIO climberIO;
+  VisionIO visionIO;
 
   // auton chooser
   private static SendableChooser<Command> m_autoChooser;
@@ -109,6 +125,11 @@ public class RobotContainer {
     configureButtonBindingsOperatorClimber();
     configureButtonBindingsOperatorNotClimber();
     setUpAuton();
+
+  }
+
+  public Command getAutonomousCommand() {
+    return m_autoChooser.getSelected();
   }
 
   /**
@@ -116,34 +137,62 @@ public class RobotContainer {
    *
    * @return the command to run in autonomous
    */
-  public Command getAutonomousCommand() {
-    return m_autoChooser.getSelected();
-  }
 
-  // construct subsystems
+  /**
+   * Use this method to define your button->command mappings. Buttons can be
+   * created by
+   * instantiating a {@link edu.wpi.first.wpilibj.GenericHID} or one of its
+   * subclasses ({@link
+   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then calling
+   * passing it to a
+   * {@link JoystickButton}.
+   */
+
+  // // Create config for trajectory
+  // TrajectoryConfig config = new TrajectoryConfig(
+  // AutoConstants.kMaxSpeedMetersPerSecond,
+  // AutoConstants.kMaxAccelerationMetersPerSecondSquared)
+  // // Add kinematics to ensure max speed is actually obeyed
+  // .setKinematics(DriveConstants.kDriveKinematics);
+
+  // // Position controllers
+  // new PIDController(AutoConstants.kPXController, 0, 0),
+  // new PIDController(AutoConstants.kPYController, 0, 0),
+  // thetaController,
+  // m_robotDrive::setModuleStates,
+  // m_robotDrive);
+
+  // // Reset odometry to the starting pose of the trajectory.
+  // m_robotDrive.resetOdometry(exampleTrajectory.getInitialPose());
+
+  // // Run path following command, then stop at the end.
+  // return swerveControllerCommand.andThen(() -> m_robotDrive.drive(0, 0, 0,
+  // false, false));
+  // }
+
   private void setUpSubsystems() {
-    // set up IOs
-    if (RobotBase.isSimulation()) {
+
+    if (Robot.robotType == RobotType.SIMULATION) {
       indexerIO = new SimIndexer();
       shooterIO = new SimShooter();
-      intakeIO = new SimIntake();
+      //intakeIO = new SimIntake();
       climberIO = new ClimberSim();
       armIO = new SimArm();
       m_gyro = new GyroIOSim();
-
       m_frontLeftIO = new SwerveModuleIO_Sim("front left");
       m_frontRightIO = new SwerveModuleIO_Sim("front right");
       m_rearLeftIO = new SwerveModuleIO_Sim("rear left");
       m_rearRightIO = new SwerveModuleIO_Sim("rear right");
+
+      m_robotDrive = new DriveSubsystem(
+      new SwerveModule(m_frontLeftIO),
+      new SwerveModule(m_frontRightIO),
+      new SwerveModule(m_rearLeftIO),
+      new SwerveModule(m_rearRightIO), m_gyro);
+
+      visionIO = new VisionSim(m_robotDrive);
+
     } else {
-
-
-      intakeIO = new RealIntake();
-      indexerIO = new RealIndexer();
-      shooterIO = new RealShooter();
-      climberIO = new ClimberSim();
-      armIO = new RealArm();
-      m_gyro = new GyroIOPigeon2();
 
       m_frontLeftIO = new SwerveModuleIO_Real(DriveConstants.kFrontLeftDrivingCanId,
           DriveConstants.kFrontLeftTurningCanId, DriveConstants.kFrontLeftChassisAngularOffset,
@@ -157,20 +206,30 @@ public class RobotContainer {
       m_rearRightIO = new SwerveModuleIO_Real(DriveConstants.kRearRightDrivingCanId,
           DriveConstants.kRearRightTurningCanId, DriveConstants.kRearRightChassisAngularOffset,
           "rear right");
+      
+      indexerIO = new RealIndexer();
+      shooterIO = new RealShooter();
+      intakeIO = new RealIntake();
+      climberIO = new ClimberSim();
+      armIO = new RealArm();
+      m_gyro = new GyroIOPigeon2();
+      visionIO = new VisionReal();
+
+      m_robotDrive = new DriveSubsystem(
+      new SwerveModule(m_frontLeftIO),
+      new SwerveModule(m_frontRightIO),
+      new SwerveModule(m_rearLeftIO),
+      new SwerveModule(m_rearRightIO), m_gyro);
+     
     }
 
     m_climber = new Climber(climberIO);
-    m_arm = new Arm(armIO);
-    m_shooter = new Shooter(shooterIO);
-    m_indexer = new Indexer(indexerIO);
-    m_intake = new Intake(intakeIO);
-    m_led = new LED(m_climber);
-
-    m_robotDrive = new DriveSubsystem(
-        new SwerveModule(m_frontLeftIO),
-        new SwerveModule(m_frontRightIO),
-        new SwerveModule(m_rearLeftIO),
-        new SwerveModule(m_rearRightIO), m_gyro);
+      m_arm = new Arm(armIO);
+      m_shooter = new Shooter(shooterIO);
+      m_indexer = new Indexer(indexerIO);
+      m_intake = new Intake(intakeIO);
+      m_led = new LED(m_climber);
+      m_vision = new Vision(visionIO);
   }
 
   // sets up auton commands
@@ -220,6 +279,7 @@ public class RobotContainer {
     m_arm.setDefaultCommand(new RunCommand(() -> m_arm.setSpeedGravityCompensation(0), m_arm));
 
     // default command for drivetrain: drive based on controller inputs
+    //actually driving robot
     m_robotDrive.setDefaultCommand(
         // The left stick controls translation of the robot.
         // Turning is controlled by the X axis of the right stick.
@@ -244,56 +304,62 @@ public class RobotContainer {
                         m_robotDrive)));
 
     // driver left bumper: manual shoot
+    //gets arm height to assign to speed. lower arm, means cloesr to speaekr, so shoots less forecfully
     m_driverController.leftBumper().whileTrue(
-        // new SequentialCommandGroup(
-        // new RunCommand(() -> m_indexer.setIsIntooked(false)),
-        new RunCommand(() -> m_shooter.setMotor(m_arm.getSpeedFromArmHeight()), m_shooter))
-    // )
-    ;
+        new RunCommand(() -> m_shooter.setMotor(m_arm.getSpeedFromArmHeight()), m_shooter));
+    
 
     // driver right bumper: auto-shoot
     m_driverController.rightBumper().onTrue(shootAfterDelay());
 
     // driver a: automatic intaking
-    m_driverController.rightTrigger().whileTrue(new automaticIntakeAndIndexer(m_indexer,
-        m_intake));
-    // driver right trigger: manual intake, uncomment if necessary
-    // m_driverController.rightTrigger().whileTrue(new ParallelCommandGroup(
-    // new RunCommand(() -> m_intake.setMotor(0.8), m_intake),
-    // new RunCommand(() -> m_indexer.setMotor(0.8), m_indexer)));
+    //m_driverController.rightTrigger().whileTrue(new automaticIntakeAndIndexer(m_indexer,
+        //m_intake));
 
     // driver right trigger: manual intake with arm height restriction
+    //only intakes if arm is lowered
     m_driverController.rightTrigger().whileTrue(intakeWithHeightRestriction());
 
     // driver left trigger: outtake
     m_driverController.leftTrigger().whileTrue(new ParallelCommandGroup(
-        new RunCommand(() -> m_intake.setMotor(-0.3), m_intake),
+       //new RunCommand(() -> m_intake.setMotor(-0.3), m_intake),
         new RunCommand(() -> m_indexer.setMotor(-0.3), m_indexer)));
 
     // driver b: reset gyro
     m_driverController.b().onTrue(new InstantCommand(() -> m_gyro.setYaw(0.0)));
+
+    //driver a: align to speaker mode
+    m_driverController.a().whileTrue(
+      new RunCommand(() -> m_robotDrive.drive(
+                -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
+                -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),
+                m_vision.keepPointedAtSpeaker(),
+                fieldOrientedDrive), m_robotDrive))
+        .onFalse(new RunCommand(() -> m_robotDrive.drive(
+            -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
+            -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),
+            -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband),
+            fieldOrientedDrive), m_robotDrive));
+
+    
   }
 
   private void configureButtonBindingsOperatorClimber() {
-
-    m_operatorController.povCenter().onTrue(new InstantCommand(
-        () -> fieldOrientedDrive = !fieldOrientedDrive));
-
     // operater left trigger: climber mode: left climber up
     m_operatorController.leftTrigger().and(() -> isInClimberMode).whileTrue(new RunCommand(
-        () -> m_climber.setLeftSpeed(0.2), m_climber));
+       () -> m_climber.setLeftSpeed(0.2), m_climber));
 
     // operater right trigger: climber mode: right climber up
     m_operatorController.rightTrigger().and(() -> isInClimberMode).whileTrue(new RunCommand(
-        () -> m_climber.setRightSpeed(0.2), m_climber));
+      () -> m_climber.setRightSpeed(0.2), m_climber));
 
     // operater left bumper: climber mode: left climber down
     m_operatorController.leftBumper().and(() -> isInClimberMode).whileTrue(new RunCommand(
-        () -> m_climber.setLeftSpeed(-0.2), m_climber));
+         () -> m_climber.setLeftSpeed(-0.2), m_climber));
 
     // operater right bumper: climber mode: right climber down
     m_operatorController.rightBumper().and(() -> isInClimberMode).whileTrue(new RunCommand(
-        () -> m_climber.setRightSpeed(-0.2), m_climber));
+         () -> m_climber.setRightSpeed(-0.2), m_climber));
 
     // operator b (climber mode): automatic climber up
     m_operatorController.b().and(() -> isInClimberMode).onTrue(new automaticClimberCommand(m_climber, 0.4));
@@ -302,40 +368,42 @@ public class RobotContainer {
     m_operatorController.a().and(() -> isInClimberMode).onTrue(new automaticClimberCommand(m_climber, 0));
 
     // operator x: switch operator controller modes
-    m_operatorController.x().onTrue(new InstantCommand(() -> isInClimberMode = !isInClimberMode, m_climber));
+    m_operatorController.x().onTrue(new InstantCommand(() -> isInClimberMode = !isInClimberMode));
 
   }
 
   private void configureButtonBindingsOperatorNotClimber() {
     // operator right trigger: manual arm up
     m_operatorController.rightTrigger().and(() -> !isInClimberMode)
-        .whileTrue(makeSetSpeedGravityCompensationCommand(m_arm,
-            0.1))
-        .onFalse(makeSetSpeedGravityCompensationCommand(m_arm, 0));
+         .whileTrue(makeSetSpeedGravityCompensationCommand(m_arm, 0.1))
+         .onFalse(makeSetSpeedGravityCompensationCommand(m_arm, 0));
+    //  m_operatorController.rightTrigger().whileTrue( // TODO: test + change to actual makeSetPositionCommand
+    //     new RunCommand(() -> SmartDashboard.putNumber("arm angle radians", m_vision.keepArmAtAngle())));
 
     // operator left trigger: manual arm down
-    m_operatorController.leftTrigger().and(() -> !isInClimberMode)
-        .whileTrue(makeSetSpeedGravityCompensationCommand(m_arm,
-            -0.1))
-        .onFalse(makeSetSpeedGravityCompensationCommand(m_arm, 0));
+     m_operatorController.leftTrigger().and(() -> !isInClimberMode)
+         .whileTrue(makeSetSpeedGravityCompensationCommand(m_arm, -0.1))
+         .onFalse(makeSetSpeedGravityCompensationCommand(m_arm, 0));
 
     // operater a: arm to intake/subwoofer angle
-    m_operatorController.a().and(() -> !isInClimberMode).onTrue(makeSetPositionCommand(m_arm, 0.335));
+     m_operatorController.a().and(() -> !isInClimberMode).onTrue(makeSetPositionCommand(m_arm, 0.335));
 
     // operator b: arm to podium shot angle
-    m_operatorController.b().and(() -> !isInClimberMode).onTrue(makeSetPositionCommand(m_arm, 0.662));
+     m_operatorController.b().and(() -> !isInClimberMode).onTrue(makeSetPositionCommand(m_arm, 0.662));
 
     // operator y: arm to amp angle
-    m_operatorController.y().and(() -> !isInClimberMode).onTrue(makeSetPositionCommand(m_arm, 1.4));
+    m_operatorController.y().and(() -> !isInClimberMode).onTrue(makeSetPositionCommand(m_arm, 1.58));
 
     // operator left trigger: intake
-    m_operatorController.rightBumper().and(() -> !isInClimberMode).whileTrue(intakeWithHeightRestriction());
+    m_operatorController.rightBumper().and(() -> !isInClimberMode).whileTrue(new RunCommand(() -> m_indexer.setMotor(0.3), m_indexer));
 
     // operator right trigger: outtake
-    m_operatorController.leftBumper().and(() -> !isInClimberMode).whileTrue(new ParallelCommandGroup(
-        new RunCommand(() -> m_intake.setMotor(-0.3), m_intake),
-        new RunCommand(() -> m_indexer.setMotor(-0.3), m_indexer)));
-  }
+    //outtake a little bittt to get shooter up to speed
+    m_operatorController.leftBumper().and(() -> !isInClimberMode).onTrue(new RunCommand(() -> m_indexer.setMotor(-0.3), m_indexer).withTimeout(0.1));
+
+    m_operatorController.axisGreaterThan(5, 0.1).whileTrue(new RunCommand(() -> m_arm.setSpeedGravityCompensation(0.1), m_arm));
+    m_operatorController.axisLessThan(5, -0.1).whileTrue(new RunCommand(() -> m_arm.setSpeedGravityCompensation(-0.1), m_arm));
+}
 
   public static Command makeSetPositionCommand(Arm arm,
       double target) {
@@ -364,7 +432,7 @@ public class RobotContainer {
         new InstantCommand(() -> intake.setMotor(speed)),
         new InstantCommand(() -> indexer.setMotor(speed)));
   }
-
+//waiting 0.5 seconds to get shooter up to speed
   private Command shootAfterDelay() {
     return new SequentialCommandGroup(
         new ParallelCommandGroup(
@@ -382,7 +450,7 @@ public class RobotContainer {
 
   private Command outtakeAndShootAfterDelay() {
     return new SequentialCommandGroup(
-        new RunCommand(() -> m_indexer.setMotor(-0.1), m_intake).withTimeout(0.25),
+        //new RunCommand(() -> m_indexer.setMotor(-0.1), m_intake).withTimeout(0.1),
         new ParallelCommandGroup(
             new SequentialCommandGroup(
                 new WaitCommand(0.5),

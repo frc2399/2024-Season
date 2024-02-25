@@ -94,7 +94,6 @@ public class RealIndexer implements IndexerIO {
 
     @Override
     public boolean isStalling() {
-        return (Math.abs(getCurrent()) > 10);
+        return false;
     }
-
 }

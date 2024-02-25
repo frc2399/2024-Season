@@ -85,6 +85,5 @@ public class SimArm implements ArmIO{
     @Override
     public void setEncoderPosition(double angle) {
         // TODO Auto-generated method stub
-        return;
     } 
 }

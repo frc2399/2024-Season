@@ -4,25 +4,23 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.Vision;
 import frc.robot.subsystems.drive.DriveSubsystem;
+import frc.robot.subsystems.vision.Vision;
 
 public class AlignAprilTag extends Command {
   private final DriveSubsystem driveSubsystem;
   private final Vision vision;
   private Boolean posTurn;
-  private final Pose2d currentPose;
   double angleInDegrees;
   Rotation2d targetAngle;
   /** Creates a new AlignAprilTag. */
-  public AlignAprilTag(DriveSubsystem m_driveSubsystem, Vision m_visionSubsystem, Pose2d poseEstimate) {
+  public AlignAprilTag(DriveSubsystem m_driveSubsystem, Vision m_visionSubsystem) {
     //makes the global variables the same as the ones intook from the call
     driveSubsystem = m_driveSubsystem;
-    currentPose = poseEstimate;
     vision = m_visionSubsystem;
     addRequirements(m_driveSubsystem, m_visionSubsystem);
   }
@@ -64,9 +62,9 @@ public class AlignAprilTag extends Command {
   public void execute() {
     // TODO: how fast can we get to an angle accurately (get help from subsystems people); start by feeding it faster rotate speeds
     if (posTurn == true) {
-      driveSubsystem.drive(0.0,0.0,0.1,true);
+      driveSubsystem.drive(0,0,0.1,true);
     } else {
-      driveSubsystem.drive(0.0,0.0,-0.1,true);
+      driveSubsystem.drive(0,0,-0.1,true);
     }
 
   }
