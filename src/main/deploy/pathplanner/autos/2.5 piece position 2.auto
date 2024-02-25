@@ -18,21 +18,47 @@
           }
         },
         {
-          "type": "path",
+          "type": "deadline",
           "data": {
-            "pathName": "2 to B"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "2 to B"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "intake"
+                }
+              }
+            ]
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "AimToTarget"
+            "name": "intake for time"
           }
         },
         {
-          "type": "named",
+          "type": "parallel",
           "data": {
-            "name": "SetArmPosition"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "AimToTarget"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "SetArmPosition"
+                }
+              }
+            ]
           }
         },
         {
@@ -45,6 +71,12 @@
           "type": "path",
           "data": {
             "pathName": "B to G"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "intake for time"
           }
         }
       ]

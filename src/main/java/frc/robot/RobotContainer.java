@@ -175,6 +175,7 @@ public class RobotContainer {
   private void setUpAuton() {
     NamedCommands.registerCommand("intake", intakeWithHeightRestriction());
     NamedCommands.registerCommand("Intake",intakeWithHeightRestriction());
+    NamedCommands.registerCommand("intake for time", intakeForTime(m_intake, m_indexer));
     NamedCommands.registerCommand("shoot", shootAfterDelay());
     NamedCommands.registerCommand("AimToTarget", Commands.print("aimed to target!"));
     NamedCommands.registerCommand("SetArmPosition", makeSetPositionCommand(m_arm, 0.662));
