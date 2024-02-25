@@ -18,9 +18,22 @@
           }
         },
         {
-          "type": "path",
+          "type": "deadline",
           "data": {
-            "pathName": "2 to B"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "2 to B"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Intake"
+                }
+              }
+            ]
           }
         },
         {

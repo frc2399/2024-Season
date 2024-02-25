@@ -177,7 +177,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("Intake",intakeWithHeightRestriction());
     NamedCommands.registerCommand("shoot", shootAfterDelay());
     NamedCommands.registerCommand("AimToTarget", Commands.print("aimed to target!"));
-    NamedCommands.registerCommand("SetArmPosition", Commands.print("set arm position"));
+    NamedCommands.registerCommand("SetArmPosition", makeSetPositionCommand(m_arm, 0.662));
     NamedCommands.registerCommand("AutoShoot", shootAfterDelay());
     m_autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Autos/Selector", m_autoChooser);
@@ -362,12 +362,15 @@ public class RobotContainer {
   }
 
   private Command shootAfterDelay() {
-    return new ParallelCommandGroup(
-        new SequentialCommandGroup(
-            new WaitCommand(0.5),
-            new RunCommand(() -> m_indexer.setMotor(Constants.IndexerConstants.INDEXER_IN_SPEED), m_indexer),
-            new RunCommand(() -> m_indexer.setIsIntooked(false), m_indexer)),
-        new RunCommand(() -> m_shooter.setMotor(m_arm.getSpeedFromArmHeight()), m_shooter)).withTimeout(0.75);
+    return new SequentialCommandGroup(
+        new ParallelCommandGroup(
+            new SequentialCommandGroup(
+                new WaitCommand(0.5),
+                new RunCommand(() -> m_indexer.setMotor(Constants.IndexerConstants.INDEXER_IN_SPEED), m_indexer),
+                new RunCommand(() -> m_indexer.setIsIntooked(false), m_indexer)),
+            new RunCommand(() -> m_shooter.setMotor(m_arm.getSpeedFromArmHeight()), m_shooter)).withTimeout(0.75),
+        new InstantCommand(() -> m_shooter.setMotor(0), m_shooter),
+        new InstantCommand(() -> m_indexer.setMotor(0), m_indexer));
         
 
 
