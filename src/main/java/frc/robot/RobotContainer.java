@@ -90,7 +90,7 @@ public class RobotContainer {
 
   // subsystems
   public static Shooter m_shooter;
-//   public static Intake m_intake;
+  public static Intake m_intake;
   public static Indexer m_indexer;
   public static Climber m_climber;
   public static Arm m_arm;
@@ -98,7 +98,7 @@ public class RobotContainer {
 
   // subsystem IOs
   ShooterIO shooterIO;
-  //IntakeIO intakeIO;
+  IntakeIO intakeIO;
   IndexerIO indexerIO;
   ArmIO armIO;
   ClimberIO climberIO;
@@ -205,7 +205,7 @@ public class RobotContainer {
       
       indexerIO = new RealIndexer();
       shooterIO = new RealShooter();
-      //intakeIO = new SimIntake();
+      intakeIO = new RealIntake();
       climberIO = new ClimberSim();
       armIO = new RealArm();
       m_gyro = new GyroIOPigeon2();
@@ -223,7 +223,7 @@ public class RobotContainer {
       m_arm = new Arm(armIO);
       m_shooter = new Shooter(shooterIO);
       m_indexer = new Indexer(indexerIO);
-    //   m_intake = new Intake(intakeIO);
+      m_intake = new Intake(intakeIO);
       m_led = new LED(m_climber);
       m_vision = new Vision(visionIO);
   }
@@ -247,10 +247,10 @@ public class RobotContainer {
             m_shooter));
 
     // default command for intake: do nothing
-    // m_intake.setDefaultCommand(
-    //     new RunCommand(
-    //         () -> m_intake.setMotor(0),
-    //         m_intake));
+    m_intake.setDefaultCommand(
+        new RunCommand(
+            () -> m_intake.setMotor(0),
+            m_intake));
 
     // default command for indexer: do nothing
     m_indexer.setDefaultCommand(
@@ -358,13 +358,15 @@ public class RobotContainer {
 
   private void configureButtonBindingsOperatorNotClimber() {
     // operator right trigger: manual arm up
-     m_operatorController.rightTrigger().whileTrue( // TODO: test + change to actual makeSetPositionCommand
-        new RunCommand(() -> SmartDashboard.putNumber("arm angle radians", m_vision.keepArmAtAngle())));
+    m_operatorController.rightTrigger().and(() -> !isInClimberMode)
+         .whileTrue(makeSetSpeedGravityCompensationCommand(m_arm, 0.1))
+         .onFalse(makeSetSpeedGravityCompensationCommand(m_arm, 0));
+    //  m_operatorController.rightTrigger().whileTrue( // TODO: test + change to actual makeSetPositionCommand
+    //     new RunCommand(() -> SmartDashboard.putNumber("arm angle radians", m_vision.keepArmAtAngle())));
 
     // operator left trigger: manual arm down
      m_operatorController.leftTrigger().and(() -> !isInClimberMode)
-         .whileTrue(makeSetSpeedGravityCompensationCommand(m_arm,
-             -0.1))
+         .whileTrue(makeSetSpeedGravityCompensationCommand(m_arm, -0.1))
          .onFalse(makeSetSpeedGravityCompensationCommand(m_arm, 0));
 
     // operater a: arm to intake/subwoofer angle
@@ -374,7 +376,7 @@ public class RobotContainer {
      m_operatorController.b().and(() -> !isInClimberMode).onTrue(makeSetPositionCommand(m_arm, 0.662));
 
     // operator y: arm to amp angle
-    m_operatorController.y().and(() -> !isInClimberMode).onTrue(makeSetPositionCommand(m_arm, 1.4));
+    m_operatorController.y().and(() -> !isInClimberMode).onTrue(makeSetPositionCommand(m_arm, 1.58));
 
     // operator left trigger: intake
     m_operatorController.rightBumper().and(() -> !isInClimberMode).whileTrue(new RunCommand(() -> m_indexer.setMotor(0.3), m_indexer));
@@ -438,10 +440,10 @@ public class RobotContainer {
   private Command intakeWithHeightRestriction() {
     return new ConditionalCommand(
         new ParallelCommandGroup(
-            //new RunCommand(() -> m_intake.setMotor(Constants.IntakeConstants.INTAKING_SPEED), m_intake),
+            new RunCommand(() -> m_intake.setMotor(Constants.IntakeConstants.INTAKING_SPEED), m_intake),
             new RunCommand(() -> m_indexer.setMotor(Constants.IndexerConstants.INDEXER_IN_SPEED), m_indexer)),
         new ParallelCommandGroup(
-            //new RunCommand(() -> m_intake.setMotor(0), m_intake),
+            new RunCommand(() -> m_intake.setMotor(0), m_intake),
             new RunCommand(() -> m_indexer.setMotor(0), m_indexer)),
         () -> m_arm.getEncoderPosition() < 0.35);
   }
