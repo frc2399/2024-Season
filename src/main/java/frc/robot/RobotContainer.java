@@ -13,6 +13,8 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.estimator.PoseEstimator;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.ComplexWidget;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -110,6 +112,7 @@ public class RobotContainer {
 
   // auton chooser
   private static SendableChooser<Command> m_autoChooser;
+ ComplexWidget autonChooserWidget;
 
   // The driver and operator controllers
   CommandXboxController m_driverController = new CommandXboxController(OIConstants.kDriverControllerPort);
@@ -175,7 +178,7 @@ public class RobotContainer {
     if (Robot.robotType == RobotType.SIMULATION) {
       indexerIO = new SimIndexer();
       shooterIO = new SimShooter();
-      //intakeIO = new SimIntake();
+      intakeIO = new SimIntake();
       climberIO = new ClimberSim();
       armIO = new SimArm();
       m_gyro = new GyroIOSim();
@@ -237,12 +240,14 @@ public class RobotContainer {
     NamedCommands.registerCommand("intake", intakeWithHeightRestriction());
     NamedCommands.registerCommand("Intake",intakeWithHeightRestriction());
     NamedCommands.registerCommand("intake for time", intakeForTime(m_intake, m_indexer));
-    NamedCommands.registerCommand("shoot", shootAfterDelay());
+    NamedCommands.registerCommand("shoot",outtakeAndShootAfterDelay());
     NamedCommands.registerCommand("AimToTarget", Commands.print("aimed to target!"));
-    NamedCommands.registerCommand("SetArmPosition", makeSetPositionCommand(m_arm, 0.662));
+    NamedCommands.registerCommand("SetArmPosition", makeSetPositionCommandAuton(m_arm, 0.662));
+    NamedCommands.registerCommand("SetArmDown", makeSetPositionCommandAuton(m_arm, 0.335));
     NamedCommands.registerCommand("AutoShoot", shootAfterDelay());
     m_autoChooser = AutoBuilder.buildAutoChooser();
-    Shuffleboard.getTab("Driver").add("Autos/Selector",m_autoChooser);
+    SmartDashboard.putData("Autos/Selector", m_autoChooser);
+
 
   }
 
@@ -415,6 +420,17 @@ public class RobotContainer {
         new RunCommand(() -> arm.setGoal(target), arm));
   }
 
+  public static Command makeSetPositionCommandAuton(Arm arm,
+      double target) {
+    return new SequentialCommandGroup(
+        new ConditionalCommand(new InstantCommand(() -> {
+        }), new InstantCommand(() -> arm.enable(), arm), () -> arm.isEnabled()),
+        // new InstantCommand(() ->
+        // arm.setEncoderPosition(arm.getAbsoluteEncoderPosition())),
+        new InstantCommand(() -> arm.setGoal(target), arm), 
+        new WaitCommand(0.75));
+  }
+
   private Command makeSetSpeedGravityCompensationCommand(Arm a, double speed) {
     return new SequentialCommandGroup(
         new InstantCommand(() -> a.disable(), a),
@@ -422,15 +438,20 @@ public class RobotContainer {
   }
 
   private Command intakeForTime(Intake intake, Indexer indexer) {
-    return new ParallelCommandGroup(
-        new RunCommand(() -> intake.setMotor(.8)).withTimeout(1.5),
-        new RunCommand(() -> indexer.setMotor(0.8)).withTimeout(1.5));
+    return new SequentialCommandGroup(
+        new ParallelCommandGroup(
+            new InstantCommand(() -> intake.setMotor(.8)).withTimeout(1.5),
+            new InstantCommand(() -> indexer.setMotor(0.8)).withTimeout(1.5)),
+        new ParallelCommandGroup(
+            new InstantCommand(() -> intake.setMotor(0)),
+            new InstantCommand(() -> indexer.setMotor(0))));
+    
   }
 
   private Command setIndexerAndIntakeSpeed(Indexer indexer, Intake intake, double speed) {
     return new ParallelCommandGroup(
-        new InstantCommand(() -> intake.setMotor(speed)),
-        new InstantCommand(() -> indexer.setMotor(speed)));
+        new RunCommand(() -> intake.setMotor(speed)),
+        new RunCommand(() -> indexer.setMotor(speed)));
   }
 //waiting 0.5 seconds to get shooter up to speed
   private Command shootAfterDelay() {
@@ -450,13 +471,15 @@ public class RobotContainer {
 
   private Command outtakeAndShootAfterDelay() {
     return new SequentialCommandGroup(
-        //new RunCommand(() -> m_indexer.setMotor(-0.1), m_intake).withTimeout(0.1),
+        new RunCommand(() -> m_indexer.setMotor(-0.1), m_intake).withTimeout(0.1),
         new ParallelCommandGroup(
             new SequentialCommandGroup(
                 new WaitCommand(0.5),
                 new RunCommand(() -> m_indexer.setMotor(Constants.IndexerConstants.INDEXER_IN_SPEED), m_indexer),
                 new RunCommand(() -> m_indexer.setIsIntooked(false), m_indexer)),
-            new RunCommand(() -> m_shooter.setMotor(0.8), m_shooter)).withTimeout(1));
+            new RunCommand(() -> m_shooter.setMotor(0.8), m_shooter)).withTimeout(1),      
+            new InstantCommand(() -> m_shooter.setMotor(0), m_shooter),
+        new InstantCommand(() -> m_indexer.setMotor(0), m_indexer));
   }
 
   private Command intakeWithHeightRestriction() {

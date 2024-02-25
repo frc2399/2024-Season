@@ -43,22 +43,9 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "named",
           "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "AimToTarget"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "SetArmPosition"
-                }
-              }
-            ]
+            "name": "SetArmPosition"
           }
         },
         {

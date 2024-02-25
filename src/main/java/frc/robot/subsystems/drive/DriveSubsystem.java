@@ -302,7 +302,7 @@ public class DriveSubsystem extends SubsystemBase {
     m_rearLeft.setDesiredState(swerveModuleStates[2]);
     m_rearRight.setDesiredState(swerveModuleStates[3]);
 
-    Shuffleboard.getTab("Driver").add("field oriented?",fieldRelative);
+    //Shuffleboard.getTab("Driver").add("field oriented?",fieldRelative);
 
   }
 

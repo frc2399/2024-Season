@@ -92,14 +92,16 @@ public class Robot extends TimedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
-    Optional<Alliance> ally = DriverStation.getAlliance();
-    m_robotContainer.m_vision.assignAprilTags(ally);
-    //m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    // Optional<Alliance> ally = DriverStation.getAlliance();
+    // m_robotContainer.m_vision.assignAprilTags(ally);
+    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    RobotContainer.makeSetPositionCommand(RobotContainer.m_arm, 0.335);
 
     // schedule the autonomous command
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
     }
+
   }
 
   /** This function is called periodically during autonomous. */
