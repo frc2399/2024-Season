@@ -189,7 +189,7 @@ public class RobotContainer {
     m_shooter.setDefaultCommand(
         new RunCommand(
             () -> m_shooter.setMotor(0),
-            m_shooter));
+            m_shooter)) ;
 
     // default command for intake: do nothing
     m_intake.setDefaultCommand(
