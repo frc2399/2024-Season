@@ -20,7 +20,7 @@ import frc.robot.Constants.VisionConstants;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
@@ -32,7 +32,7 @@ public class VisionReal extends SubsystemBase implements VisionIO {
     public static PhotonCamera camera;
     private static PhotonPoseEstimator CamEstimator;
     private boolean updatePoseWithVisionReadings = true;
-    public Pose2d robotPose;
+    public Pose3d robotPose;
 
     //apriltags
     public  int facingSourceLeftID;
@@ -73,12 +73,12 @@ public class VisionReal extends SubsystemBase implements VisionIO {
       var result = camera.getLatestResult();
       if (result.hasTargets()) {
         PhotonTrackedTarget target = bestTarget();
+        target.getBestCameraToTarget();
         //the robot pose is estimating field to robot using photon utils
-        robotPose = PhotonUtils.estimateFieldToRobot(
-          new Transform2d(
-            new Translation2d(pose.get().estimatedPose.getX(), pose.get().estimatedPose.getY()), 
-            pose.get().estimatedPose.getRotation().toRotation2d()),
-          kFieldLayout.getTagPose(target.getFiducialId()).get().toPose2d(), VisionConstants.camToRobot2d);
+        robotPose = PhotonUtils.estimateFieldToRobotAprilTag(
+          target.getBestCameraToTarget(),
+          kFieldLayout.getTagPose(target.getFiducialId()).get(), 
+          VisionConstants.camToRobot);
         SmartDashboard.putNumber("robot pose", robotPose.getX());
         SmartDashboard.putNumber("robot pose y", robotPose.getY());
      }
@@ -156,44 +156,39 @@ public class VisionReal extends SubsystemBase implements VisionIO {
       final double hundredIntercept = VisionConstants.hundredModelIntercept;
       final double boundary = VisionConstants.eightyModelRange;
       double dist;
+      Translation2d speakerDist;
+      PhotonTrackedTarget speakerTarget;
       boolean seesSpeaker = false;
-      boolean targetPoseDNE = kFieldLayout.getTagPose(speakerID).isEmpty();
-      boolean sevenPoseDNE = kFieldLayout.getTagPose(7).isEmpty();
       double desiredRadians = 0.37;
+      SmartDashboard.putString("debugging/hi", "hi it calls :)");
       //this should help with the debugging :)
       for (PhotonTrackedTarget result : getCameraResult().getTargets()) {
+        SmartDashboard.putNumber("debugging/hi again", result.getFiducialId());
         if (result.getFiducialId() == speakerID) {// FIXME: any alliance
           seesSpeaker = true;
-          if (sevenPoseDNE) {
-            SmartDashboard.putString("Oh no", "we cannot find the ID 7's pose :(");
-          }
-          else if (targetPoseDNE) {
-            SmartDashboard.putString("Oh no","we cannot find the speakerID's pose");
-          }
-          else {
-            SmartDashboard.putString("Oh no", "It appears there is another bug bc it can find both of the IDs");
+          speakerTarget = result;
             //gets the translation from the robot's current (x,y) to the (x,y) of the speaker-center
-            Translation2d speakerDist = new Translation2d(
-              robotPose.getX() - kFieldLayout.getTagPose(speakerID).get().getX(),
-              robotPose.getY() - kFieldLayout.getTagPose(speakerID).get().getY()
-            );
+            speakerDist = speakerTarget.getBestCameraToTarget().getTranslation().toTranslation2d();
+            SmartDashboard.putNumber("debugging/x", speakerDist.getX());
+            SmartDashboard.putNumber("debugging/y", speakerDist.getY());
             
             //gets distance + calculates models (returning desired arm)
             dist = speakerDist.getNorm();
+
+            SmartDashboard.putNumber("debugging/dist w/o 15.75", dist);
             //accounts for model measuring from front of frame and pose being to center of robot
             dist -= Units.inchesToMeters(15.75);
-            SmartDashboard.putNumber("distance", dist);
-            SmartDashboard.putNumber("radians", Math.atan(eightySlope * Units.metersToInches(dist) + eightyIntercept));
+            SmartDashboard.putNumber("deubgingg/distance", dist);
+            SmartDashboard.putNumber("debugging/radians", Math.atan(eightySlope * Units.metersToInches(dist) + eightyIntercept));
             if (dist <= boundary) {
               desiredRadians = (Math.atan(eightySlope * Units.metersToInches(dist) + eightyIntercept));
             } else {
               desiredRadians = (Math.atan(hundredSlope * Units.metersToInches(dist) + hundredIntercept));
             }
-          }
         }
       }
       if (!seesSpeaker) {
-        SmartDashboard.putBoolean("Sees speaker (only true when in keep pointed mode): ", false);
+        SmartDashboard.putBoolean("Sees speaker (only true when in arm align mode): ", false);
       }      
       return desiredRadians;
     }

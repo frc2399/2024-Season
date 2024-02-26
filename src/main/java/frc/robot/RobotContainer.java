@@ -379,11 +379,11 @@ public class RobotContainer {
 
   private void configureButtonBindingsOperatorNotClimber() {
     // operator right trigger: manual arm up
-    m_operatorController.rightTrigger().and(() -> !isInClimberMode)
-         .whileTrue(makeSetSpeedGravityCompensationCommand(m_arm, 0.1))
-         .onFalse(makeSetSpeedGravityCompensationCommand(m_arm, 0));
-    //  m_operatorController.rightTrigger().whileTrue( // TODO: test + change to actual makeSetPositionCommand
-    //     new RunCommand(() -> SmartDashboard.putNumber("arm angle radians", m_vision.keepArmAtAngle())));
+    // m_operatorController.rightTrigger().and(() -> !isInClimberMode)
+    //      .whileTrue(makeSetSpeedGravityCompensationCommand(m_arm, 0.1))
+    //      .onFalse(makeSetSpeedGravityCompensationCommand(m_arm, 0));
+     m_operatorController.rightTrigger().whileTrue( // TODO: test + change to actual makeSetPositionCommand
+        makeSetPositionCommand(m_arm, m_vision.keepArmAtAngle()));
 
     // operator left trigger: manual arm down
      m_operatorController.leftTrigger().and(() -> !isInClimberMode)

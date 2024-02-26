@@ -3,7 +3,7 @@ package frc.robot.commands;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
@@ -20,7 +20,7 @@ public class GetToTarget extends Command {
     private int targetID;
     private boolean seesTarget = false;
     private PhotonTrackedTarget desiredTarget;
-    private Pose2d camEstimate;
+    private Pose3d camEstimate;
     private Translation2d poseDiff;
     private double xDiff;
     private double yDiff;
@@ -56,7 +56,7 @@ public class GetToTarget extends Command {
             if (result.getFiducialId() == targetID) {
                 seesTarget = true;
                 desiredTarget = result;
-                drive.alignOrigins(camEstimate);
+                drive.alignOrigins(camEstimate.toPose2d());
                 poseDiff = new Translation2d(
                     camEstimate.getX() - VisionConstants.kFieldLayout.getTagPose(targetID).get().toPose2d().getX(),
                     camEstimate.getY() - VisionConstants.kFieldLayout.getTagPose(targetID).get().toPose2d().getY()
