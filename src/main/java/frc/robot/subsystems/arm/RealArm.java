@@ -51,8 +51,6 @@ public class RealArm implements ArmIO {
     @Override
     public void periodicUpdate() {
         SmartDashboard.putNumber("arm/arm position", getEncoderPosition());
-        SmartDashboard.putNumber("arm/arm absolute position", getAbsoluteEncoderPosition());
-        SmartDashboard.putNumber("arm/Arm zero offset", armAbsoluteEncoderRight.getZeroOffset());
     }
 
     @Override
