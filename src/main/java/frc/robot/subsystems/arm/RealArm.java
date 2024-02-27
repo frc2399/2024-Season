@@ -35,7 +35,8 @@ public class RealArm implements ArmIO {
         armAbsoluteEncoderRight.setPositionConversionFactor(ArmConstants.ABSOLUTE_RADIANS_PER_REVOLUTION);
         armAbsoluteEncoderRight.setVelocityConversionFactor(ArmConstants.ABSOLUTE_RADIANS_PER_REVOLUTION / 60);
         armAbsoluteEncoderRight.setInverted(true);
-        armAbsoluteEncoderRight.setZeroOffset(0.033 + Math.PI / 2);
+        //armAbsoluteEncoderRight.setZeroOffset(0.601 - 0.397 + Math.PI / 2);
+        armAbsoluteEncoderRight.setZeroOffset(0.601 - 0.397);
         armEncoderRight.setPositionConversionFactor(ArmConstants.RADIANS_PER_REVOLUTION);
         armEncoderRight.setVelocityConversionFactor(ArmConstants.RADIANS_PER_REVOLUTION / 60);
         armEncoderRight.setPosition(armAbsoluteEncoderRight.getPosition());
@@ -51,6 +52,7 @@ public class RealArm implements ArmIO {
     @Override
     public void periodicUpdate() {
         SmartDashboard.putNumber("arm/arm position", getEncoderPosition());
+        SmartDashboard.putNumber("arm/arm absolute position", getAbsoluteEncoderPosition());
     }
 
     @Override

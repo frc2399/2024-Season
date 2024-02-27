@@ -213,7 +213,7 @@ public class RobotContainer {
       indexerIO = new RealIndexer();
       shooterIO = new RealShooter();
       intakeIO = new RealIntake();
-      climberIO = new ClimberSim();
+      climberIO = new ClimberReal();
       armIO = new RealArm();
       m_gyro = new GyroIOPigeon2();
       visionIO = new VisionReal();
@@ -327,7 +327,7 @@ public class RobotContainer {
 
     // driver left trigger: outtake
     m_driverController.leftTrigger().whileTrue(new ParallelCommandGroup(
-       //new RunCommand(() -> m_intake.setMotor(-0.3), m_intake),
+       new RunCommand(() -> m_intake.setMotor(-0.3), m_intake),
         new RunCommand(() -> m_indexer.setMotor(-0.3), m_indexer)));
 
     // driver b: reset gyro
@@ -382,16 +382,16 @@ public class RobotContainer {
     // m_operatorController.rightTrigger().and(() -> !isInClimberMode)
     //      .whileTrue(makeSetSpeedGravityCompensationCommand(m_arm, 0.1))
     //      .onFalse(makeSetSpeedGravityCompensationCommand(m_arm, 0));
-     m_operatorController.rightTrigger().whileTrue( // TODO: test + change to actual makeSetPositionCommand
+     m_operatorController.rightTrigger().and(() -> !isInClimberMode).whileTrue( // TODO: test + change to actual makeSetPositionCommand
         makeSetPositionCommand(m_arm, m_vision.keepArmAtAngle()));
 
     // operator left trigger: manual arm down
-     m_operatorController.leftTrigger().and(() -> !isInClimberMode)
+     m_operatorController.leftTrigger().and(() -> !isInClimberMode).and(() -> !isInClimberMode)
          .whileTrue(makeSetSpeedGravityCompensationCommand(m_arm, -0.1))
          .onFalse(makeSetSpeedGravityCompensationCommand(m_arm, 0));
 
     // operater a: arm to intake/subwoofer angle
-     m_operatorController.a().and(() -> !isInClimberMode).onTrue(makeSetPositionCommand(m_arm, 0.335));
+     m_operatorController.a().and(() -> !isInClimberMode).onTrue(makeSetPositionCommand(m_arm, 0.41));
 
     // operator b: arm to podium shot angle
      m_operatorController.b().and(() -> !isInClimberMode).onTrue(makeSetPositionCommand(m_arm, 0.662));
@@ -490,6 +490,6 @@ public class RobotContainer {
         new ParallelCommandGroup(
             new RunCommand(() -> m_intake.setMotor(0), m_intake),
             new RunCommand(() -> m_indexer.setMotor(0), m_indexer)),
-        () -> m_arm.getEncoderPosition() < 0.35);
+        () -> m_arm.getEncoderPosition() < 0.5);
   }
 }
