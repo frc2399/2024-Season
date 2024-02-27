@@ -1,10 +1,79 @@
 {
   "NTProvider": {
     "types": {
+<<<<<<< HEAD
       "/FMSInfo": "FMSInfo"
     }
   },
   "NetworkTables Info": {
     "visible": true
+=======
+      "/FMSInfo": "FMSInfo",
+      "/Shuffleboard/Driver/Autos/Selector": "String Chooser",
+      "/SmartDashboard/Autos/Selector": "String Chooser",
+      "/SmartDashboard/Field": "Field2d",
+      "/SmartDashboard/VisionSystemSim-front_camera/Sim Field": "Field2d"
+    },
+    "windows": {
+      "/FMSInfo": {
+        "window": {
+          "visible": true
+        }
+      },
+      "/Shuffleboard/Driver/Autos/Selector": {
+        "window": {
+          "visible": true
+        }
+      },
+      "/SmartDashboard/Field": {
+        "bottom": 1476,
+        "height": 8.210550308227539,
+        "left": 150,
+        "right": 2961,
+        "top": 79,
+        "width": 16.541748046875,
+        "window": {
+          "visible": true
+        }
+      },
+      "/SmartDashboard/VisionSystemSim-front_camera/Sim Field": {
+        "apriltag": {
+          "color": [
+            232.50001525878906,
+            255.0,
+            0.0,
+            255.0
+          ]
+        },
+        "bottom": 1476,
+        "height": 8.210550308227539,
+        "left": 150,
+        "right": 2961,
+        "top": 79,
+        "width": 16.541748046875,
+        "window": {
+          "visible": true
+        }
+      }
+    }
+  },
+  "NetworkTables Info": {
+    "AdvantageScope@1": {
+      "Publishers": {
+        "open": true
+      },
+      "open": true
+    },
+    "Connections": {
+      "open": true
+    },
+    "Server": {
+      "open": true
+    },
+    "visible": true
+  },
+  "NetworkTables View": {
+    "visible": false
+>>>>>>> dev-testing
   }
 }
