@@ -36,7 +36,8 @@ public class Climber extends SubsystemBase {
         climberIO.setRightSpeed(speed);
     }
 
-    public void peridoic(){
+    @Override
+    public void periodic(){
         climberIO.periodicUpdate(); 
     }
 

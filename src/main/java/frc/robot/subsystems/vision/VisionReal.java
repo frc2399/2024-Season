@@ -52,7 +52,7 @@ public class VisionReal extends SubsystemBase implements VisionIO {
 
   /** Creates a new Vision. */
   public VisionReal() {
-    camera = new PhotonCamera("Arducam_OV2311_USB_Camera"); //swap if swapping cameras
+    camera = new PhotonCamera("backup_camera"); //swap if swapping cameras
     CamEstimator = new PhotonPoseEstimator(VisionConstants.kFieldLayout, 
     PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camera, VisionConstants.camToRobot);
     kFieldLayout = VisionConstants.kFieldLayout; 

@@ -36,7 +36,7 @@ public class ClimberReal implements ClimberIO {
                 true,
                 true, 0.5);
         rightMotorController = MotorUtil.createSparkMAX(ClimberConstants.RIGHT_CLIMBER_MOTOR_ID, MotorType.kBrushless,
-                50, false, true, 0.5);
+                50, true, true, 0.5);
 
         // initialize motor encoders
         leftEncoder = leftMotorController.getEncoder();
@@ -70,8 +70,8 @@ public class ClimberReal implements ClimberIO {
         rightPIDController.setOutputRange(CLIMBER_K_MIN_OUTPUT, CLIMBER_K_MAX_OUTPUT);
 
         // invert the motor controllers so climber climbs right
-        leftMotorController.setInverted(false);
-        rightMotorController.setInverted(false);
+        leftMotorController.setInverted(true);
+        rightMotorController.setInverted(true);
 
         // set encoder velocity to meters/second
         leftEncoder.setPositionConversionFactor(Constants.ClimberConstants.ENCODER_VELOCITY_MPS);
@@ -97,7 +97,7 @@ public class ClimberReal implements ClimberIO {
 
     // left basic climbing with just speed
     public void setLeftSpeed(double speed) {
-        if ((isLeftRetracted() && speed < 0)) {
+        if (((isLeftRetracted() && speed < 0)) || ((isLeftExtended() && speed > 0))) {
             leftMotorController.set(0);
         } else {
             leftMotorController.set(speed);
@@ -116,7 +116,7 @@ public class ClimberReal implements ClimberIO {
 
     // right basic climbing with just speed
     public void setRightSpeed(double speed) {
-        if ((isRightRetracted() && speed < 0)) {
+        if ((isRightRetracted() && speed < 0) || ((isRightExtended() && speed > 0))) {
             rightMotorController.set(0);
         } else {
             rightMotorController.set(speed);
