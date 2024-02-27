@@ -81,7 +81,7 @@ public class RealArm implements ArmIO {
     @Override
     public double getSpeedFromArmHeight() {
         if (getEncoderPosition() < 0.4) {
-            speedFromArmHeight = 0.7;
+            speedFromArmHeight = 0.6;
           } else if (getEncoderPosition() < 0.8 & getEncoderPosition() > 0.4) {
             speedFromArmHeight = 0.8;
           } else if (getEncoderPosition() < 1 & getEncoderPosition() > 0.8) {
