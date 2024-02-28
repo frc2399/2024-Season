@@ -237,9 +237,10 @@ public class RobotContainer {
 
   // sets up auton commands
   private void setUpAuton() {
-    NamedCommands.registerCommand("intake",setIndexerAndIntakeSpeed(m_indexer, m_intake, Constants.IndexerConstants.INDEXER_IN_SPEED));
-    NamedCommands.registerCommand("Intake",setIndexerAndIntakeSpeed(m_indexer, m_intake, Constants.IndexerConstants.INDEXER_IN_SPEED));
+    NamedCommands.registerCommand("intake",intakeWithHeightRestriction());
+    NamedCommands.registerCommand("Intake",intakeWithHeightRestriction());
     NamedCommands.registerCommand("intake for time", intakeForTime(m_intake, m_indexer));
+    NamedCommands.registerCommand("SHORT intake for time", shortIntakeForTime(m_intake, m_indexer));
     NamedCommands.registerCommand("shoot",outtakeAndShootAfterDelay());
     NamedCommands.registerCommand("AimToTarget", Commands.print("aimed to target!"));
     NamedCommands.registerCommand("SetArmPosition", makeSetPositionCommandAuton(m_arm, 0.675));
@@ -446,6 +447,18 @@ public class RobotContainer {
         new ParallelCommandGroup(
             new InstantCommand(() -> intake.setMotor(.8)).withTimeout(1.5),
             new InstantCommand(() -> indexer.setMotor(0.8)).withTimeout(1.5)),
+        new ParallelCommandGroup(
+            new InstantCommand(() -> intake.setMotor(0)),
+            new InstantCommand(() -> indexer.setMotor(0))));
+    
+  }
+
+
+  private Command shortIntakeForTime(Intake intake, Indexer indexer) {
+    return new SequentialCommandGroup(
+        new ParallelCommandGroup(
+            new InstantCommand(() -> intake.setMotor(.8)).withTimeout(0.2),
+            new InstantCommand(() -> indexer.setMotor(0.8)).withTimeout(0.2)),
         new ParallelCommandGroup(
             new InstantCommand(() -> intake.setMotor(0)),
             new InstantCommand(() -> indexer.setMotor(0))));

@@ -30,6 +30,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "SHORT intake for time"
+          }
+        },
+        {
           "type": "parallel",
           "data": {
             "commands": [
@@ -77,6 +83,12 @@
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SHORT intake for time"
           }
         },
         {
@@ -133,6 +145,12 @@
           "type": "path",
           "data": {
             "pathName": "A line to a"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SHORT intake for time"
           }
         },
         {
