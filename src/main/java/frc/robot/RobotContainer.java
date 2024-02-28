@@ -237,8 +237,8 @@ public class RobotContainer {
 
   // sets up auton commands
   private void setUpAuton() {
-    NamedCommands.registerCommand("intake", intakeWithHeightRestriction());
-    NamedCommands.registerCommand("Intake",intakeWithHeightRestriction());
+    NamedCommands.registerCommand("intake",setIndexerAndIntakeSpeed(m_indexer, m_intake, Constants.IndexerConstants.INDEXER_IN_SPEED));
+    NamedCommands.registerCommand("Intake",setIndexerAndIntakeSpeed(m_indexer, m_intake, Constants.IndexerConstants.INDEXER_IN_SPEED));
     NamedCommands.registerCommand("intake for time", intakeForTime(m_intake, m_indexer));
     NamedCommands.registerCommand("shoot",outtakeAndShootAfterDelay());
     NamedCommands.registerCommand("AimToTarget", Commands.print("aimed to target!"));
@@ -455,7 +455,7 @@ public class RobotContainer {
   private Command setIndexerAndIntakeSpeed(Indexer indexer, Intake intake, double speed) {
     return new ParallelCommandGroup(
         new RunCommand(() -> intake.setMotor(speed)),
-        new RunCommand(() -> indexer.setMotor(speed)));
+        new RunCommand(() -> indexer.setMotor(speed))).withTimeout(0.4);
   }
 //waiting 0.5 seconds to get shooter up to speed
   private Command shootAfterDelay() {
@@ -495,6 +495,8 @@ public class RobotContainer {
             new RunCommand(() -> m_indexer.setMotor(0), m_indexer)),
         () -> m_arm.getEncoderPosition() < 0.5);
   }
+  
+
 
   private Command intakeAndOuttake(){
     return new SequentialCommandGroup(
