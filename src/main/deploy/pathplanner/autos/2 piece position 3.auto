@@ -18,59 +18,27 @@
           }
         },
         {
-          "type": "deadline",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "3 to C"
-                }
-              }
-            ]
+            "pathName": "3 to C"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "intake for time"
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "AimToTarget"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "SetArmPosition"
-                }
-              }
-            ]
+            "name": "AimToTarget"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "outtake"
+            "name": "SetArmPosition"
           }
         },
         {
           "type": "named",
           "data": {
             "name": "shoot"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "SetArmDown"
           }
         }
       ]

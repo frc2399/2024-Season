@@ -18,28 +18,15 @@
           }
         },
         {
-          "type": "deadline",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "2 to B"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Intake"
-                }
-              }
-            ]
+            "pathName": "2 to B"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "intake for time"
+            "name": "AimToTarget"
           }
         },
         {
@@ -51,19 +38,7 @@
         {
           "type": "named",
           "data": {
-            "name": "outtake"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
             "name": "shoot"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "SetArmDown"
           }
         }
       ]
