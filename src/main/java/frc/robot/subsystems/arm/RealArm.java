@@ -36,7 +36,7 @@ public class RealArm implements ArmIO {
         armAbsoluteEncoderRight.setVelocityConversionFactor(ArmConstants.ABSOLUTE_RADIANS_PER_REVOLUTION / 60);
         armAbsoluteEncoderRight.setInverted(true);
         //armAbsoluteEncoderRight.setZeroOffset(0.601 - 0.397 + Math.PI / 2);
-        armAbsoluteEncoderRight.setZeroOffset(0.601 - 0.274);
+        armAbsoluteEncoderRight.setZeroOffset(ArmConstants.ARM_ABSOLUTE_MEASURED - ArmConstants.ARM_ABSOLUTE_CAD);
         armEncoderRight.setPositionConversionFactor(ArmConstants.RADIANS_PER_REVOLUTION);
         armEncoderRight.setVelocityConversionFactor(ArmConstants.RADIANS_PER_REVOLUTION / 60);
         armEncoderRight.setPosition(armAbsoluteEncoderRight.getPosition());
