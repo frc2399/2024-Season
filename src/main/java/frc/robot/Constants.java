@@ -171,7 +171,9 @@ public final class Constants {
     //absolute encoder only needs the sprocket/chain reduction, since it comes after the gearboxes
     public static final double ABSOLUTE_RADIANS_PER_REVOLUTION = 2 * Math.PI / 4;
 
-    public static final double INITIAL_OFFSET = Units.degreesToRadians(14);
+    public static final double ARM_ABSOLUTE_MEASURED = 0.601;
+    public static final double ARM_ABSOLUTE_CAD = 0.274;
+    public static final double INITIAL_OFFSET = 0.274;
 
     // can be 2 degrees off from goal setpoints in auton and still considered at goal
     public static final double ANGLE_TOLERANCE_AUTON = Units.degreesToRadians(2);
