@@ -16,6 +16,7 @@ import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.MyVersion;
 import frc.robot.Constants.VisionConstants;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.controller.PIDController;
@@ -25,6 +26,7 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class VisionReal extends SubsystemBase implements VisionIO {
@@ -33,6 +35,7 @@ public class VisionReal extends SubsystemBase implements VisionIO {
     private static PhotonPoseEstimator CamEstimator;
     private boolean updatePoseWithVisionReadings = true;
     public Pose3d robotPose;
+    public boolean isAligned = false;
 
     //apriltags
     public  int facingSourceLeftID;
@@ -139,6 +142,14 @@ public class VisionReal extends SubsystemBase implements VisionIO {
           yawDiff = ((result.getYaw()*Math.PI)/180);
           SmartDashboard.putBoolean("Sees speaker (only true when in keep pointed mode): ", true);
           SmartDashboard.putNumber("YawDiff", yawDiff);
+          // Add green/red square for if robot aligned within 5 degrees to speaker tag
+          if (yawDiff < Math.toRadians(5)) {
+            isAligned = true;
+          }
+          else {
+            isAligned = false;
+          }
+          Shuffleboard.getTab("Driver").add("aligned speaker?", isAligned);
           break; //saves a tiny bit of processing power possibly
         }
       }
