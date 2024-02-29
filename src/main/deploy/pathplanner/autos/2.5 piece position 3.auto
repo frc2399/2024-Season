@@ -26,12 +26,6 @@
                 "data": {
                   "pathName": "3 to C"
                 }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "intake"
-                }
               }
             ]
           }

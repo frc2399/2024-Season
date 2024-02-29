@@ -72,7 +72,7 @@ public final class Constants {
 
   public static final class SwerveModuleConstants {
     //THIS IS 13 ON COMP BOT
-    public static final int kDrivingMotorPinionTeeth = 14;
+    public static final int kDrivingMotorPinionTeeth = 13;
 
     // Invert the turning encoder, since the output shaft rotates in the opposite
     // direction of the steering motor in the MAXSwerve Module.
@@ -171,7 +171,9 @@ public final class Constants {
     //absolute encoder only needs the sprocket/chain reduction, since it comes after the gearboxes
     public static final double ABSOLUTE_RADIANS_PER_REVOLUTION = 2 * Math.PI / 4;
 
-    public static final double INITIAL_OFFSET = Units.degreesToRadians(14);
+    public static final double ARM_ABSOLUTE_MEASURED = 0.601;
+    public static final double ARM_ABSOLUTE_CAD = 0.274;
+    public static final double INITIAL_OFFSET = 0.274;
 
     // can be 2 degrees off from goal setpoints in auton and still considered at goal
     public static final double ANGLE_TOLERANCE_AUTON = Units.degreesToRadians(2);
@@ -194,7 +196,7 @@ public final class Constants {
     public static final int RIGHT_CLIMBER_MOTOR_ID = 14;
     public static final double CLIMBER_SPEED = 0.5;
 
-    public static final double MAX_HEIGHT = 0.2794;
+    public static final double MAX_HEIGHT = 0.15;
     public static final double MIN_HEIGHT = 0;
 
     public static final double VELOCITY_THRESHHOLD = 20;
@@ -203,15 +205,15 @@ public final class Constants {
 
     public static final double SETPOINT_RANGE = 0.05;
 
-    public static final double ENCODER_VELOCITY_MPS = (2 * (Math.PI) * 0.375) / 60;
-    public static final double ENCODER_METERS = (2 * (Math.PI) * 0.375);
+    public static final double ENCODER_VELOCITY_MPS = (2 * (Math.PI) * 0.375) / 60 / 12;
+    public static final double ENCODER_METERS = (2 * (Math.PI) * 0.375 / 12);
 
   }
 
   public static final class OIConstants {
     public static final int kDriverControllerPort = 0;
     public static final int kOperatorControllerPort = 1;
-    public static final double kDriveDeadband = 0.1;
+    public static final double kDriveDeadband = 0.05;
   }
 
   public static final class AutoConstants {

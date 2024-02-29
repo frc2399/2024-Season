@@ -10,9 +10,15 @@ public final class MyVersion {
 	public static final int GIT_REVISION = 218;
 	public static final String GIT_SHA = "6f355f089a6cc756dc19079a8bb95f9152dc8e45";
 	public static final String GIT_DATE = "2024-02-26 10:58";
+<<<<<<< HEAD
 	public static final String GIT_BRANCH = "dev-testing";
 	public static final String BUILD_DATE = "2024-02-29 10:48";
 	public static final long BUILD_UNIX_TIME = 1709221717495L;
+=======
+	public static final String GIT_BRANCH = "final-auton";
+	public static final String BUILD_DATE = "2024-02-26 21:08";
+	public static final long BUILD_UNIX_TIME = 1708999725625L;
+>>>>>>> 3414d28b540fddafed7e88b2c21df522df354bd6
 	public static final int DIRTY = 1;
 
 	private MyVersion(){}

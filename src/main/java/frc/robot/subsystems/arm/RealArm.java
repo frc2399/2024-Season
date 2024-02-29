@@ -35,7 +35,8 @@ public class RealArm implements ArmIO {
         armAbsoluteEncoderRight.setPositionConversionFactor(ArmConstants.ABSOLUTE_RADIANS_PER_REVOLUTION);
         armAbsoluteEncoderRight.setVelocityConversionFactor(ArmConstants.ABSOLUTE_RADIANS_PER_REVOLUTION / 60);
         armAbsoluteEncoderRight.setInverted(true);
-        armAbsoluteEncoderRight.setZeroOffset(0.033 + Math.PI / 2);
+        //armAbsoluteEncoderRight.setZeroOffset(0.601 - 0.397 + Math.PI / 2);
+        armAbsoluteEncoderRight.setZeroOffset(ArmConstants.ARM_ABSOLUTE_MEASURED - ArmConstants.ARM_ABSOLUTE_CAD);
         armEncoderRight.setPositionConversionFactor(ArmConstants.RADIANS_PER_REVOLUTION);
         armEncoderRight.setVelocityConversionFactor(ArmConstants.RADIANS_PER_REVOLUTION / 60);
         armEncoderRight.setPosition(armAbsoluteEncoderRight.getPosition());
@@ -51,6 +52,7 @@ public class RealArm implements ArmIO {
     @Override
     public void periodicUpdate() {
         SmartDashboard.putNumber("arm/arm position", getEncoderPosition());
+        SmartDashboard.putNumber("arm/arm absolute position", getAbsoluteEncoderPosition());
     }
 
     @Override
@@ -81,7 +83,7 @@ public class RealArm implements ArmIO {
     @Override
     public double getSpeedFromArmHeight() {
         if (getEncoderPosition() < 0.4) {
-            speedFromArmHeight = 0.7;
+            speedFromArmHeight = 0.6;
           } else if (getEncoderPosition() < 0.8 & getEncoderPosition() > 0.4) {
             speedFromArmHeight = 0.8;
           } else if (getEncoderPosition() < 1 & getEncoderPosition() > 0.8) {

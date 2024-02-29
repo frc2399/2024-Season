@@ -51,7 +51,19 @@
         {
           "type": "named",
           "data": {
+            "name": "outtake"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
             "name": "shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SetArmDown"
           }
         }
       ]
