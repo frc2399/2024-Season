@@ -243,7 +243,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("SHORT intake for time", shortIntakeForTime(m_intake, m_indexer));
     NamedCommands.registerCommand("shoot", outtakeAndShootAfterDelay());
     NamedCommands.registerCommand("AimToTarget", Commands.print("aimed to target!"));
-    NamedCommands.registerCommand("SetArmPosition", makeSetPositionCommandAuton(m_arm, 0.675));
+    NamedCommands.registerCommand("SetArmPosition", makeSetPositionCommandAuton(m_arm, 0.67 ));
     NamedCommands.registerCommand("SetArmDown", makeSetPositionCommandAuton(m_arm, 0.335));
     NamedCommands.registerCommand("SetArm4Piece", makeSetPositionCommandAuton(m_arm, 0.58));
     NamedCommands.registerCommand("AutoShoot", outtakeAndShootAfterDelay());
@@ -303,12 +303,12 @@ public class RobotContainer {
   }
 
   private void configureButtonBindingsDriver() {
-    m_driverController.y().onTrue((new RunCommand(
-        () -> m_robotDrive.setZero(),
-        m_robotDrive)));
+
+    m_driverController.y().onTrue((new RunCommand(() -> m_robotDrive.setZero(), m_robotDrive)));
     m_driverController.x().onTrue((new RunCommand(
         () -> m_robotDrive.setX(),
         m_robotDrive)));
+
 
     // driver left bumper: manual shoot
     // gets arm height to assign to speed. lower arm, means cloesr to speaekr, so
@@ -492,10 +492,13 @@ public class RobotContainer {
             new SequentialCommandGroup(
                 new WaitCommand(0.25),
                 new RunCommand(() -> m_indexer.setMotor(Constants.IndexerConstants.INDEXER_IN_SPEED), m_indexer),
-                new RunCommand(() -> m_indexer.setIsIntooked(false), m_indexer)),
-            new RunCommand(() -> m_shooter.setMotor(m_arm.getSpeedFromArmHeight()), m_shooter)).withTimeout(0.5),
+                new RunCommand(() -> m_indexer.setIsIntooked(false), m_indexer)
+                ),
+            new RunCommand(() -> m_shooter.setMotor(m_arm.getSpeedFromArmHeight()), m_shooter)).
+                 withTimeout(0.5),
         new InstantCommand(() -> m_shooter.setMotor(0), m_shooter),
-        new InstantCommand(() -> m_indexer.setMotor(0), m_indexer));
+        new InstantCommand(() -> m_indexer.setMotor(0), m_indexer)
+        );
   }
 
   private Command intakeWithHeightRestriction() {
@@ -506,7 +509,7 @@ public class RobotContainer {
         new ParallelCommandGroup(
             new RunCommand(() -> m_intake.setMotor(0), m_intake),
             new RunCommand(() -> m_indexer.setMotor(0), m_indexer)),
-        () -> m_arm.getEncoderPosition() < 0.5);
+        () -> m_arm.getEncoderPosition() < 0.5); 
   }
 
   private Command intakeAndOuttake() {

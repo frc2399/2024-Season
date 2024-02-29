@@ -84,7 +84,13 @@ public class Robot extends TimedRobot {
 
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+
+    //Disables arm and elevator PID loops so it won't remember/try to get to the last setpoint
+    //Otherwise, if the arm fell after disabling, it would go up really quickly on enabling
+    //Also disables gravity compensation b/c no command with gravity compensation running after disable
+    RobotContainer.m_arm.disable();
+  }
 
   @Override
   public void disabledPeriodic() {}

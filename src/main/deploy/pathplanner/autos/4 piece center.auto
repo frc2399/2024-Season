@@ -20,49 +20,38 @@
         {
           "type": "path",
           "data": {
-            "pathName": "pos 2 to C"
+            "pathName": "2 to C"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "SetArmPosition"
+            "name": "intake for time"
           }
         },
         {
-          "type": "named",
+          "type": "parallel",
           "data": {
-            "name": "AutoShoot"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "SetArmDown"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Copy of 3 to C"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "strafing center line to B"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "strafing b to center line"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "SetArmPosition"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Copy of 3 to C"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "SetArm4Piece"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "intake and outtake"
+                }
+              }
+            ]
           }
         },
         {
@@ -72,15 +61,72 @@
           }
         },
         {
-          "type": "named",
+          "type": "parallel",
           "data": {
-            "name": "SetArmDown"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "SetArmDown"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "strafing center line to B"
+                }
+              }
+            ]
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "Copy of center line to center b"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "strafing b to center line"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "SetArm4Piece"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "intake and outtake"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AutoShoot"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "SetArmDown"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Copy of center line to center b"
+                }
+              }
+            ]
           }
         },
         {
@@ -90,15 +136,28 @@
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "Copy of a to center line"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "SetArmPosition"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Copy of a to center line"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "SetArm4Piece"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "intake and outtake"
+                }
+              }
+            ]
           }
         },
         {

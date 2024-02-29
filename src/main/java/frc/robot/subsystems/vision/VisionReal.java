@@ -25,6 +25,7 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class VisionReal extends SubsystemBase implements VisionIO {
@@ -43,6 +44,7 @@ public class VisionReal extends SubsystemBase implements VisionIO {
     public  int facingAwayFromSpeakerStageLeftID;
     public   int facingAwayFromSpeakerStageRightID;
     public  int ampID;
+    public boolean isAligned= false;
 
     //PID for the speaker-aiming method
     final double ANGULAR_P = 0.8; // TODO: tune
@@ -139,6 +141,14 @@ public class VisionReal extends SubsystemBase implements VisionIO {
           yawDiff = ((result.getYaw()*Math.PI)/180);
           SmartDashboard.putBoolean("Sees speaker (only true when in keep pointed mode): ", true);
           SmartDashboard.putNumber("YawDiff", yawDiff);
+          // Add green/red square for if robot aligned within 5 degrees to speaker tag
+          if (yawDiff < Math.toRadians(5)) {
+            isAligned = true;
+          }
+          else {
+            isAligned = false;
+          }
+          Shuffleboard.getTab("Driver").add("aligned speaker?", isAligned);
           break; //saves a tiny bit of processing power possibly
         }
       }
