@@ -202,18 +202,24 @@ public class VisionSim extends SubsystemBase implements VisionIO {
       final double hundredIntercept = VisionConstants.hundredModelIntercept;
       final double boundary = VisionConstants.eightyModelRange;
       double dist;
-      Translation2d speakerDist = new Translation2d(
-        robotPose.getX() - VisionConstants.kFieldLayout.getTagPose(7).get().toPose2d().getX(),
-        robotPose.getY() - VisionConstants.kFieldLayout.getTagPose(7).get().toPose2d().getY()
-      );
-      dist = speakerDist.getNorm();
-      System.out.println(Units.metersToInches(dist));
-      System.out.println(Math.atan(eightySlope * Units.metersToInches(dist) + eightyIntercept));
-      if (dist <= boundary) {
-        return (Math.atan(eightySlope * Units.metersToInches(dist) + eightyIntercept));
-      } else {
-        return (Math.atan(hundredSlope * Units.metersToInches(dist) + hundredIntercept));
+      // Added if statement to avoid sim crash from button bindings setup
+      if (robotPose == null) {
+        return eightyIntercept;
       }
+      else {
+        Translation2d speakerDist = new Translation2d(
+            robotPose.getX() - VisionConstants.kFieldLayout.getTagPose(7).get().toPose2d().getX(),
+            robotPose.getY() - VisionConstants.kFieldLayout.getTagPose(7).get().toPose2d().getY()
+        );
+        dist = speakerDist.getNorm();
+        System.out.println(Units.metersToInches(dist));
+        System.out.println(Math.atan(eightySlope * Units.metersToInches(dist) + eightyIntercept));
+        if (dist <= boundary) {
+            return (Math.atan(eightySlope * Units.metersToInches(dist) + eightyIntercept));
+        } else {
+            return (Math.atan(hundredSlope * Units.metersToInches(dist) + hundredIntercept));
+        }
+    }
     }
 
     @Override
