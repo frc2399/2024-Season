@@ -244,8 +244,8 @@ public class RobotContainer {
     NamedCommands.registerCommand("shoot", outtakeAndShootAfterDelay());
     NamedCommands.registerCommand("AimToTarget", Commands.print("aimed to target!"));
     NamedCommands.registerCommand("SetArmPosition", makeSetPositionCommandAuton(m_arm, 0.67 ));
-    NamedCommands.registerCommand("SetArmDown", makeSetPositionCommandAuton(m_arm, 0.335));
-    NamedCommands.registerCommand("SetArm4Piece", makeSetPositionCommandAuton(m_arm, 0.58));
+    NamedCommands.registerCommand("SetArmDown", makeSetPositionCommandAuton(m_arm, 0.));
+    NamedCommands.registerCommand("SetArm4Piece", makeSetPositionCommandAuton(m_arm, 0.55));
     NamedCommands.registerCommand("AutoShoot", outtakeAndShootAfterDelay());
     NamedCommands.registerCommand("intake and outtake", intakeAndOuttake());
     NamedCommands.registerCommand("outtake", outtake());
@@ -261,19 +261,19 @@ public class RobotContainer {
     m_shooter.setDefaultCommand(
         new RunCommand(
             () -> m_shooter.setMotor(0),
-            m_shooter));
+            m_shooter).withName("drive default"));
 
     // default command for intake: do nothing
     m_intake.setDefaultCommand(
         new RunCommand(
             () -> m_intake.setMotor(0),
-            m_intake));
+            m_intake).withName("drive default"));
 
     // default command for indexer: do nothing
     m_indexer.setDefaultCommand(
         new RunCommand(
             () -> m_indexer.setMotor(0),
-            m_indexer));
+            m_indexer).withName("drive default"));
 
     // default command for climber: do nothing
     m_climber.setDefaultCommand(
@@ -285,7 +285,7 @@ public class RobotContainer {
     // where it is.
     // Setpoint is in RADIANS
     m_arm.setEncoderPosition(m_arm.getAbsoluteEncoderPosition());
-    m_arm.setDefaultCommand(new RunCommand(() -> m_arm.setSpeedGravityCompensation(0), m_arm));
+    m_arm.setDefaultCommand(new RunCommand(() -> m_arm.setSpeedGravityCompensation(0), m_arm).withName("drive default"));
 
     // default command for drivetrain: drive based on controller inputs
     // actually driving robot
@@ -298,16 +298,16 @@ public class RobotContainer {
                 -Math.pow(MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband), 3),
                 -Math.pow(MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband), 3),
                 fieldOrientedDrive),
-            m_robotDrive));
+            m_robotDrive).withName("drive default"));
 
   }
 
   private void configureButtonBindingsDriver() {
-
-    m_driverController.y().onTrue((new RunCommand(() -> m_robotDrive.setZero(), m_robotDrive)));
-    m_driverController.x().onTrue((new RunCommand(
+    // while true with run commands
+    m_driverController.y().whileTrue((new RunCommand(() -> m_robotDrive.setZero(), m_robotDrive).withName("setzero")));
+    m_driverController.x().whileTrue((new RunCommand(
         () -> m_robotDrive.setX(),
-        m_robotDrive)));
+        m_robotDrive).withName("setx")));
 
 
     // driver left bumper: manual shoot

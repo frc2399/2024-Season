@@ -35,7 +35,7 @@ public class VisionReal extends SubsystemBase implements VisionIO {
     private static PhotonPoseEstimator CamEstimator;
     private boolean updatePoseWithVisionReadings = true;
     public Pose3d robotPose;
-    public boolean isAligned = false;
+    
 
     //apriltags
     public  int facingSourceLeftID;
@@ -150,7 +150,7 @@ public class VisionReal extends SubsystemBase implements VisionIO {
           else {
             isAligned = false;
           }
-          Shuffleboard.getTab("Driver").add("aligned speaker?", isAligned);
+          //Shuffleboard.getTab("Driver").add("aligned speaker?", isAligned);
           break; //saves a tiny bit of processing power possibly
         }
       }
