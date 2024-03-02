@@ -140,27 +140,29 @@ public class DriveSubsystem extends SubsystemBase {
     //m_poseEstimator.addVisionMeasurement(m_vision, desiredAngle);
 
 
-    // updates inputs for each module
-    m_frontLeft.updateInputs();
-    m_rearLeft.updateInputs();
-    m_frontRight.updateInputs();
-    m_rearRight.updateInputs();
+    // updates inputs for each module for sim only!
+    // m_frontLeft.updateInputs();
+    // m_rearLeft.updateInputs();
+    // m_frontRight.updateInputs();
+    // m_rearRight.updateInputs();
+// pathplanner debugging
 
-    field2d.setRobotPose(getPose());
+    var pose = getPose();
+    field2d.setRobotPose(pose);
 
-    frontLeftField2dModule.setPose(getPose().transformBy(new Transform2d(
+    frontLeftField2dModule.setPose(pose.transformBy(new Transform2d(
         Constants.DriveConstants.FRONT_LEFT_OFFSET,
         new Rotation2d(m_frontLeft.getTurnEncoderPosition()))));
 
-    rearLeftField2dModule.setPose(getPose().transformBy(new Transform2d(
+    rearLeftField2dModule.setPose(pose.transformBy(new Transform2d(
         Constants.DriveConstants.REAR_LEFT_OFFSET,
         new Rotation2d(m_rearLeft.getTurnEncoderPosition()))));
 
-    frontRightField2dModule.setPose(getPose().transformBy(new Transform2d(
+    frontRightField2dModule.setPose(pose.transformBy(new Transform2d(
         Constants.DriveConstants.FRONT_RIGHT_OFFSET,
         new Rotation2d(m_frontRight.getTurnEncoderPosition()))));
 
-    rearRightField2dModule.setPose(getPose().transformBy(new Transform2d(
+    rearRightField2dModule.setPose(pose.transformBy(new Transform2d(
         Constants.DriveConstants.REAR_RIGHT_OFFSET,
         new Rotation2d(m_rearRight.getTurnEncoderPosition()))));
 
