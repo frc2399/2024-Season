@@ -243,9 +243,9 @@ public class RobotContainer {
     NamedCommands.registerCommand("SHORT intake for time", shortIntakeForTime(m_intake, m_indexer));
     NamedCommands.registerCommand("shoot", outtakeAndShootAfterDelay());
     NamedCommands.registerCommand("AimToTarget", Commands.print("aimed to target!"));
-    NamedCommands.registerCommand("SetArmPosition", makeSetPositionCommandAuton(m_arm, 0.67 ));
-    NamedCommands.registerCommand("SetArmDown", makeSetPositionCommandAuton(m_arm, 0.));
-    NamedCommands.registerCommand("SetArm4Piece", makeSetPositionCommandAuton(m_arm, 0.55));
+    NamedCommands.registerCommand("SetArmPosition", makeSetPositionCommandAuton(m_arm, 0.475));
+    NamedCommands.registerCommand("SetArmDown", makeSetPositionCommandAuton(m_arm, 0.335));
+    NamedCommands.registerCommand("SetArm4Piece", makeSetPositionCommandAuton(m_arm, 0.475));
     NamedCommands.registerCommand("AutoShoot", outtakeAndShootAfterDelay());
     NamedCommands.registerCommand("intake and outtake", intakeAndOuttake());
     NamedCommands.registerCommand("outtake", outtake());
@@ -397,7 +397,7 @@ public class RobotContainer {
     m_operatorController.a().and(() -> !isInClimberMode).onTrue(makeSetPositionCommand(m_arm, 0.31));
 
     // operator b: arm to podium shot angle
-    m_operatorController.b().and(() -> !isInClimberMode).onTrue(makeSetPositionCommand(m_arm, 0.662));
+    m_operatorController.b().and(() -> !isInClimberMode).onTrue(makeSetPositionCommand(m_arm, 0.66));
 
     // operator y: arm to amp angle
     m_operatorController.y().and(() -> !isInClimberMode).onTrue(makeSetPositionCommand(m_arm, 1.58));
@@ -405,6 +405,7 @@ public class RobotContainer {
     // operator left trigger: intake
     m_operatorController.rightBumper().and(() -> !isInClimberMode)
         .whileTrue(new RunCommand(() -> m_indexer.setMotor(0.3), m_indexer));
+        
 
     // operator right trigger: outtake
     // outtake a little bittt to get shooter up to speed
