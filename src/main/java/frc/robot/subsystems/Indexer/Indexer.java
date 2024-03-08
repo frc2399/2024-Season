@@ -32,9 +32,6 @@ public class Indexer extends SubsystemBase {
     indexerIO.setMotor(indexerSpeed);
   }
 
-  public void setSpeed(double speed) {
-    indexerIO.setSpeed(speed);
-  }
 
   // returns speed of the indexer
   public double getEncoderSpeed() {

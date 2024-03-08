@@ -28,16 +28,14 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.VisionConstants;
-import frc.robot.RobotContainer;
 import frc.robot.subsystems.drive.DriveSubsystem;
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
 
 
 public class VisionSim extends SubsystemBase implements VisionIO {
 
     // A vision system sim labelled as "main" in NetworkTables
     PhotonCamera camera = new PhotonCamera("simulated_camera");
-    final double ANGULAR_P = 0.8; // TODO: tune
+    final double ANGULAR_P = 0.8;
     final double ANGULAR_D = 0.0;
     PIDController keepPointedController = new PIDController(ANGULAR_P, 0, ANGULAR_D);
     VisionSystemSim visionSim = new VisionSystemSim("front_camera");

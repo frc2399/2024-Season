@@ -16,17 +16,13 @@ import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.MyVersion;
 import frc.robot.Constants.VisionConstants;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class VisionReal extends SubsystemBase implements VisionIO {
@@ -97,7 +93,6 @@ public class VisionReal extends SubsystemBase implements VisionIO {
   //estimates the robot pose
     public Optional<EstimatedRobotPose> getCameraEst() {
       var visionest = CamEstimator.update();
-      //System.out.println(visionest);
       return visionest;
     }
 
@@ -131,8 +126,8 @@ public class VisionReal extends SubsystemBase implements VisionIO {
 
     //keeps the robot pointed at the speaker; uses PID and yaw
     public double keepPointedAtSpeaker() {
-      SmartDashboard.putNumber("visiontesting/speakerID", speakerID);
-      SmartDashboard.putNumber("speaker ID from VisionReal (should be 7) ", speakerID);
+      SmartDashboard.putNumber("vision/debugging/speakerID", speakerID);
+      SmartDashboard.putNumber("vision/debugging/speaker ID from VisionReal (should be 7) ", speakerID);
       boolean seesSpeaker = false;
       double yawDiff = 0.0;
       //gets yaw to centralized speaker target
@@ -141,8 +136,8 @@ public class VisionReal extends SubsystemBase implements VisionIO {
           seesSpeaker = true;
           //yaw in radians bc p values get too small
           yawDiff = ((result.getYaw()*Math.PI)/180);
-          SmartDashboard.putBoolean("Sees speaker (only true when in keep pointed mode): ", true);
-          SmartDashboard.putNumber("YawDiff", yawDiff);
+          SmartDashboard.putBoolean("vision/debugging/Sees speaker (only true when in keep pointed mode): ", true);
+          SmartDashboard.putNumber("vision/YawDiff", yawDiff);
           // Add green/red square for if robot aligned within 5 degrees to speaker tag
           if (yawDiff < Math.toRadians(5)) {
             isAligned = true;
@@ -150,14 +145,12 @@ public class VisionReal extends SubsystemBase implements VisionIO {
           else {
             isAligned = false;
           }
-          //Shuffleboard.getTab("Driver").add("aligned speaker?", isAligned);
           break; //saves a tiny bit of processing power possibly
         }
       }
       if (!seesSpeaker) {
-        SmartDashboard.putBoolean("Sees speaker (only true when in keep pointed mode): ", false);
+        SmartDashboard.putBoolean("vision/debugging/Sees speaker (only true when in keep pointed mode): ", false);
       }
-      System.out.println(keepPointedController.calculate(yawDiff, 0));
       return (keepPointedController.calculate(yawDiff, 0));
     }
 
@@ -172,26 +165,26 @@ public class VisionReal extends SubsystemBase implements VisionIO {
       PhotonTrackedTarget speakerTarget;
       boolean seesSpeaker = false;
       double desiredRadians = 0.37;
-      SmartDashboard.putString("debugging/hi", "hi it calls :)");
+      SmartDashboard.putString("vision/debugging/hi", "hi it calls :)");
       //this should help with the debugging :)
       for (PhotonTrackedTarget result : getCameraResult().getTargets()) {
-        SmartDashboard.putNumber("debugging/hi again", result.getFiducialId());
-        if (result.getFiducialId() == speakerID) {// FIXME: any alliance
+        SmartDashboard.putNumber("vision/debugging/hi again", result.getFiducialId());
+        if (result.getFiducialId() == speakerID) {
           seesSpeaker = true;
           speakerTarget = result;
             //gets the translation from the robot's current (x,y) to the (x,y) of the speaker-center
             speakerDist = speakerTarget.getBestCameraToTarget().getTranslation().toTranslation2d();
-            SmartDashboard.putNumber("debugging/x", speakerDist.getX());
-            SmartDashboard.putNumber("debugging/y", speakerDist.getY());
+            SmartDashboard.putNumber("vision/debugging/x", speakerDist.getX());
+            SmartDashboard.putNumber("vision/debugging/y", speakerDist.getY());
             
             //gets distance + calculates models (returning desired arm)
             dist = speakerDist.getNorm();
 
-            SmartDashboard.putNumber("debugging/dist w/o 15.75", dist);
+            SmartDashboard.putNumber("vision/debugging/dist w/o 15.75", dist);
             //accounts for model measuring from front of frame and pose being to center of robot
             dist -= Units.inchesToMeters(15.75);
-            SmartDashboard.putNumber("deubgingg/distance", dist);
-            SmartDashboard.putNumber("debugging/radians", Math.atan(eightySlope * Units.metersToInches(dist) + eightyIntercept));
+            SmartDashboard.putNumber("vision/deubgingg/distance", dist);
+            SmartDashboard.putNumber("vision/debugging/radians", Math.atan(eightySlope * Units.metersToInches(dist) + eightyIntercept));
             if (dist <= boundary) {
               desiredRadians = (Math.atan(eightySlope * Units.metersToInches(dist) + eightyIntercept));
             } else {
@@ -200,7 +193,7 @@ public class VisionReal extends SubsystemBase implements VisionIO {
         }
       }
       if (!seesSpeaker) {
-        SmartDashboard.putBoolean("Sees speaker (only true when in arm align mode): ", false);
+        SmartDashboard.putBoolean("vision/debugging/Sees speaker (only true when in arm align mode): ", false);
       }      
       return desiredRadians;
     }
@@ -226,7 +219,7 @@ public class VisionReal extends SubsystemBase implements VisionIO {
           facingAwayFromSpeakerStageRightID = 16;
           ampID = 6;
       }
-    SmartDashboard.putNumber("robotcontainer/speaker id", speakerID);
+    SmartDashboard.putNumber("vision/speaker id", speakerID);
 
     }
   }

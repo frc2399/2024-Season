@@ -23,7 +23,6 @@ import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -31,18 +30,13 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
-import frc.robot.MyVersion;
 import frc.robot.Robot;
 import frc.robot.subsystems.gyro.GyroIO;
-import frc.robot.subsystems.vision.VisionIO;
 
 public class DriveSubsystem extends SubsystemBase {
 
   // Odometry
   private SwerveDrivePoseEstimator m_poseEstimator;
-  
-  // Vision
-  private VisionIO m_vision;
 
   // swerve modules
   private SwerveModule m_frontLeft;
@@ -82,9 +76,6 @@ public class DriveSubsystem extends SubsystemBase {
 
     SmartDashboard.putData(field2d);
 
-    // poseEstimator = new SwerveDrivePoseEstimator(
-    //     Constants.DriveConstants.kDriveKinematics, new Rotation2d(m_gyro.getYaw()), getModulePositions(), 
-    //     new Pose2d());
     m_poseEstimator = new SwerveDrivePoseEstimator(
       DriveConstants.kDriveKinematics,
       Rotation2d.fromDegrees(m_gyro.getYaw()), 
@@ -136,16 +127,6 @@ public class DriveSubsystem extends SubsystemBase {
             m_rearLeft.getPosition(),
             m_rearRight.getPosition()
         });
-    
-    //m_poseEstimator.addVisionMeasurement(m_vision, desiredAngle);
-
-
-    // updates inputs for each module for sim only!
-    // m_frontLeft.updateInputs();
-    // m_rearLeft.updateInputs();
-    // m_frontRight.updateInputs();
-    // m_rearRight.updateInputs();
-// pathplanner debugging
 
     var pose = getPose();
     field2d.setRobotPose(pose);
@@ -175,9 +156,6 @@ public class DriveSubsystem extends SubsystemBase {
     };
     swerveModuleStatePublisher.set(swerveModuleStates);
 
-    if (DriverStation.isAutonomous()){
-      //System.out.println("Mahee is annoying");
-    } 
     if (Robot.isSimulation()) {
     double angleChange = Constants.DriveConstants.kDriveKinematics.toChassisSpeeds(swerveModuleStates).omegaRadiansPerSecond * (1/Constants.CodeConstants.kMainLoopFrequency);
     lastAngle = lastAngle.plus(Rotation2d.fromRadians(angleChange));
@@ -206,12 +184,6 @@ public class DriveSubsystem extends SubsystemBase {
 
   /** Resets the odometry to the specified pose. */
   public void resetOdometry(Pose2d pose) {
-    System.out.println("angle " + m_gyro.getYaw());
-    System.out.println("front left position " + m_frontLeft.getPosition());
-    System.out.println("front right position " + m_frontRight.getPosition());
-    System.out.println("rear left position " + m_rearLeft.getPosition());
-    System.out.println("rear right position " + m_rearRight.getPosition());
-
     m_poseEstimator.resetPosition(
         Rotation2d.fromRadians(m_gyro.getYaw()),
         new SwerveModulePosition[] {
@@ -222,6 +194,7 @@ public class DriveSubsystem extends SubsystemBase {
         },
         pose);
   }
+
   public void updateOdometry () {
     m_poseEstimator.update(Rotation2d.fromDegrees(m_gyro.getYaw()),
     new SwerveModulePosition[] {
@@ -262,9 +235,7 @@ public class DriveSubsystem extends SubsystemBase {
       // //Account for edge case when gyro resets
     if (currentAngle == 0) {
       desiredAngle = 0;
-    }
-
-    
+    }   
 
     //Apply correction if needed
     if (rotRate == 0 && (xSpeed != 0 || ySpeed != 0)) {
@@ -303,9 +274,6 @@ public class DriveSubsystem extends SubsystemBase {
     m_frontRight.setDesiredState(swerveModuleStates[1]);
     m_rearLeft.setDesiredState(swerveModuleStates[2]);
     m_rearRight.setDesiredState(swerveModuleStates[3]);
-
-    //Shuffleboard.getTab("Driver").add("field oriented?",fieldRelative);
-
   }
 
   /**
@@ -386,8 +354,6 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   //makes sure odometry's (0,0) is the same as global (0,0) (according to PhotonVision)
-  
-
    private void configurePathPlannerLogging() {        
         PathPlannerLogging.setLogCurrentPoseCallback((pose) -> {
             field2d.setRobotPose(pose);

@@ -1,6 +1,5 @@
 package frc.robot.subsystems.Indexer;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -9,7 +8,6 @@ import frc.utils.SimEncoder;
 public class SimIndexer implements IndexerIO {
     public static SimEncoder indexerEncoderSim;
     private DCMotorSim indexerMotorSim;
-    private PIDController pidController;
     public boolean isIntooked = false;
 
     public SimIndexer() {
@@ -17,7 +15,6 @@ public class SimIndexer implements IndexerIO {
         indexerMotorSim = new DCMotorSim(DCMotor.getNeo550(1), 1, 1);
         SmartDashboard.putNumber("indexer current sim", 0);
         SmartDashboard.putNumber("indexer sim velocity", 0);
-        pidController = new PIDController(1, 0, 0);
     }
 
     public void setIsIntooked(boolean intooked) {
@@ -26,10 +23,6 @@ public class SimIndexer implements IndexerIO {
 
     public void setMotor(double speed) {
         indexerMotorSim.setInput(speed);
-    }
-
-    public void setSpeed(double speed) {
-        pidController.calculate(getEncoderSpeed(), speed);
     }
 
     public double getCurrent() {

@@ -7,7 +7,6 @@ import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkBase.ControlType;
 
 import frc.robot.Constants;
-import frc.robot.Constants.IndexerConstants;
 import frc.robot.Constants.SwerveModuleConstants;
 import frc.utils.MotorUtil;
 

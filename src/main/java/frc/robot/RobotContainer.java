@@ -4,22 +4,11 @@
 
 package frc.robot;
 
-import java.util.Optional;
-
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.estimator.PoseEstimator;
-import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.ComplexWidget;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -30,15 +19,10 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
-import frc.robot.Constants.VisionConstants;
 import frc.robot.Robot.RobotType;
-import frc.robot.commands.automaticClimberCommand;
-import frc.robot.commands.automaticIntakeAndIndexer;
 import frc.robot.subsystems.LED;
 import frc.robot.subsystems.Indexer.Indexer;
 import frc.robot.subsystems.Indexer.IndexerIO;
@@ -134,44 +118,6 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     return m_autoChooser.getSelected();
   }
-
-  /**
-   * Use this to pass the autonomous command to the main {@link Robot} class.
-   *
-   * @return the command to run in autonomous
-   */
-
-  /**
-   * Use this method to define your button->command mappings. Buttons can be
-   * created by
-   * instantiating a {@link edu.wpi.first.wpilibj.GenericHID} or one of its
-   * subclasses ({@link
-   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then calling
-   * passing it to a
-   * {@link JoystickButton}.
-   */
-
-  // // Create config for trajectory
-  // TrajectoryConfig config = new TrajectoryConfig(
-  // AutoConstants.kMaxSpeedMetersPerSecond,
-  // AutoConstants.kMaxAccelerationMetersPerSecondSquared)
-  // // Add kinematics to ensure max speed is actually obeyed
-  // .setKinematics(DriveConstants.kDriveKinematics);
-
-  // // Position controllers
-  // new PIDController(AutoConstants.kPXController, 0, 0),
-  // new PIDController(AutoConstants.kPYController, 0, 0),
-  // thetaController,
-  // m_robotDrive::setModuleStates,
-  // m_robotDrive);
-
-  // // Reset odometry to the starting pose of the trajectory.
-  // m_robotDrive.resetOdometry(exampleTrajectory.getInitialPose());
-
-  // // Run path following command, then stop at the end.
-  // return swerveControllerCommand.andThen(() -> m_robotDrive.drive(0, 0, 0,
-  // false, false));
-  // }
 
   private void setUpSubsystems() {
 
@@ -319,11 +265,6 @@ public class RobotContainer {
     // driver right bumper: auto-shoot
     m_driverController.rightBumper().onTrue(shootAfterDelay());
 
-    // driver a: automatic intaking
-    // m_driverController.rightTrigger().whileTrue(new
-    // automaticIntakeAndIndexer(m_indexer,
-    // m_intake));
-
     // driver right trigger: manual intake with arm height restriction
     // only intakes if arm is lowered
     m_driverController.rightTrigger().whileTrue(intakeWithHeightRestriction());
@@ -342,13 +283,7 @@ public class RobotContainer {
             -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
             -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),
             m_vision.keepPointedAtSpeaker(),
-            fieldOrientedDrive), m_robotDrive))
-        .onFalse(new RunCommand(() -> m_robotDrive.drive(
-            -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
-            -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),
-            -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband),
             fieldOrientedDrive), m_robotDrive));
-
   }
 
   private void configureButtonBindingsOperatorClimber() {
@@ -380,10 +315,6 @@ public class RobotContainer {
   }
 
   private void configureButtonBindingsOperatorNotClimber() {
-    // operator right trigger: manual arm up
-    // m_operatorController.rightTrigger().and(() -> !isInClimberMode)
-    // .whileTrue(makeSetSpeedGravityCompensationCommand(m_arm, 0.1))
-    // .onFalse(makeSetSpeedGravityCompensationCommand(m_arm, 0));
     m_operatorController.rightTrigger().and(() -> !isInClimberMode).whileTrue( // TODO: test + change to actual
                                                                                // makeSetPositionCommand
         makeSetPositionCommand(m_arm, m_vision.keepArmAtAngle()));
@@ -412,6 +343,7 @@ public class RobotContainer {
     m_operatorController.leftBumper().and(() -> !isInClimberMode)
         .onTrue(new RunCommand(() -> m_indexer.setMotor(-0.3), m_indexer).withTimeout(0.1));
 
+        //TODO test this!
     m_operatorController.axisGreaterThan(5, 0.1)
         .whileTrue(new RunCommand(() -> m_arm.setSpeedGravityCompensation(0.1), m_arm));
     m_operatorController.axisLessThan(5, -0.1)
@@ -423,8 +355,6 @@ public class RobotContainer {
     return new SequentialCommandGroup(
         new ConditionalCommand(new InstantCommand(() -> {
         }), new InstantCommand(() -> arm.enable(), arm), () -> arm.isEnabled()),
-        // new InstantCommand(() ->
-        // arm.setEncoderPosition(arm.getAbsoluteEncoderPosition())),
         new RunCommand(() -> arm.setGoal(target), arm));
   }
 
@@ -433,8 +363,6 @@ public class RobotContainer {
     return new SequentialCommandGroup(
         new ConditionalCommand(new InstantCommand(() -> {
         }), new InstantCommand(() -> arm.enable(), arm), () -> arm.isEnabled()),
-        // new InstantCommand(() ->
-        // arm.setEncoderPosition(arm.getAbsoluteEncoderPosition())),
         new InstantCommand(() -> arm.setGoal(target), arm),
         new WaitCommand(0.5));
   }

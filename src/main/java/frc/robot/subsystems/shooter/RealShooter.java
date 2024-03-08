@@ -35,6 +35,7 @@ public class RealShooter implements ShooterIO {
         // initialize motor encoder
         shooterLowEncoder = shooterMotorControllerLow.getEncoder();
         shooterHighEncoder = shooterMotorControllerHigh.getEncoder();
+        //TODO put in constants
         shooterHighEncoder.setVelocityConversionFactor(1/60.0); //convert to rps
         shooterLowEncoder.setVelocityConversionFactor(1/60.0); //convert to rps
 
@@ -58,14 +59,7 @@ public class RealShooter implements ShooterIO {
     public void setMotor(double shootSpeed) {
         shooterHighController.setReference(shootSpeed * ShooterConstants.SHOOT_MAX_SPEED_RPS, ControlType.kVelocity);
         shooterLowController.setReference(shootSpeed * ShooterConstants.SHOOT_MAX_SPEED_RPS, ControlType.kVelocity);   
-        SmartDashboard.putNumber("Shooter goal", shootSpeed * ShooterConstants.SHOOT_MAX_SPEED_RPS);
-    }
-
-    //Shooting command, but using PID
-    @Override
-    public void setSpeed(double speedPercent) {
-        shooterHighController.setReference(speedPercent, ControlType.kVelocity);
-        shooterLowController.setReference(speedPercent, ControlType.kVelocity);    
+        SmartDashboard.putNumber("Shooter/shooter goal", shootSpeed * ShooterConstants.SHOOT_MAX_SPEED_RPS);
     }
 
     public double getCurrent()
@@ -85,7 +79,7 @@ public class RealShooter implements ShooterIO {
 
     @Override
     public void periodicUpdate() {  
-        SmartDashboard.putNumber("Shooter speed", getEncoderSpeed());
+        SmartDashboard.putNumber("Shooter/shooter speed", getEncoderSpeed());
     }
 
 }

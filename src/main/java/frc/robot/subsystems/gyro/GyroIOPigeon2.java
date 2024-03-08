@@ -29,7 +29,6 @@ public class GyroIOPigeon2 implements GyroIO {
 
   public void setYaw(double yaw) {
     pigeon.setYaw(Units.radiansToDegrees(yaw));
-    var status= pigeon.setYaw(Units.radiansToDegrees(yaw));
   }
 
   public void updateInputs(GyroIOInputs inputs) {
