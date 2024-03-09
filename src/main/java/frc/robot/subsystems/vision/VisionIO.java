@@ -11,6 +11,8 @@ import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 /** Add your docs here. */
@@ -27,5 +29,6 @@ public interface VisionIO {
     public double keepPointedAtSpeaker();
     public double keepArmAtAngle();
     public void assignAprilTags(Optional<Alliance> ally);
-
+    public void checkSpeedReq(double xSpeed, double ySpeed);
+    public void odometryAdding(SwerveDrivePoseEstimator odoPose);
 }

@@ -247,15 +247,13 @@ public final class Constants {
     public static final Transform3d camToRobot = new Transform3d(
         new Translation3d(Units.inchesToMeters(5), Units.inchesToMeters(14.25), Units.inchesToMeters(0)),
         new Rotation3d(0.0, Units.degreesToRadians(15.0), 0.0));
-        // TODO: measure camera height
-    //these need to be changed on Comp Bot
     public static final Transform2d camToRobot2d = new Transform2d(
       Units.inchesToMeters(5),
       Units.inchesToMeters(14.25),
       new Rotation2d(0));
-    public static final double xOffsetToRobot = Units.inchesToMeters(5);
-    public static final double yOffsetToRobot = Units.inchesToMeters(14.25);
-    public static final double zOffsetToRobot = Units.inchesToMeters(0);
+    public static final double xOffsetToRobot = Units.inchesToMeters(-7.494);
+    public static final double yOffsetToRobot = Units.inchesToMeters(13.674);
+    public static final double zOffsetToRobot = Units.inchesToMeters(5.944);
 
      //5.33E-03*x + 0.206 - https://docs.google.com/spreadsheets/d/1TCEiHto6ypUku9VXPN79PGwONyrlhI2SbMsfn337yTw/edit#gid=0
     // inverse tan of function above to get angle

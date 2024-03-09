@@ -16,13 +16,17 @@ import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.VisionConstants;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class VisionReal extends SubsystemBase implements VisionIO {
@@ -31,6 +35,8 @@ public class VisionReal extends SubsystemBase implements VisionIO {
     private static PhotonPoseEstimator CamEstimator;
     private boolean updatePoseWithVisionReadings = true;
     public Pose3d robotPose;
+    private SwerveDrivePoseEstimator m_PoseEstimator;
+    public Pose2d poseWOdo;
     
 
     //apriltags
@@ -66,6 +72,8 @@ public class VisionReal extends SubsystemBase implements VisionIO {
     if (!updatePoseWithVisionReadings) {
       return;
     }
+
+    updateWOdo();
     Optional<EstimatedRobotPose> pose = getCameraEst();
       
     //makes sure that there is a new pose and that there are targets before getting a robot pose 
@@ -169,11 +177,15 @@ public class VisionReal extends SubsystemBase implements VisionIO {
       //this should help with the debugging :)
       for (PhotonTrackedTarget result : getCameraResult().getTargets()) {
         SmartDashboard.putNumber("vision/debugging/hi again", result.getFiducialId());
+        System.out.println(result.getFiducialId());
         if (result.getFiducialId() == speakerID) {
           seesSpeaker = true;
           speakerTarget = result;
             //gets the translation from the robot's current (x,y) to the (x,y) of the speaker-center
-            speakerDist = speakerTarget.getBestCameraToTarget().getTranslation().toTranslation2d();
+            speakerDist = new Translation2d(
+              poseWOdo.getX() - VisionConstants.kFieldLayout.getTagPose(7).get().toPose2d().getX(),
+              poseWOdo.getY() - VisionConstants.kFieldLayout.getTagPose(7).get().toPose2d().getY()
+          );
             SmartDashboard.putNumber("vision/debugging/x", speakerDist.getX());
             SmartDashboard.putNumber("vision/debugging/y", speakerDist.getY());
             
@@ -190,10 +202,11 @@ public class VisionReal extends SubsystemBase implements VisionIO {
             } else {
               desiredRadians = (Math.atan(hundredSlope * Units.metersToInches(dist) + hundredIntercept));
             }
+            SmartDashboard.putBoolean("vision/debugging/Sees speaker (arm): ", false);
         }
       }
       if (!seesSpeaker) {
-        SmartDashboard.putBoolean("vision/debugging/Sees speaker (only true when in arm align mode): ", false);
+        SmartDashboard.putBoolean("vision/debugging/Sees speaker (arm): ", false);
       }      
       return desiredRadians;
     }
@@ -222,4 +235,30 @@ public class VisionReal extends SubsystemBase implements VisionIO {
     SmartDashboard.putNumber("vision/speaker id", speakerID);
 
     }
+
+    public void checkSpeedReq(double xSpeed, double ySpeed) {
+      double xSpeedActual = xSpeed * DriveConstants.kMaxSpeedMetersPerSecond;
+      double ySpeedActual = ySpeed * DriveConstants.kMaxSpeedMetersPerSecond;
+      double maxSpeedSquared = 0.5625;
+      double curSpeedActual = Math.pow(xSpeedActual, 2) + Math.pow(ySpeedActual, 2);
+      if (curSpeedActual < maxSpeedSquared) {
+        enableUpdatePoseWithVisionReading();
+      } else {
+        disableUpdatePoseWithVisionReading();
+      }
+    }
+
+    public void odometryAdding(SwerveDrivePoseEstimator odoPose) {
+      if (updatePoseWithVisionReadings) {
+        this.m_PoseEstimator = odoPose; 
+        updateWOdo();
+      }
+    }
+
+    public void updateWOdo() {
+      m_PoseEstimator.addVisionMeasurement(robotPose.toPose2d(), Timer.getFPGATimestamp());
+      poseWOdo = m_PoseEstimator.getEstimatedPosition();
+    }
+
+
   }

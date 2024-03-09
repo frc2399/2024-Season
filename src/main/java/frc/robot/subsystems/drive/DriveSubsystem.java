@@ -167,6 +167,10 @@ public class DriveSubsystem extends SubsystemBase {
     return m_poseEstimator.getEstimatedPosition();
   }
 
+  public SwerveDrivePoseEstimator getPoseEstimator() {
+    return m_poseEstimator;
+  }
+
   /** Returns the current odometry rotation. */
   public Rotation2d getRotation() {
     return getPose().getRotation();

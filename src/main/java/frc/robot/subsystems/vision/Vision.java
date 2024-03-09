@@ -6,6 +6,8 @@ import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonPipelineResult;
 
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -44,6 +46,14 @@ public class Vision extends SubsystemBase {
 
     public void assignAprilTags(Optional<Alliance> ally) {
       io.assignAprilTags(ally);
+    }
+
+    public void checkSpeedReq(double xSpeed, double ySpeed) {
+        io.checkSpeedReq(xSpeed,ySpeed);
+    }
+
+    public void odometryAdding(SwerveDrivePoseEstimator odoPose) {
+        io.odometryAdding(odoPose);
     }
 
 }

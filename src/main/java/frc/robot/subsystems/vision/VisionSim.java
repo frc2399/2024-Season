@@ -16,6 +16,7 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -242,9 +243,15 @@ public class VisionSim extends SubsystemBase implements VisionIO {
                 facingAwayFromSpeakerStageRightID = 16;
                 ampID = 6;
             }
-          SmartDashboard.putNumber("robotcontainer/speaker id", speakerID);
-      
-          
+          SmartDashboard.putNumber("robotcontainer/speaker id", speakerID);  
+    }
+
+    public void checkSpeedReq(double xSpeed, double ySpeed) {
+
+    }
+
+    public void odometryAdding(SwerveDrivePoseEstimator odoPose) {
+        
     }
 
 }

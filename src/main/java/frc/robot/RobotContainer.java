@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import java.time.Instant;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
@@ -241,10 +243,23 @@ public class RobotContainer {
         new RunCommand(
             () -> m_robotDrive.drive(
                 -Math.pow(MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband), 3),
-                -Math.pow(MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband), 3),
+                -Math.pow(MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband), 3),
                 -Math.pow(MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband), 3),
                 fieldOrientedDrive),
             m_robotDrive).withName("drive default"));
+            
+    m_vision.setDefaultCommand(
+      new ParallelCommandGroup(
+        new RunCommand(
+          () -> m_vision.checkSpeedReq(
+            -Math.pow(MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband), 3),
+            -Math.pow(MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband), 3)
+          )),
+        new InstantCommand(
+          () -> m_vision.odometryAdding(
+            m_robotDrive.getPoseEstimator())
+          ))
+      );
 
   }
 
@@ -315,9 +330,7 @@ public class RobotContainer {
   }
 
   private void configureButtonBindingsOperatorNotClimber() {
-    m_operatorController.rightTrigger().and(() -> !isInClimberMode).whileTrue( // TODO: test + change to actual
-                                                                               // makeSetPositionCommand
-        makeSetPositionCommand(m_arm, m_vision.keepArmAtAngle()));
+    m_operatorController.rightTrigger().and(() -> !isInClimberMode).whileTrue(new InstantCommand (()-> SmartDashboard.putNumber("vision/debugging/radians", m_vision.keepArmAtAngle())));
 
     // operator left trigger: manual arm down
     m_operatorController.leftTrigger().and(() -> !isInClimberMode).and(() -> !isInClimberMode)
