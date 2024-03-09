@@ -72,7 +72,7 @@ public final class Constants {
 
   public static final class SwerveModuleConstants {
     //THIS IS 13 ON COMP BOT
-    public static final int kDrivingMotorPinionTeeth = 13;
+    public static final int kDrivingMotorPinionTeeth = 14;
 
     // Invert the turning encoder, since the output shaft rotates in the opposite
     // direction of the steering motor in the MAXSwerve Module.
@@ -128,7 +128,7 @@ public final class Constants {
     public static final int LEFT_CENTERING_MOTOR_ID = 5;
     public static final int RIGHT_CENTERING_MOTOR_ID = 4;
     public static final int INTAKE_CENTERING_ID = 2; 
-    public static final double INTAKING_SPEED = 0.8;
+    public static final double INTAKING_SPEED = 1.0;
     public static final double OUTTAKING_SPEED = -0.6;
   }
 
@@ -217,7 +217,7 @@ public final class Constants {
   }
 
   public static final class AutoConstants {
-    public static final double kMaxSpeedMetersPerSecond = 3;
+    public static final double kMaxSpeedMetersPerSecond = 4;
     public static final double kMaxAccelerationMetersPerSecondSquared = 3;
     public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI;
     public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.PI;

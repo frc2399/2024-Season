@@ -3,7 +3,7 @@
   "startingPose": {
     "position": {
       "x": 0.4,
-      "y": 2.0
+      "y": 2.15
     },
     "rotation": 0
   },
@@ -14,7 +14,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "stay out of the way"
+            "pathName": "testing turning"
           }
         }
       ]
