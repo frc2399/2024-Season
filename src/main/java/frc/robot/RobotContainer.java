@@ -260,7 +260,7 @@ public class RobotContainer {
     // gets arm height to assign to speed. lower arm, means cloesr to speaekr, so
     // shoots less forecfully
     m_driverController.leftBumper().whileTrue(
-        new RunCommand(() -> m_shooter.setMotor(m_arm.getSpeedFromArmHeight()), m_shooter));
+        setShooterFromArm());
 
     // driver right bumper: auto-shoot
     m_driverController.rightBumper().onTrue(shootAfterDelay());
@@ -409,9 +409,9 @@ public class RobotContainer {
                 new WaitCommand(0.5),
                 new RunCommand(() -> m_indexer.setMotor(Constants.IndexerConstants.INDEXER_IN_SPEED), m_indexer),
                 new RunCommand(() -> m_indexer.setIsIntooked(false), m_indexer)),
-            new RunCommand(() -> m_shooter.setMotor(m_arm.getSpeedFromArmHeight()), m_shooter)).withTimeout(0.75),
+            setShooterFromArm().withTimeout(0.75),
         new InstantCommand(() -> m_shooter.setMotor(0), m_shooter),
-        new InstantCommand(() -> m_indexer.setMotor(0), m_indexer));
+        new InstantCommand(() -> m_indexer.setMotor(0), m_indexer)));
 
   }
 
@@ -423,10 +423,9 @@ public class RobotContainer {
                 new RunCommand(() -> m_indexer.setMotor(Constants.IndexerConstants.INDEXER_IN_SPEED), m_indexer),
                 new RunCommand(() -> m_indexer.setIsIntooked(false), m_indexer)
                 ),
-            new RunCommand(() -> m_shooter.setMotor(m_arm.getSpeedFromArmHeight()), m_shooter)).
-                 withTimeout(0.5),
+            setShooterFromArm().withTimeout(0.5),
         new InstantCommand(() -> m_shooter.setMotor(0), m_shooter),
-        new InstantCommand(() -> m_indexer.setMotor(0), m_indexer)
+        new InstantCommand(() -> m_indexer.setMotor(0), m_indexer))
         );
   }
 
@@ -450,5 +449,20 @@ public class RobotContainer {
 
   private Command outtake() {
     return new RunCommand(() -> m_indexer.setMotor(-0.15), m_indexer).withTimeout(0.1);
+  }
+
+  private Command setShooterFromArm() {
+    if(m_arm.getEncoderPosition() <= 0.37) {
+        return new RunCommand(() -> m_shooter.setMotor(Constants.ShooterConstants.SUBWOOFER_SPEED), m_shooter);
+    }
+    else if(m_arm.getEncoderPosition() > 0.37 && m_arm.getEncoderPosition() <= 0.76 ) {
+        return new RunCommand(() -> m_shooter.setMotor(Constants.ShooterConstants.SPEAKER_SPEED), m_shooter);
+    }
+    else if(m_arm.getEncoderPosition() > 0.76 && m_arm.getEncoderPosition() <= 1 ) {
+        return new RunCommand(() -> m_shooter.setMotor(Constants.ShooterConstants.FAR_AWAY_SPEED), m_shooter);
+    }
+    else {
+        return new RunCommand(() -> m_shooter.setMotor(Constants.ShooterConstants.AMP_SPEED), m_shooter);
+    }
   }
 }

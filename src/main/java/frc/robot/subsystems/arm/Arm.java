@@ -99,7 +99,7 @@ public class Arm extends ProfiledPIDSubsystem {
     armIO.setEncoderPosition(angle);
   }
 
-  //TODO there's a duplicate of this in RealArm. Also, do we want this in Robotçontainer instead?
+  //TODO do we want this in Robotçontainer instead?
   public double getSpeedFromArmHeight() {
     if (getEncoderPosition() <= 0.37) {
       speedFromArmHeight = Constants.ShooterConstants.SUBWOOFER_SPEED;
