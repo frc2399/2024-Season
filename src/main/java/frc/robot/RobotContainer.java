@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
@@ -406,12 +407,12 @@ public class RobotContainer {
     return new SequentialCommandGroup(
         new ParallelCommandGroup(
             new SequentialCommandGroup(
-                new WaitCommand(0.5),
+                new WaitUntilCommand(() -> m_shooter.getEncoderSpeed() >= (getShooterFromArm() * Constants.ShooterConstants.SHOOT_MAX_SPEED_RPS)),
                 new RunCommand(() -> m_indexer.setMotor(Constants.IndexerConstants.INDEXER_IN_SPEED), m_indexer),
                 new RunCommand(() -> m_indexer.setIsIntooked(false), m_indexer)),
-            setShooterFromArm().withTimeout(0.75),
+            setShooterFromArm()).withTimeout(0.75),
         new InstantCommand(() -> m_shooter.setMotor(0), m_shooter),
-        new InstantCommand(() -> m_indexer.setMotor(0), m_indexer)));
+        new InstantCommand(() -> m_indexer.setMotor(0), m_indexer));
 
   }
 
@@ -423,10 +424,9 @@ public class RobotContainer {
                 new RunCommand(() -> m_indexer.setMotor(Constants.IndexerConstants.INDEXER_IN_SPEED), m_indexer),
                 new RunCommand(() -> m_indexer.setIsIntooked(false), m_indexer)
                 ),
-            setShooterFromArm().withTimeout(0.5),
+            setShooterFromArm()).withTimeout(0.5),
         new InstantCommand(() -> m_shooter.setMotor(0), m_shooter),
-        new InstantCommand(() -> m_indexer.setMotor(0), m_indexer))
-        );
+        new InstantCommand(() -> m_indexer.setMotor(0), m_indexer));
   }
 
   private Command intakeWithHeightRestriction() {
@@ -463,6 +463,21 @@ public class RobotContainer {
     }
     else {
         return new RunCommand(() -> m_shooter.setMotor(Constants.ShooterConstants.AMP_SPEED), m_shooter);
+    }
+  }
+
+  private double getShooterFromArm() {
+     if(m_arm.getEncoderPosition() <= 0.37) {
+        return Constants.ShooterConstants.SUBWOOFER_SPEED;
+    }
+    else if(m_arm.getEncoderPosition() > 0.37 && m_arm.getEncoderPosition() <= 0.76 ) {
+        return Constants.ShooterConstants.SPEAKER_SPEED;
+    }
+    else if(m_arm.getEncoderPosition() > 0.76 && m_arm.getEncoderPosition() <= 1 ) {
+        return Constants.ShooterConstants.FAR_AWAY_SPEED;
+    }
+    else {
+        return Constants.ShooterConstants.AMP_SPEED;
     }
   }
 }
