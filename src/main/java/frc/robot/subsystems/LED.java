@@ -8,8 +8,8 @@ import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.intake.Intake;
 
 public class LED extends SubsystemBase {
-    AddressableLED m_led = new AddressableLED(0);
-    AddressableLEDBuffer m_ledBuffer = new AddressableLEDBuffer(60);
+    AddressableLED m_led = new AddressableLED(9);
+    AddressableLEDBuffer m_ledBuffer = new AddressableLEDBuffer(16);
     int m_rainbowFirstPixelHue = 97;
     private Climber climber;
 
