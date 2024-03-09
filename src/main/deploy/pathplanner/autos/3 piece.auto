@@ -55,6 +55,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "SetArmDown"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "Wingleft to E"
