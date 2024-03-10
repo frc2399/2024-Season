@@ -315,10 +315,10 @@ public class RobotContainer {
   }
 
   private void configureButtonBindingsOperatorNotClimber() {
-    m_operatorController.rightTrigger().and(() -> !isInClimberMode).whileTrue(
-        new InstantCommand(
-          () -> SmartDashboard.putNumber("vision/debugging/armRadsRC", m_vision.keepArmAtAngle())
-        ));
+    
+    m_operatorController.rightTrigger().and(() -> !isInClimberMode).onTrue(
+        makeSetPositionCommand(m_arm, m_vision.keepArmAtAngle())
+      );
 
     // operator left trigger: manual arm down
     m_operatorController.leftTrigger().and(() -> !isInClimberMode).and(() -> !isInClimberMode)
@@ -451,5 +451,11 @@ public class RobotContainer {
 
   private Command outtake() {
     return new RunCommand(() -> m_indexer.setMotor(-0.15), m_indexer).withTimeout(0.1);
+  }
+
+  private Command makeSetPositionVision() {
+    System.out.println("hi2");
+    double armRadiansFromVision = m_vision.keepArmAtAngle();
+    return makeSetPositionCommand(m_arm, armRadiansFromVision);
   }
 }

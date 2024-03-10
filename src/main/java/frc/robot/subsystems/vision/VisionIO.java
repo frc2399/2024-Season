@@ -27,5 +27,6 @@ public interface VisionIO {
     public double keepPointedAtSpeaker();
     public double keepArmAtAngle();
     public void assignAprilTags(Optional<Alliance> ally);
+    public double plsWork();
 
 }
