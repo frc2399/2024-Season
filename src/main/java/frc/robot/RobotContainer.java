@@ -461,4 +461,10 @@ public class RobotContainer {
   private Command outtake() {
     return new RunCommand(() -> m_indexer.setMotor(-0.15), m_indexer).withTimeout(0.1);
   }
+
+  private Command makeSetPositionVision() {
+    System.out.println("hi2");
+    double armRadiansFromVision = m_vision.keepArmAtAngle();
+    return makeSetPositionCommand(m_arm, armRadiansFromVision);
+  }
 }

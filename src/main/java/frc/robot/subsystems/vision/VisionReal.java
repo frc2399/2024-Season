@@ -153,6 +153,9 @@ public class VisionReal extends SubsystemBase implements VisionIO {
       }
       return (keepPointedController.calculate(yawDiff, 0));
     }
+  public double plsWork() {
+    return 0.5;
+  }
 
   public double keepArmAtAngle() {    
       final double eightySlope = VisionConstants.eightyModelSlope;
@@ -161,6 +164,7 @@ public class VisionReal extends SubsystemBase implements VisionIO {
       final double hundredIntercept = VisionConstants.hundredModelIntercept;
       final double boundary = VisionConstants.eightyModelRange;
       double dist;
+      System.out.println("hi");
       Translation2d speakerDist;
       PhotonTrackedTarget speakerTarget;
       boolean seesSpeaker = false;
@@ -170,6 +174,7 @@ public class VisionReal extends SubsystemBase implements VisionIO {
       for (PhotonTrackedTarget result : getCameraResult().getTargets()) {
         SmartDashboard.putNumber("vision/debugging/hi again", result.getFiducialId());
         System.out.println(result.getFiducialId());
+        System.out.println(speakerID);
         if (result.getFiducialId() == speakerID) {
           seesSpeaker = true;
           speakerTarget = result;
@@ -192,6 +197,7 @@ public class VisionReal extends SubsystemBase implements VisionIO {
               desiredRadians = (Math.atan(hundredSlope * Units.metersToInches(dist) + hundredIntercept));
             }
             SmartDashboard.putBoolean("vision/debugging/Sees speaker (arm): ", false);
+            System.out.println(desiredRadians);
         }
       }
       if (!seesSpeaker) {
