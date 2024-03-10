@@ -37,16 +37,20 @@ public class LED extends SubsystemBase {
 
     @Override
     public void periodic() {
-        rainbow();
-        m_led.setData(m_ledBuffer);
+        //rainbow();
         if (RobotBase.isReal()) {
             if (Intake.isIntooked) {
-                m_ledBuffer.setRGB(0, 112, 243, 121);
+                for (var i = 0; i < m_ledBuffer.getLength(); i++) {
+                    m_ledBuffer.setRGB(i, 112, 243, 121);
+                }
             } else if (climber.isInClimberMode()) {
-                m_ledBuffer.setRGB(0, 0, 100, 255);
-            } else if (RobotBase.isSimulation()) {
+                for (var i = 0; i < m_ledBuffer.getLength(); i++) {
+                    m_ledBuffer.setRGB(i, 0, 100, 255);
+                }
+            } else {
                 rainbow();
             }
         }
+        m_led.setData(m_ledBuffer);
     }
 }
