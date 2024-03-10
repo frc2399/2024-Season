@@ -171,7 +171,7 @@ public final class Constants {
     //absolute encoder only needs the sprocket/chain reduction, since it comes after the gearboxes
     public static final double ABSOLUTE_RADIANS_PER_REVOLUTION = 2 * Math.PI / 4;
 
-    public static final double ARM_ABSOLUTE_MEASURED = 0.601;
+    public static final double ARM_ABSOLUTE_MEASURED = 0.533;
     public static final double ARM_ABSOLUTE_CAD = 0.274;
     public static final double INITIAL_OFFSET = 0.274;
 
