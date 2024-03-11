@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems.Indexer;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Indexer extends SubsystemBase {
@@ -49,6 +50,7 @@ public class Indexer extends SubsystemBase {
   @Override
   public void periodic() {
     indexerIO.periodicUpdate();
+    SmartDashboard.putNumber("indexer/ indexer speed", getEncoderSpeed());
   }
 
   public boolean isStalling() {

@@ -51,8 +51,8 @@ public class SwerveModuleIO_Real implements SwerveModuleIO {
       // Apply position and velocity conversion factors for the driving encoder. The
       // native units for position and velocity are rotations and RPM, respectively,
       // but we want meters and meters per second to use with WPILib's swerve APIs.
-      m_drivingEncoder.setPositionConversionFactor(SwerveModuleConstants.kDrivingEncoderPositionFactor);
-      m_drivingEncoder.setVelocityConversionFactor(SwerveModuleConstants.kDrivingEncoderVelocityFactor);
+      m_drivingEncoder.setPositionConversionFactor(0.04955);
+      m_drivingEncoder.setVelocityConversionFactor(0.04955/60);
 
       // Apply position and velocity conversion factors for the turning encoder. We
       // want these in radians and radians per second to use with WPILib's swerve

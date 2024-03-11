@@ -24,9 +24,21 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "intake for time"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "D to Wingleft"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "outtake"
           }
         },
         {
@@ -42,7 +54,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "SetArmPosition"
+                  "name": "Set Arm Wingleft"
                 }
               }
             ]
@@ -67,9 +79,21 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "intake for time"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "E to Wingleft"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "outtake"
           }
         },
         {
@@ -85,7 +109,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "SetArmPosition"
+                  "name": "Set Arm Wingleft"
                 }
               }
             ]

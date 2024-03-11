@@ -93,8 +93,8 @@ public class DriveSubsystem extends SubsystemBase {
         this::getRobotRelativeSpeeds,
         this::setRobotRelativeSpeeds,
         new HolonomicPathFollowerConfig(
-            new PIDConstants(5, 0, 0.03), // Translation
-            new PIDConstants(5, 0, 0.05), // Rotation
+            new PIDConstants(5, 0.5, 0.03), // Translation
+            new PIDConstants(7, 0, 0.1), // Rotation
             AutoConstants.kMaxSpeedMetersPerSecond,
             0.385, /* Distance from furthest module to robot center in meters */
             new ReplanningConfig()),
@@ -120,6 +120,7 @@ public class DriveSubsystem extends SubsystemBase {
     // This will get the simulated sensor readings that we set
     // in the previous article while in simulation, but will use
     // real values on the robot itself.
+    SmartDashboard.putNumber("left front distance (meters)", m_frontLeft.getDriveEncoderPosition());
     m_poseEstimator.updateWithTime(Timer.getFPGATimestamp(), Rotation2d.fromRadians(m_gyro.getYaw()),
         new SwerveModulePosition[] {
             m_frontLeft.getPosition(),
@@ -129,6 +130,7 @@ public class DriveSubsystem extends SubsystemBase {
         });
 
     var pose = getPose();
+    SmartDashboard.putNumber("robot pose theta", pose.getRotation().getDegrees());
     field2d.setRobotPose(pose);
 
     frontLeftField2dModule.setPose(pose.transformBy(new Transform2d(
