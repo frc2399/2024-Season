@@ -189,7 +189,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("SHORT intake for time", shortIntakeForTime(m_intake, m_indexer));
     NamedCommands.registerCommand("AimToTarget", Commands.print("aimed to target!"));
     NamedCommands.registerCommand("SetArmPosition", makeSetPositionCommandAuton(m_arm, 0.475));
-    NamedCommands.registerCommand("Set Arm Wingleft", makeSetPositionCommandAuton(m_arm, 0.831));
+    NamedCommands.registerCommand("Set Arm Wingleft", makeSetPositionCommandAuton(m_arm, 0.745));
     NamedCommands.registerCommand("SetArmDown", makeSetPositionCommandAuton(m_arm, 0.335));
     NamedCommands.registerCommand("AutoShoot", outtakeAndShootAfterDelay());
     NamedCommands.registerCommand("intake and outtake", intakeAndOuttake());

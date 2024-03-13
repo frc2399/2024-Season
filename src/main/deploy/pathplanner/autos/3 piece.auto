@@ -30,34 +30,28 @@
           }
         },
         {
-          "type": "path",
-          "data": {
-            "pathName": "D to Wingleft"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "outtake"
-          }
-        },
-        {
           "type": "parallel",
           "data": {
             "commands": [
               {
-                "type": "named",
+                "type": "path",
                 "data": {
-                  "name": "AimToTarget"
+                  "pathName": "D to Wingleft"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "Set Arm Wingleft"
+                  "name": "outtake"
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Set Arm Wingleft"
           }
         },
         {
@@ -67,15 +61,22 @@
           }
         },
         {
-          "type": "named",
+          "type": "parallel",
           "data": {
-            "name": "SetArmDown"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Wingleft to E"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "SetArmDown"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Wingleft to E"
+                }
+              }
+            ]
           }
         },
         {
@@ -85,15 +86,9 @@
           }
         },
         {
-          "type": "path",
-          "data": {
-            "pathName": "E to Wingleft"
-          }
-        },
-        {
           "type": "named",
           "data": {
-            "name": "outtake"
+            "name": "SHORT intake for time"
           }
         },
         {
@@ -103,16 +98,22 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "AimToTarget"
+                  "name": "outtake"
                 }
               },
               {
-                "type": "named",
+                "type": "path",
                 "data": {
-                  "name": "Set Arm Wingleft"
+                  "pathName": "E to Wingleft"
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Set Arm Wingleft"
           }
         },
         {
