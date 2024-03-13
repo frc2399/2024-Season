@@ -246,7 +246,5 @@ public class VisionSim extends SubsystemBase implements VisionIO {
       
           
     }
-    public double plsWork()
-    {return 0.5;}
 
 }

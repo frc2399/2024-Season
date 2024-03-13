@@ -153,9 +153,6 @@ public class VisionReal extends SubsystemBase implements VisionIO {
       }
       return (keepPointedController.calculate(yawDiff, 0));
     }
-  public double plsWork() {
-    return 0.5;
-  }
 
   public double keepArmAtAngle() {    
       final double eightySlope = VisionConstants.eightyModelSlope;

@@ -7,6 +7,8 @@ package frc.robot;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
+import java.util.function.DoubleSupplier;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.shuffleboard.ComplexWidget;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -315,7 +317,7 @@ public class RobotContainer {
   }
 
   private void configureButtonBindingsOperatorNotClimber() {
-    m_operatorController.rightTrigger().and(() -> !isInClimberMode).onTrue(
+    m_operatorController.rightTrigger().and(() -> !isInClimberMode).whileTrue(
         // new InstantCommand(
         //   () -> SmartDashboard.putNumber("vision/debugging/armRadsRC", m_vision.keepArmAtAngle()))
         makeSetPositionCommandVision(m_arm)
@@ -361,11 +363,12 @@ public class RobotContainer {
   }
 
   private Command makeSetPositionCommandVision(Arm arm) {
-    double target = m_vision.keepArmAtAngle();
+    System.out.println("hi");
+    DoubleSupplier target = ()-> (m_vision.keepArmAtAngle());
     return new SequentialCommandGroup(
         new ConditionalCommand(new InstantCommand(() -> {
         }), new InstantCommand(() -> arm.enable(), arm), () -> arm.isEnabled()),
-        new RunCommand(() -> arm.setGoal(target), arm));
+        new RunCommand(() -> arm.setGoal(target.getAsDouble()), arm));
   }
 
   public static Command makeSetPositionCommandAuton(Arm arm,
@@ -460,11 +463,5 @@ public class RobotContainer {
 
   private Command outtake() {
     return new RunCommand(() -> m_indexer.setMotor(-0.15), m_indexer).withTimeout(0.1);
-  }
-
-  private Command makeSetPositionVision() {
-    System.out.println("hi2");
-    double armRadiansFromVision = m_vision.keepArmAtAngle();
-    return makeSetPositionCommand(m_arm, armRadiansFromVision);
   }
 }

@@ -45,9 +45,5 @@ public class Vision extends SubsystemBase {
     public void assignAprilTags(Optional<Alliance> ally) {
       io.assignAprilTags(ally);
     }
-    public double plsWork(){
-        return io.plsWork();
-        
-    }
 
 }
