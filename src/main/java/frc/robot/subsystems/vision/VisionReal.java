@@ -73,7 +73,6 @@ public class VisionReal extends SubsystemBase implements VisionIO {
       return;
     }
 
-    updateWOdo();
     Optional<EstimatedRobotPose> pose = getCameraEst();
       
     //makes sure that there is a new pose and that there are targets before getting a robot pose 
@@ -91,6 +90,7 @@ public class VisionReal extends SubsystemBase implements VisionIO {
         SmartDashboard.putNumber("robot pose y", robotPose.getY());
      }
     }
+    updateWOdo();
   }
 
   //gets latest result
