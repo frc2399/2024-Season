@@ -59,7 +59,7 @@ public class RealShooter implements ShooterIO {
     public void setMotor(double shootSpeed) {
         shooterHighController.setReference(shootSpeed * ShooterConstants.SHOOT_MAX_SPEED_RPS, ControlType.kVelocity);
         shooterLowController.setReference(shootSpeed * ShooterConstants.SHOOT_MAX_SPEED_RPS, ControlType.kVelocity);   
-        SmartDashboard.putNumber("Shooter/shooter goal", shootSpeed * ShooterConstants.SHOOT_MAX_SPEED_RPS);
+        SmartDashboard.putNumber("Shooter/shooter goal speed", shootSpeed * ShooterConstants.SHOOT_MAX_SPEED_RPS);
     }
 
     public double getCurrent()
