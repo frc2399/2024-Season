@@ -415,7 +415,7 @@ public class RobotContainer {
                 new WaitCommand(0.5),
                 new RunCommand(() -> m_indexer.setMotor(Constants.IndexerConstants.INDEXER_IN_SPEED), m_indexer),
                 new RunCommand(() -> m_indexer.setIsIntooked(false), m_indexer)),
-            new RunCommand(() -> m_shooter.setMotor(m_arm.getSpeedFromArmHeight()), m_shooter)).withTimeout(0.75),
+            new RunCommand(() -> m_shooter.setMotor(m_arm.getSpeedFromArmHeight()), m_shooter)).withTimeout(0.9), //0.75
         new InstantCommand(() -> m_shooter.setMotor(0), m_shooter),
         new InstantCommand(() -> m_indexer.setMotor(0), m_indexer));
 
