@@ -6,7 +6,6 @@ package frc.robot;
 public final class MyVersion {
 	public static final String MAVEN_GROUP = "";
 	public static final String MAVEN_NAME = "2024-Season";
-	public static final String MAVEN_NAME = "2024-Season";
 	public static final String VERSION = "unspecified";
 	public static final int GIT_REVISION = 245;
 	public static final String GIT_SHA = "d775b5ecae92d2153ab2e7e5ffc66f87383202b5";
