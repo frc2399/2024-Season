@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
@@ -412,7 +413,7 @@ public class RobotContainer {
     return new SequentialCommandGroup(
         new ParallelCommandGroup(
             new SequentialCommandGroup(
-                new WaitCommand(0.5),
+                new WaitUntilCommand(() -> m_shooter.getEncoderSpeed() >= (m_arm.getSpeedFromArmHeight() * Constants.ShooterConstants.SHOOT_MAX_SPEED_RPS)),
                 new RunCommand(() -> m_indexer.setMotor(Constants.IndexerConstants.INDEXER_IN_SPEED), m_indexer),
                 new RunCommand(() -> m_indexer.setIsIntooked(false), m_indexer)),
             new RunCommand(() -> m_shooter.setMotor(m_arm.getSpeedFromArmHeight()), m_shooter)).withTimeout(0.9), //0.75
