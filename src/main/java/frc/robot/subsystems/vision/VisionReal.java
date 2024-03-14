@@ -154,6 +154,7 @@ public class VisionReal extends SubsystemBase implements VisionIO {
       return (keepPointedController.calculate(yawDiff, 0));
     }
 
+  //retrns desired arm radians based on distance from aprilTag
   public double keepArmAtAngle() {    
       final double eightySlope = VisionConstants.eightyModelSlope;
       final double eightyIntercept = VisionConstants.eightyModelIntercept;
@@ -203,8 +204,8 @@ public class VisionReal extends SubsystemBase implements VisionIO {
       return desiredRadians;
     }
 
+    //assigns aprilTags based on alliance
     public void assignAprilTags(Optional<Alliance> ally) {
-        
       if (ally.get() == Alliance.Red) {
           facingSourceLeftID = 10;
           facingSourceRightID = 9;
