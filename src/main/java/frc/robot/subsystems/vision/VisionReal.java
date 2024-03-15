@@ -154,13 +154,15 @@ public class VisionReal extends SubsystemBase implements VisionIO {
       return (keepPointedController.calculate(yawDiff, 0));
     }
 
-    public double keepArmAtAngle() {    
+  //retrns desired arm radians based on distance from aprilTag
+  public double keepArmAtAngle() {    
       final double eightySlope = VisionConstants.eightyModelSlope;
       final double eightyIntercept = VisionConstants.eightyModelIntercept;
       final double hundredSlope = VisionConstants.hundredModelSlope;
       final double hundredIntercept = VisionConstants.hundredModelIntercept;
       final double boundary = VisionConstants.eightyModelRange;
       double dist;
+      System.out.println("hi");
       Translation2d speakerDist;
       PhotonTrackedTarget speakerTarget;
       boolean seesSpeaker = false;
@@ -169,6 +171,8 @@ public class VisionReal extends SubsystemBase implements VisionIO {
       //this should help with the debugging :)
       for (PhotonTrackedTarget result : getCameraResult().getTargets()) {
         SmartDashboard.putNumber("vision/debugging/hi again", result.getFiducialId());
+        System.out.println(result.getFiducialId());
+        System.out.println(speakerID);
         if (result.getFiducialId() == speakerID) {
           seesSpeaker = true;
           speakerTarget = result;
@@ -190,16 +194,18 @@ public class VisionReal extends SubsystemBase implements VisionIO {
             } else {
               desiredRadians = (Math.atan(hundredSlope * Units.metersToInches(dist) + hundredIntercept));
             }
+            SmartDashboard.putBoolean("vision/debugging/Sees speaker (arm): ", false);
+            System.out.println(desiredRadians);
         }
       }
       if (!seesSpeaker) {
-        SmartDashboard.putBoolean("vision/debugging/Sees speaker (only true when in arm align mode): ", false);
+        SmartDashboard.putBoolean("vision/debugging/Sees speaker (arm): ", false);
       }      
       return desiredRadians;
     }
 
+    //assigns aprilTags based on alliance
     public void assignAprilTags(Optional<Alliance> ally) {
-        
       if (ally.get() == Alliance.Red) {
           facingSourceLeftID = 10;
           facingSourceRightID = 9;

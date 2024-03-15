@@ -7,6 +7,8 @@ package frc.robot;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
+import java.util.function.DoubleSupplier;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.shuffleboard.ComplexWidget;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -19,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
@@ -314,14 +317,9 @@ public class RobotContainer {
   }
 
   private void configureButtonBindingsOperatorNotClimber() {
-    m_operatorController.rightTrigger().and(() -> !isInClimberMode).whileTrue( // TODO: test + change to actual
-                                                                               // makeSetPositionCommand
-        makeSetPositionCommand(m_arm, m_vision.keepArmAtAngle()));
-
-    // operator left trigger: manual arm down
-    m_operatorController.leftTrigger().and(() -> !isInClimberMode).and(() -> !isInClimberMode)
-        .whileTrue(makeSetSpeedGravityCompensationCommand(m_arm, -0.1))
-        .onFalse(makeSetSpeedGravityCompensationCommand(m_arm, 0));
+    m_operatorController.leftTrigger().and(() -> !isInClimberMode).whileTrue(
+        makeSetPositionCommandVision(m_arm)
+        );
 
     // operater a: arm to intake/subwoofer angle
     m_operatorController.a().and(() -> !isInClimberMode).onTrue(makeSetPositionCommand(m_arm, 0.31));
@@ -355,6 +353,15 @@ public class RobotContainer {
         new ConditionalCommand(new InstantCommand(() -> {
         }), new InstantCommand(() -> arm.enable(), arm), () -> arm.isEnabled()),
         new RunCommand(() -> arm.setGoal(target), arm));
+  }
+
+  private Command makeSetPositionCommandVision(Arm arm) {
+    System.out.println("hi");
+    DoubleSupplier target = ()-> (m_vision.keepArmAtAngle());
+    return new SequentialCommandGroup(
+        new ConditionalCommand(new InstantCommand(() -> {
+        }), new InstantCommand(() -> arm.enable(), arm), () -> arm.isEnabled()),
+        new RunCommand(() -> arm.setGoal(target.getAsDouble()), arm));
   }
 
   public static Command makeSetPositionCommandAuton(Arm arm,
@@ -403,10 +410,10 @@ public class RobotContainer {
     return new SequentialCommandGroup(
         new ParallelCommandGroup(
             new SequentialCommandGroup(
-                new WaitCommand(0.5),
+                new WaitUntilCommand(() -> m_shooter.getEncoderSpeed() >= (m_arm.getSpeedFromArmHeight() * Constants.ShooterConstants.SHOOT_MAX_SPEED_RPS)),
                 new RunCommand(() -> m_indexer.setMotor(Constants.IndexerConstants.INDEXER_IN_SPEED), m_indexer),
                 new RunCommand(() -> m_indexer.setIsIntooked(false), m_indexer)),
-            new RunCommand(() -> m_shooter.setMotor(m_arm.getSpeedFromArmHeight()), m_shooter)).withTimeout(0.75),
+            new RunCommand(() -> m_shooter.setMotor(m_arm.getSpeedFromArmHeight()), m_shooter)).withTimeout(0.9), //0.75
         new InstantCommand(() -> m_shooter.setMotor(0), m_shooter),
         new InstantCommand(() -> m_indexer.setMotor(0), m_indexer));
 
