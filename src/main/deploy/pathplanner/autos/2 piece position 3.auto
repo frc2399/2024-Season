@@ -26,13 +26,13 @@
         {
           "type": "named",
           "data": {
-            "name": "AimToTarget"
+            "name": "intake for time"
           }
         },
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "SetArmPosition"
+            "pathName": "C to 3"
           }
         },
         {

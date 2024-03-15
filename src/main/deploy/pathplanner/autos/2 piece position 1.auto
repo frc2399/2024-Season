@@ -14,7 +14,7 @@
         {
           "type": "named",
           "data": {
-            "name": "AutoShoot"
+            "name": "shoot"
           }
         },
         {
@@ -26,19 +26,19 @@
         {
           "type": "named",
           "data": {
-            "name": "AimToTarget"
+            "name": "intake for time"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "A to 1"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "SetArmPosition"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "AutoShoot"
+            "name": "shoot"
           }
         }
       ]

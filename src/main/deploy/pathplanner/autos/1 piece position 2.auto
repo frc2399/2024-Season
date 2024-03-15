@@ -2,19 +2,19 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.4,
-      "y": 2
+      "x": 1.25,
+      "y": 5.54
     },
-    "rotation": 0
+    "rotation": 0.0
   },
   "command": {
     "type": "sequential",
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "stay out of the way"
+            "name": "shoot"
           }
         }
       ]

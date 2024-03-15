@@ -375,12 +375,10 @@ public class RobotContainer {
   private Command intakeForTime(Intake intake, Indexer indexer) {
     return new SequentialCommandGroup(
         new ParallelCommandGroup(
-            new InstantCommand(() -> intake.setMotor(.8)).withTimeout(1.5),
-            new InstantCommand(() -> indexer.setMotor(0.8)).withTimeout(1.5)),
-        new ParallelCommandGroup(
-            new InstantCommand(() -> intake.setMotor(0)),
-            new InstantCommand(() -> indexer.setMotor(0))));
-
+            new RunCommand(() -> intake.setMotor(.8), intake),
+            new RunCommand(() -> indexer.setMotor(0.8), indexer)
+        ).withTimeout(1.5)
+     );
   }
 
   private Command shortIntakeForTime(Intake intake, Indexer indexer) {
