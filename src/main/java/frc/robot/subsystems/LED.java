@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.vision.VisionReal;
 
 public class LED extends SubsystemBase {
     AddressableLED m_led = new AddressableLED(9);
@@ -33,6 +34,10 @@ public class LED extends SubsystemBase {
         m_rainbowFirstPixelHue += 1;
         // Check bounds
         m_rainbowFirstPixelHue %= 155;
+    }
+
+    public void visionLED() {
+
     }
 
     @Override

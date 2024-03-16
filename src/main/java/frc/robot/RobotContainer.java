@@ -162,7 +162,7 @@ public class RobotContainer {
       indexerIO = new RealIndexer();
       shooterIO = new RealShooter();
       intakeIO = new RealIntake();
-      climberIO = new ClimberReal();
+      climberIO = new ClimberSim();
       armIO = new RealArm();
       m_gyro = new GyroIOPigeon2();
       visionIO = new VisionReal();
