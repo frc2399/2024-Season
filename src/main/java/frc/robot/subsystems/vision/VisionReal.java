@@ -31,6 +31,8 @@ public class VisionReal extends SubsystemBase implements VisionIO {
     private static PhotonPoseEstimator CamEstimator;
     private boolean updatePoseWithVisionReadings = true;
     public Pose3d robotPose;
+    private boolean driveTrainIsAligned = false;
+    private boolean armIsAligned = false;
     
 
     //apriltags
@@ -141,21 +143,24 @@ public class VisionReal extends SubsystemBase implements VisionIO {
           // Add green/red square for if robot aligned within 5 degrees to speaker tag
           if (yawDiff < Math.toRadians(5)) {
             isAligned = true;
+            driveTrainIsAligned = true;
           }
           else {
             isAligned = false;
+            driveTrainIsAligned = true;
           }
           break; //saves a tiny bit of processing power possibly
         }
       }
       if (!seesSpeaker) {
         SmartDashboard.putBoolean("vision/debugging/Sees speaker (only true when in keep pointed mode): ", false);
+        driveTrainIsAligned = false;
       }
       return (keepPointedController.calculate(yawDiff, 0));
     }
 
   //retrns desired arm radians based on distance from aprilTag
-  public double keepArmAtAngle() {    
+  public double keepArmAtAngle(double curArmAngle) {    
       final double eightySlope = VisionConstants.eightyModelSlope;
       final double eightyIntercept = VisionConstants.eightyModelIntercept;
       final double hundredSlope = VisionConstants.hundredModelSlope;
@@ -177,31 +182,34 @@ public class VisionReal extends SubsystemBase implements VisionIO {
           seesSpeaker = true;
           speakerTarget = result;
             //gets the translation from the robot's current (x,y) to the (x,y) of the speaker-center
-            speakerDist = speakerTarget.getBestCameraToTarget().getTranslation().toTranslation2d();
-            SmartDashboard.putNumber("vision/debugging/x", speakerDist.getX());
-            SmartDashboard.putNumber("vision/debugging/y", speakerDist.getY());
-            
+            speakerDist = speakerTarget.getBestCameraToTarget().getTranslation().toTranslation2d();            
             //gets distance + calculates models (returning desired arm)
             dist = speakerDist.getNorm();
-
-            SmartDashboard.putNumber("vision/debugging/dist w/o 15.75", dist);
             //accounts for model measuring from front of frame and pose being to center of robot
             dist -= Units.inchesToMeters(15.75);
-            SmartDashboard.putNumber("vision/deubgingg/distance", dist);
-            SmartDashboard.putNumber("vision/debugging/radians", Math.atan(eightySlope * Units.metersToInches(dist) + eightyIntercept));
             if (dist <= boundary) {
               desiredRadians = (Math.atan(eightySlope * Units.metersToInches(dist) + eightyIntercept));
             } else {
               desiredRadians = (Math.atan(hundredSlope * Units.metersToInches(dist) + hundredIntercept));
             }
-            SmartDashboard.putBoolean("vision/debugging/Sees speaker (arm): ", false);
-            System.out.println(desiredRadians);
+            SmartDashboard.putBoolean("vision/debugging/Sees speaker (arm): ", true);
         }
       }
       if (!seesSpeaker) {
         SmartDashboard.putBoolean("vision/debugging/Sees speaker (arm): ", false);
-      }      
+      }
+      if (Math.abs(curArmAngle - desiredRadians) < VisionConstants.armAlignTolerance) {
+        armIsAligned = true;
+      }        
       return desiredRadians;
+    }
+
+    public boolean isDriveTrainAligned() {
+      return driveTrainIsAligned;
+    }
+
+    public boolean isArmAligned() {
+      return armIsAligned;
     }
 
     //assigns aprilTags based on alliance

@@ -25,7 +25,8 @@ public interface VisionIO {
     public void disableUpdatePoseWithVisionReading ();
     public PhotonCamera getCamera();
     public double keepPointedAtSpeaker();
-    public double keepArmAtAngle();
+    public double keepArmAtAngle(double curArmAngle);
     public void assignAprilTags(Optional<Alliance> ally);
-
+    public boolean isDriveTrainAligned();
+    public boolean isArmAligned();
 }

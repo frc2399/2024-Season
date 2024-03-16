@@ -265,6 +265,7 @@ public final class Constants {
     public static final double eightyModelRange = Units.feetToMeters(12);
     public static final double hundredModelSlope = 0.00533;
     public static final double hundredModelIntercept = 0.210;
+    public static final double armAlignTolerance = 0.01;
 
   }
 

@@ -180,7 +180,7 @@ public class RobotContainer {
     m_shooter = new Shooter(shooterIO);
     m_indexer = new Indexer(indexerIO);
     m_intake = new Intake(intakeIO);
-    m_led = new LED(m_climber);
+    m_led = new LED(m_vision);
     m_vision = new Vision(visionIO);
   }
 
@@ -357,7 +357,7 @@ public class RobotContainer {
 
   private Command makeSetPositionCommandVision(Arm arm) {
     System.out.println("hi");
-    DoubleSupplier target = ()-> (m_vision.keepArmAtAngle());
+    DoubleSupplier target = ()-> (m_vision.keepArmAtAngle((m_arm.getAbsoluteEncoderPosition())));
     return new SequentialCommandGroup(
         new ConditionalCommand(new InstantCommand(() -> {
         }), new InstantCommand(() -> arm.enable(), arm), () -> arm.isEnabled()),

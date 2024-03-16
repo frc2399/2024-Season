@@ -193,7 +193,7 @@ public class VisionSim extends SubsystemBase implements VisionIO {
        return 0.0;
     }
 
-    public double keepArmAtAngle() {    
+    public double keepArmAtAngle(double curArmAngle) {    
       final double eightySlope = VisionConstants.eightyModelSlope;
       final double eightyIntercept = VisionConstants.eightyModelIntercept;
       final double hundredSlope = VisionConstants.hundredModelSlope;
@@ -246,5 +246,13 @@ public class VisionSim extends SubsystemBase implements VisionIO {
       
           
     }
+
+    public boolean isDriveTrainAligned() {
+        return false;
+      }
+  
+      public boolean isArmAligned() {
+        return false;
+      }
 
 }

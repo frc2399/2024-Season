@@ -6,15 +6,17 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.vision.Vision;
 
 public class LED extends SubsystemBase {
     AddressableLED m_led = new AddressableLED(9);
     AddressableLEDBuffer m_ledBuffer = new AddressableLEDBuffer(16);
     int m_rainbowFirstPixelHue = 97;
-    private Climber climber;
+    int m_rainbowLastPixelHue = 154;
+    private Vision vision;
 
-    public LED(Climber climber) {
-        this.climber = climber;
+    public LED(Vision vision) {
+        this.vision = vision;
         m_led.setLength(m_ledBuffer.getLength());
         m_led.setData(m_ledBuffer);
         m_led.start();
@@ -32,18 +34,42 @@ public class LED extends SubsystemBase {
         // Increase by to make the rainbow "move"
         m_rainbowFirstPixelHue += 1;
         // Check bounds
-        m_rainbowFirstPixelHue %= 155;
+        if (m_rainbowFirstPixelHue == (m_rainbowLastPixelHue + 1)) {
+            m_rainbowFirstPixelHue = 97;
+        }
     }
 
-    @Override
+    public void visionLED() {
+        //purple if driveTrainAligned AND arm aligned
+        if (vision.isArmAligned() && vision.isDriveTrainAligned()) {
+            for (var i = 0; i < m_ledBuffer.getLength(); i++) {
+                m_ledBuffer.setHSV(i, 125, 255, 128);
+            }
+        //blue if just arm aligned
+        } else if (vision.isArmAligned() && !vision.isDriveTrainAligned()) {
+            for (var i = 0; i < m_ledBuffer.getLength(); i++) {
+                m_ledBuffer.setHSV(i, 97, 255, 128);
+            }
+        //pink if just drive aligned
+        } else if (!vision.isArmAligned() && vision.isDriveTrainAligned()) {
+            for (var i = 0; i < m_ledBuffer.getLength(); i++) {
+                m_ledBuffer.setHSV(i, 154, 255, 128);
+            }
+        //turns off if nothing aligned
+        } else {
+            for (var i = 0; i < m_ledBuffer.getLength(); i++) {
+                 m_ledBuffer.setHSV(i,0,0,0);
+            }
+        }
+    }
     public void periodic() {
-        rainbow();
+        visionLED();
         m_led.setData(m_ledBuffer);
         if (RobotBase.isReal()) {
             if (Intake.isIntooked) {
                 m_ledBuffer.setRGB(0, 112, 243, 121);
-            } else if (climber.isInClimberMode()) {
-                m_ledBuffer.setRGB(0, 0, 100, 255);
+            // } else if (climber.isInClimberMode()) {
+            //     m_ledBuffer.setRGB(0, 0, 100, 255);
             } else if (RobotBase.isSimulation()) {
                 rainbow();
             }
