@@ -41,6 +41,10 @@ public class Vision extends SubsystemBase {
         return io.keepPointedAtSpeaker();
     }
 
+    public double keepPointedAtSpeakerAlt() {
+        return io.keepPointedAtSpeakerAlt();
+    }
+
     public double keepArmAtAngle(double curArmAngle) {
         return io.keepArmAtAngle(curArmAngle);
     }

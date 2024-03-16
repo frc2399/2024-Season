@@ -26,6 +26,7 @@ public interface VisionIO {
     public void enableUpdatePoseWithVisionReading ();
     public void disableUpdatePoseWithVisionReading ();
     public PhotonCamera getCamera();
+    public double keepPointedAtSpeakerAlt();
     public double keepPointedAtSpeaker();
     public double keepArmAtAngle(double curArmAngle);
     public void assignAprilTags(Optional<Alliance> ally);

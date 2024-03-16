@@ -263,4 +263,7 @@ public class VisionSim extends SubsystemBase implements VisionIO {
         return false;
     }  
 
+    public double keepPointedAtSpeakerAlt() {
+        return 0.0;
+    }
 }

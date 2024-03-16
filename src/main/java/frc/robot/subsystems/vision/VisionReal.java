@@ -23,6 +23,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -132,6 +133,30 @@ public class VisionReal extends SubsystemBase implements VisionIO {
     //allows the camera instance into other commands
     public PhotonCamera getCamera() {
       return camera;
+    }
+
+    public double keepPointedAtSpeakerAlt() {
+      double yawDiff = 0.0;
+      Rotation2d targetAngle;
+      double angleInDegrees;
+      //these next three lines get the angle of the tag in degrees
+      Pose2d tagPose = kFieldLayout.getTagPose(speakerID).get().toPose2d();
+      targetAngle = new Rotation2d(tagPose.getX() - poseWOdo.getX(), tagPose.getY() - poseWOdo.getY());
+      angleInDegrees = targetAngle.getDegrees();
+      //adjusts if it gives a negative angle so comparison can happen
+      if (angleInDegrees < 0) {
+        angleInDegrees += 360;
+      }
+      //takes care of gyro facing the other way + not wrapping
+      double robotCurRot = poseWOdo.getRotation().getDegrees();
+      robotCurRot = ((robotCurRot + 180)%360);
+      yawDiff = Math.abs(robotCurRot - angleInDegrees);
+      if (yawDiff < 5) {
+        driveTrainIsAligned = true;
+      } else {
+        driveTrainIsAligned = false;
+      }
+      return (keepPointedController.calculate(yawDiff, 0));
     }
 
     //keeps the robot pointed at the speaker; uses PID and yaw
