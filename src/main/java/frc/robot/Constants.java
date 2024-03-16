@@ -261,10 +261,10 @@ public final class Constants {
     // inverse tan of function above to get angle
     //all in inches except for eightyModelRange
     public static final double eightyModelSlope = 0.00533;
-    public static final double eightyModelIntercept = 0.206;
+    public static final double eightyModelIntercept = 0.215;
     public static final double eightyModelRange = Units.feetToMeters(12);
     public static final double hundredModelSlope = 0.00533;
-    public static final double hundredModelIntercept = 0.206;
+    public static final double hundredModelIntercept = 0.210;
 
   }
 

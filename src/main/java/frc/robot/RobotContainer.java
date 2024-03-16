@@ -282,8 +282,8 @@ public class RobotContainer {
     // driver a: align to speaker mode
     m_driverController.a().whileTrue(
         new RunCommand(() -> m_robotDrive.drive(
-            -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
-            -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),
+            -Math.pow(MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband), 3),
+            -Math.pow(MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband), 3),
             m_vision.keepPointedAtSpeaker(),
             fieldOrientedDrive), m_robotDrive));
   }
@@ -384,7 +384,7 @@ public class RobotContainer {
         new ParallelCommandGroup(
             new RunCommand(() -> intake.setMotor(.8), intake),
             new RunCommand(() -> indexer.setMotor(0.8), indexer)
-        ).withTimeout(1.5)
+        ).withTimeout(0.5)
      );
   }
 
@@ -412,7 +412,7 @@ public class RobotContainer {
             new SequentialCommandGroup(
                 new WaitUntilCommand(() -> m_shooter.getEncoderSpeed() >= (m_arm.getSpeedFromArmHeight() * Constants.ShooterConstants.SHOOT_MAX_SPEED_RPS)),
                 new RunCommand(() -> m_indexer.setMotor(Constants.IndexerConstants.INDEXER_IN_SPEED), m_indexer),
-                new RunCommand(() -> m_indexer.setIsIntooked(false), m_indexer)),
+                new RunCommand(() -> m_indexer.setIsIntooked(false))),
             new RunCommand(() -> m_shooter.setMotor(m_arm.getSpeedFromArmHeight()), m_shooter)).withTimeout(0.9), //0.75
         new InstantCommand(() -> m_shooter.setMotor(0), m_shooter),
         new InstantCommand(() -> m_indexer.setMotor(0), m_indexer));
