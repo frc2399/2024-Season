@@ -194,7 +194,7 @@ public class VisionSim extends SubsystemBase implements VisionIO {
        return 0.0;
     }
 
-    public double keepArmAtAngle() {    
+    public double keepArmAtAngle(double curArmAngle) {    
       final double eightySlope = VisionConstants.eightyModelSlope;
       final double eightyIntercept = VisionConstants.eightyModelIntercept;
       final double hundredSlope = VisionConstants.hundredModelSlope;
@@ -213,6 +213,7 @@ public class VisionSim extends SubsystemBase implements VisionIO {
         dist = speakerDist.getNorm();
         System.out.println(Units.metersToInches(dist));
         System.out.println(Math.atan(eightySlope * Units.metersToInches(dist) + eightyIntercept));
+        
         if (dist <= boundary) {
             return (Math.atan(eightySlope * Units.metersToInches(dist) + eightyIntercept));
         } else {
@@ -253,5 +254,13 @@ public class VisionSim extends SubsystemBase implements VisionIO {
     public void odometryAdding(SwerveDrivePoseEstimator odoPose) {
         
     }
+
+    public boolean isArmAligned() {
+        return false;
+    }
+
+    public boolean isDriveTrainAligned() {
+        return false;
+    }  
 
 }

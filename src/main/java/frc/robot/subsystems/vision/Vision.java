@@ -40,8 +40,9 @@ public class Vision extends SubsystemBase {
     public double keepPointedAtSpeaker() {
         return io.keepPointedAtSpeaker();
     }
-    public double keepArmAtAngle() {
-        return io.keepArmAtAngle();
+
+    public double keepArmAtAngle(double curArmAngle) {
+        return io.keepArmAtAngle(curArmAngle);
     }
 
     public void assignAprilTags(Optional<Alliance> ally) {
@@ -55,5 +56,14 @@ public class Vision extends SubsystemBase {
     public void odometryAdding(SwerveDrivePoseEstimator odoPose) {
         io.odometryAdding(odoPose);
     }
+    
+    public boolean isDriveTrainAligned() {
+        return io.isDriveTrainAligned();
+    }
+
+    public boolean isArmAligned() {
+        return io.isArmAligned();
+    }
+
 
 }

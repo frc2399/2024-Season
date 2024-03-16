@@ -34,9 +34,11 @@ public class VisionReal extends SubsystemBase implements VisionIO {
     public static PhotonCamera camera;
     private static PhotonPoseEstimator CamEstimator;
     private boolean updatePoseWithVisionReadings = true;
+    private boolean driveTrainIsAligned = false;
     public Pose3d robotPose;
     private SwerveDrivePoseEstimator m_PoseEstimator;
     public Pose2d poseWOdo;
+    private boolean armIsAligned = false;
     
 
     //apriltags
@@ -149,37 +151,36 @@ public class VisionReal extends SubsystemBase implements VisionIO {
           // Add green/red square for if robot aligned within 5 degrees to speaker tag
           if (yawDiff < Math.toRadians(5)) {
             isAligned = true;
+            driveTrainIsAligned = true;
           }
           else {
             isAligned = false;
+            driveTrainIsAligned = false;
           }
           break; //saves a tiny bit of processing power possibly
         }
       }
       if (!seesSpeaker) {
         SmartDashboard.putBoolean("vision/debugging/Sees speaker (only true when in keep pointed mode): ", false);
+        driveTrainIsAligned = false;
       }
       return (keepPointedController.calculate(yawDiff, 0));
     }
 
-  public double keepArmAtAngle() {    
+  //retrns desired arm radians based on distance from aprilTag
+  public double keepArmAtAngle(double curArmAngle) {    
       final double eightySlope = VisionConstants.eightyModelSlope;
       final double eightyIntercept = VisionConstants.eightyModelIntercept;
       final double hundredSlope = VisionConstants.hundredModelSlope;
       final double hundredIntercept = VisionConstants.hundredModelIntercept;
       final double boundary = VisionConstants.eightyModelRange;
       double dist;
-      System.out.println("hi");
       Translation2d speakerDist;
       PhotonTrackedTarget speakerTarget;
       boolean seesSpeaker = false;
       double desiredRadians = 0.37;
-      SmartDashboard.putString("vision/debugging/hi", "hi it calls :)");
       //this should help with the debugging :)
       for (PhotonTrackedTarget result : getCameraResult().getTargets()) {
-        SmartDashboard.putNumber("vision/debugging/hi again", result.getFiducialId());
-        System.out.println(result.getFiducialId());
-        System.out.println(speakerID);
         if (result.getFiducialId() == speakerID) {
           seesSpeaker = true;
           speakerTarget = result;
@@ -193,23 +194,22 @@ public class VisionReal extends SubsystemBase implements VisionIO {
             
             //gets distance + calculates models (returning desired arm)
             dist = speakerDist.getNorm();
-
-            SmartDashboard.putNumber("vision/debugging/dist w/o 15.75", dist);
             //accounts for model measuring from front of frame and pose being to center of robot
             dist -= Units.inchesToMeters(15.75);
-            SmartDashboard.putNumber("vision/deubgingg/distance", dist);
-            SmartDashboard.putNumber("vision/debugging/radians", Math.atan(eightySlope * Units.metersToInches(dist) + eightyIntercept));
             if (dist <= boundary) {
               desiredRadians = (Math.atan(eightySlope * Units.metersToInches(dist) + eightyIntercept));
             } else {
               desiredRadians = (Math.atan(hundredSlope * Units.metersToInches(dist) + hundredIntercept));
             }
-            SmartDashboard.putBoolean("vision/debugging/Sees speaker (arm): ", false);
-            System.out.println(desiredRadians);
+            SmartDashboard.putBoolean("vision/Sees speaker (arm): ", false);
         }
       }
       if (!seesSpeaker) {
-        SmartDashboard.putBoolean("vision/debugging/Sees speaker (arm): ", false);
+        SmartDashboard.putBoolean("vision/Sees speaker (arm): ", false);
+        armIsAligned = false;
+      }
+      if (Math.abs(curArmAngle - desiredRadians) < VisionConstants.armAlignTolerance) {
+        armIsAligned = true;
       }      
       return desiredRadians;
     }
@@ -236,7 +236,14 @@ public class VisionReal extends SubsystemBase implements VisionIO {
           ampID = 6;
       }
     SmartDashboard.putNumber("vision/speaker id", speakerID);
+    }
 
+    public boolean isDriveTrainAligned() {
+      return driveTrainIsAligned;
+    }
+
+    public boolean isArmAligned() {
+      return armIsAligned;
     }
 
     public void checkSpeedReq(double xSpeed, double ySpeed) {
