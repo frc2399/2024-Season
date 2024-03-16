@@ -19,7 +19,6 @@ public class RealIndexer implements IndexerIO {
     private double slewRate = 0;
     public boolean isIntooked = false;
     public boolean isSensorOverriden = false;
-    private static DigitalInput indexerSensorTop;
     private static DigitalInput indexerSensorBottom;
 
     public RealIndexer() {
@@ -28,7 +27,6 @@ public class RealIndexer implements IndexerIO {
 
         // initialize motor encoder
         indexerEncoder = indexerMotorController.getEncoder();
-        indexerSensorTop = new DigitalInput(IndexerConstants.INDEXER_SENSOR_CHANNEL_TOP);
         indexerSensorBottom = new DigitalInput(IndexerConstants.INDEXER_SENSOR_CHANNEL_BOTTOM);
     }
 

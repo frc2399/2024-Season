@@ -146,18 +146,22 @@ public class RobotContainer {
 
     } else {
 
-      m_frontLeftIO = new SwerveModuleIO_Real(DriveConstants.kFrontLeftDrivingCanId,
-          DriveConstants.kFrontLeftTurningCanId, DriveConstants.kFrontLeftChassisAngularOffset,
-          "front left");
-      m_frontRightIO = new SwerveModuleIO_Real(DriveConstants.kFrontRightDrivingCanId,
-          DriveConstants.kFrontRightTurningCanId, DriveConstants.kFrontRightChassisAngularOffset,
-          "front right");
-      m_rearLeftIO = new SwerveModuleIO_Real(DriveConstants.kRearLeftDrivingCanId,
-          DriveConstants.kRearLeftTurningCanId, DriveConstants.kRearLeftChassisAngularOffset,
-          "rear left");
-      m_rearRightIO = new SwerveModuleIO_Real(DriveConstants.kRearRightDrivingCanId,
-          DriveConstants.kRearRightTurningCanId, DriveConstants.kRearRightChassisAngularOffset,
-          "rear right");
+    //   m_frontLeftIO = new SwerveModuleIO_Real(DriveConstants.kFrontLeftDrivingCanId,
+    //       DriveConstants.kFrontLeftTurningCanId, DriveConstants.kFrontLeftChassisAngularOffset,
+    //       "front left");
+    //   m_frontRightIO = new SwerveModuleIO_Real(DriveConstants.kFrontRightDrivingCanId,
+    //       DriveConstants.kFrontRightTurningCanId, DriveConstants.kFrontRightChassisAngularOffset,
+    //       "front right");
+    //   m_rearLeftIO = new SwerveModuleIO_Real(DriveConstants.kRearLeftDrivingCanId,
+    //       DriveConstants.kRearLeftTurningCanId, DriveConstants.kRearLeftChassisAngularOffset,
+    //       "rear left");
+    //   m_rearRightIO = new SwerveModuleIO_Real(DriveConstants.kRearRightDrivingCanId,
+    //       DriveConstants.kRearRightTurningCanId, DriveConstants.kRearRightChassisAngularOffset,
+    //       "rear right");
+     m_frontLeftIO = new SwerveModuleIO_Sim("front left");
+      m_frontRightIO = new SwerveModuleIO_Sim("front right");
+      m_rearLeftIO = new SwerveModuleIO_Sim("rear left");
+      m_rearRightIO = new SwerveModuleIO_Sim("rear right");
 
       indexerIO = new RealIndexer();
       shooterIO = new RealShooter();
