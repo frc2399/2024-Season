@@ -32,8 +32,10 @@ public class LED extends SubsystemBase {
         }
         // Increase by to make the rainbow "move"
         m_rainbowFirstPixelHue += 1;
-        // Check bounds
-        m_rainbowFirstPixelHue %= 154;
+        // Reassigns if above desired value - runs at 155 b/c we want the loop to run for 154
+        if (m_rainbowFirstPixelHue == 155) {
+            m_rainbowFirstPixelHue = 96;
+        }
     }
 
     @Override
