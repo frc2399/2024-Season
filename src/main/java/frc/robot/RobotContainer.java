@@ -180,8 +180,8 @@ public class RobotContainer {
     m_shooter = new Shooter(shooterIO);
     m_indexer = new Indexer(indexerIO);
     m_intake = new Intake(intakeIO);
-    m_led = new LED(m_vision);
     m_vision = new Vision(visionIO);
+    m_led = new LED(m_vision);
   }
 
   // sets up auton commands
