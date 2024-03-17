@@ -77,8 +77,8 @@ public class VisionSim extends SubsystemBase implements VisionIO {
     public VisionSim(DriveSubsystem drive) {
         this.drive = drive ;
         
-        visionSim.addAprilTags(VisionConstants.kFieldLayout);
-        kFieldLayout = VisionConstants.kFieldLayout;
+        visionSim.addAprilTags(VisionConstants.KFIELDLAYOUT);
+        kFieldLayout = VisionConstants.KFIELDLAYOUT;
         // Get the built-in Field2d used by this VisionSystemSim
         visionSim.getDebugField();
 
@@ -109,8 +109,8 @@ public class VisionSim extends SubsystemBase implements VisionIO {
         // Add this camera to the vision system simulation with the given
         // robot-to-camera transform.
         visionSim.addCamera(cameraSim, robotToCamera);
-        camPoseEstimator = new PhotonPoseEstimator(VisionConstants.kFieldLayout,
-                PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camera, VisionConstants.camToRobot);
+        camPoseEstimator = new PhotonPoseEstimator(VisionConstants.KFIELDLAYOUT,
+                PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camera, VisionConstants.CAMTOROBOT);
     }
 
     @Override
@@ -133,7 +133,7 @@ public class VisionSim extends SubsystemBase implements VisionIO {
         new Transform2d(
           new Translation2d(pose.get().estimatedPose.getX(), pose.get().estimatedPose.getY()), 
           pose.get().estimatedPose.getRotation().toRotation2d()),
-         kFieldLayout.getTagPose(target.getFiducialId()).get().toPose2d(), VisionConstants.camToRobot2d);
+         kFieldLayout.getTagPose(target.getFiducialId()).get().toPose2d(), VisionConstants.CAMTOROBOT2D);
      }
     }
         visionSim.update(drive.getPose());
@@ -194,11 +194,11 @@ public class VisionSim extends SubsystemBase implements VisionIO {
     }
 
     public double keepArmAtAngle(double curArmAngle) {    
-      final double eightySlope = VisionConstants.eightyModelSlope;
-      final double eightyIntercept = VisionConstants.eightyModelIntercept;
-      final double hundredSlope = VisionConstants.hundredModelSlope;
-      final double hundredIntercept = VisionConstants.hundredModelIntercept;
-      final double boundary = VisionConstants.eightyModelRange;
+      final double eightySlope = VisionConstants.EIGHTYMODELSLOPE;
+      final double eightyIntercept = VisionConstants.EIGHTYMODELINTERCEPT;
+      final double hundredSlope = VisionConstants.HUNDREDMODELSLOPE;
+      final double hundredIntercept = VisionConstants.HUNDREDMODELINTERCEPT;
+      final double boundary = VisionConstants.EIGHTYMODELRANGE;
       double dist;
       // Added if statement to avoid sim crash from button bindings setup
       if (robotPose == null) {
@@ -206,8 +206,8 @@ public class VisionSim extends SubsystemBase implements VisionIO {
       }
       else {
         Translation2d speakerDist = new Translation2d(
-            robotPose.getX() - VisionConstants.kFieldLayout.getTagPose(7).get().toPose2d().getX(),
-            robotPose.getY() - VisionConstants.kFieldLayout.getTagPose(7).get().toPose2d().getY()
+            robotPose.getX() - VisionConstants.KFIELDLAYOUT.getTagPose(7).get().toPose2d().getX(),
+            robotPose.getY() - VisionConstants.KFIELDLAYOUT.getTagPose(7).get().toPose2d().getY()
         );
         dist = speakerDist.getNorm();
         System.out.println(Units.metersToInches(dist));
@@ -254,5 +254,9 @@ public class VisionSim extends SubsystemBase implements VisionIO {
       public boolean isArmAligned() {
         return false;
       }
-
+      public void makeDriveTrainAlignedFalse() {
+      }
+  
+      public void makeArmAlignedFalse() {
+      }
 }

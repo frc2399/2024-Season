@@ -181,7 +181,7 @@ public class RobotContainer {
     m_indexer = new Indexer(indexerIO);
     m_intake = new Intake(intakeIO);
     m_vision = new Vision(visionIO);
-    m_led = new LED(m_vision);
+    m_led = new LED(m_vision, m_indexer);
   }
 
   // sets up auton commands
@@ -285,7 +285,8 @@ public class RobotContainer {
             -Math.pow(MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband), 3),
             -Math.pow(MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband), 3),
             m_vision.keepPointedAtSpeaker(),
-            fieldOrientedDrive), m_robotDrive));
+            fieldOrientedDrive), m_robotDrive))
+        .onFalse(new InstantCommand(() -> m_vision.makeDriveTrainAlignedFalse()));
   }
 
   private void configureButtonBindingsOperatorClimber() {
@@ -318,8 +319,8 @@ public class RobotContainer {
 
   private void configureButtonBindingsOperatorNotClimber() {
     m_operatorController.leftTrigger().and(() -> !isInClimberMode).whileTrue(
-        makeSetPositionCommandVision(m_arm)
-        );
+        makeSetPositionCommandVision(m_arm))
+        .onFalse(new InstantCommand(() -> m_vision.makeArmAlignedFalse()));
 
     // operater a: arm to intake/subwoofer angle
     m_operatorController.a().and(() -> !isInClimberMode).onTrue(makeSetPositionCommand(m_arm, 0.31));

@@ -54,4 +54,12 @@ public class Vision extends SubsystemBase {
       io.assignAprilTags(ally);
     }
 
+    public void makeDriveTrainAlignedFalse() {
+        io.makeDriveTrainAlignedFalse();
+    }
+
+    public void makeArmAlignedFalse() {
+        io.makeArmAlignedFalse();
+    }
+
 }
