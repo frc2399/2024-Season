@@ -63,7 +63,7 @@ public class LED extends SubsystemBase {
         }
     }
     public void periodic() {
-        visionLED();
+        //visionLED();
         m_led.setData(m_ledBuffer);
         if (RobotBase.isReal()) {
             if (Intake.isIntooked) {

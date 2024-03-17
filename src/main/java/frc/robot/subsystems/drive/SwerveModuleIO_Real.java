@@ -1,6 +1,7 @@
 package frc.robot.subsystems.drive;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkAbsoluteEncoder.Type;
 import com.revrobotics.SparkPIDController;
@@ -30,6 +31,8 @@ public class SwerveModuleIO_Real implements SwerveModuleIO {
    public SwerveModuleIO_Real(int drivingCANId, int turningCANId, double chassisAngularOffset,
          String name) {
 
+   int errors = 0;
+
       this.name = name;
       
    m_drivingSparkMax =MotorUtil.createSparkMAX(drivingCANId, MotorType.kBrushless, 
@@ -45,8 +48,10 @@ public class SwerveModuleIO_Real implements SwerveModuleIO {
       m_turningEncoder = m_turningSparkMax.getAbsoluteEncoder(Type.kDutyCycle);
       m_drivingPIDController = m_drivingSparkMax.getPIDController();
       m_turningPIDController = m_turningSparkMax.getPIDController();
-      m_drivingPIDController.setFeedbackDevice(m_drivingEncoder);
       m_turningPIDController.setFeedbackDevice(m_turningEncoder);
+
+      errors += check(m_drivingPIDController.setFeedbackDevice(m_drivingEncoder));
+      errors += check(m_turningPIDController.setFeedbackDevice(m_turningEncoder));
 
       // Apply position and velocity conversion factors for the driving encoder. The
       // native units for position and velocity are rotations and RPM, respectively,
@@ -60,12 +65,17 @@ public class SwerveModuleIO_Real implements SwerveModuleIO {
       m_turningEncoder.setPositionConversionFactor(SwerveModuleConstants.kTurningEncoderPositionFactor);
       m_turningEncoder.setVelocityConversionFactor(SwerveModuleConstants.kTurningEncoderVelocityFactor);
 
+      errors += check(m_turningEncoder.setPositionConversionFactor(SwerveModuleConstants.kTurningEncoderPositionFactor));
+      errors += check(m_turningEncoder.setVelocityConversionFactor(SwerveModuleConstants.kTurningEncoderVelocityFactor));
+
       // Invert the turning encoder, since the output shaft rotates in the opposite
       // direction of
       // the steering motor in the MAXSwerve Module.
       m_turningEncoder.setInverted(SwerveModuleConstants.kTurningEncoderInverted);
       m_drivingSparkMax.setInverted(SwerveModuleConstants.kDrivingEncoderInverted);
 
+      errors += check(m_turningEncoder.setInverted(SwerveModuleConstants.kTurningEncoderInverted));
+      
       // Enable PID wrap around for the turning motor. This will allow the PID
       // controller to go through 0 to get to the setpoint i.e. going from 350 degrees
       // to 10 degrees will go through 0 rather than the other direction which is a
@@ -81,6 +91,10 @@ public class SwerveModuleIO_Real implements SwerveModuleIO {
       m_drivingPIDController.setFF(SwerveModuleConstants.kDrivingFF);
       m_drivingPIDController.setOutputRange(SwerveModuleConstants.kDrivingMinOutput,
             SwerveModuleConstants.kDrivingMaxOutput);
+      
+      errors += check(m_drivingPIDController.setP(SwerveModuleConstants.kDrivingP));
+      errors += check(m_drivingPIDController.setFF(SwerveModuleConstants.kDrivingFF));
+      errors += check(m_drivingPIDController.setOutputRange(SwerveModuleConstants.kDrivingMinOutput, SwerveModuleConstants.kDrivingMaxOutput));
 
       // Set the PID gains for the turning motor
       m_turningPIDController.setP(SwerveModuleConstants.kTurningP);
@@ -90,9 +104,18 @@ public class SwerveModuleIO_Real implements SwerveModuleIO {
       m_turningPIDController.setOutputRange(SwerveModuleConstants.kTurningMinOutput,
             SwerveModuleConstants.kTurningMaxOutput);
 
+      errors += check(m_turningPIDController.setP(SwerveModuleConstants.kTurningP));
+      errors += check(m_turningPIDController.setFF(SwerveModuleConstants.kTurningFF));
+      errors += check(m_turningPIDController.setOutputRange(SwerveModuleConstants.kTurningMinOutput, SwerveModuleConstants.kTurningMaxOutput));
 
       this.chassisAngularOffset = chassisAngularOffset;
       m_drivingEncoder.setPosition(0);
+
+      errors += check(m_drivingEncoder.setPosition(0));
+
+      if (errors > 0 ){
+         System.out.println("Swerve Module Errors! Name: " + name + ", Amount: " + errors);
+      }
    }
 
    public void updateInputs(SwerveModuleIOInputs inputs) {
@@ -152,6 +175,10 @@ public class SwerveModuleIO_Real implements SwerveModuleIO {
 
    public double getChassisAngularOffset() {
       return chassisAngularOffset;
+   }
+
+   private int check(REVLibError err) {
+      return err == REVLibError.kOk ? 0 : 1;
    }
 
 }
