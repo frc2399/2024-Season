@@ -18,7 +18,7 @@ public class Indexer extends SubsystemBase {
   }
 
   public void setIsIntooked(boolean intooked) {
-    indexerIO.setIsIntooked(intooked);
+    isIntooked = true;
   }
 
   public boolean getIsIntooked() {
