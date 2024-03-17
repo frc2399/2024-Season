@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Robot.RobotType;
+import frc.robot.commands.automaticIntakeAndIndexer;
 import frc.robot.subsystems.LED;
 import frc.robot.subsystems.Indexer.Indexer;
 import frc.robot.subsystems.Indexer.IndexerIO;
@@ -274,7 +275,8 @@ public class RobotContainer {
     // driver left trigger: outtake
     m_driverController.leftTrigger().whileTrue(new ParallelCommandGroup(
         new RunCommand(() -> m_intake.setMotor(-0.3), m_intake),
-        new RunCommand(() -> m_indexer.setMotor(-0.3), m_indexer)));
+        new RunCommand(() -> m_indexer.setMotor(-0.3), m_indexer),
+        new RunCommand(() -> m_indexer.setIsIntooked(false))));
 
     // driver b: reset gyro
     m_driverController.b().onTrue(new InstantCommand(() -> m_gyro.setYaw(0.0)));
@@ -339,13 +341,15 @@ public class RobotContainer {
     // operator right trigger: outtake
     // outtake a little bittt to get shooter up to speed
     m_operatorController.leftBumper().and(() -> !isInClimberMode)
-        .onTrue(new RunCommand(() -> m_indexer.setMotor(-0.3), m_indexer).withTimeout(0.1));
+        .onTrue(new SequentialCommandGroup(
+            new RunCommand(() -> m_indexer.setMotor(-0.3), m_indexer).withTimeout(0.1),
+            new RunCommand(() -> m_indexer.setIsIntooked(false))));
 
         //TODO test this!
     m_operatorController.axisGreaterThan(5, 0.1)
-        .whileTrue(new RunCommand(() -> m_arm.setSpeedGravityCompensation(0.1), m_arm));
+        .whileTrue(makeSetSpeedGravityCompensationCommand(m_arm, 0.1));
     m_operatorController.axisLessThan(5, -0.1)
-        .whileTrue(new RunCommand(() -> m_arm.setSpeedGravityCompensation(-0.1), m_arm));
+       .whileTrue(makeSetSpeedGravityCompensationCommand(m_arm, -0.1));
   }
 
   public static Command makeSetPositionCommand(Arm arm,
@@ -426,8 +430,7 @@ public class RobotContainer {
             new SequentialCommandGroup(
                 new WaitCommand(0.25),
                 new RunCommand(() -> m_indexer.setMotor(Constants.IndexerConstants.INDEXER_IN_SPEED), m_indexer),
-                new RunCommand(() -> m_indexer.setIsIntooked(false), m_indexer)
-                ),
+                new RunCommand(() -> m_indexer.setIsIntooked(false))),
             new RunCommand(() -> m_shooter.setMotor(m_arm.getSpeedFromArmHeight()), m_shooter)).
                  withTimeout(0.5),
         new InstantCommand(() -> m_shooter.setMotor(0), m_shooter),
@@ -437,9 +440,7 @@ public class RobotContainer {
 
   private Command intakeWithHeightRestriction() {
     return new ConditionalCommand(
-        new ParallelCommandGroup(
-            new RunCommand(() -> m_intake.setMotor(Constants.IntakeConstants.INTAKING_SPEED), m_intake),
-            new RunCommand(() -> m_indexer.setMotor(Constants.IndexerConstants.INDEXER_IN_SPEED), m_indexer)),
+        new automaticIntakeAndIndexer(m_indexer, m_intake),
         new ParallelCommandGroup(
             new RunCommand(() -> m_intake.setMotor(0), m_intake),
             new RunCommand(() -> m_indexer.setMotor(0), m_indexer)),

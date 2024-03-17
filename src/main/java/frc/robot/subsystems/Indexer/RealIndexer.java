@@ -72,7 +72,7 @@ public class RealIndexer implements IndexerIO {
         if (isSensorOverriden) {
             return false;
         } else {
-            return indexerSensorBottom.get();
+            return !indexerSensorBottom.get();
         }
     }
 
