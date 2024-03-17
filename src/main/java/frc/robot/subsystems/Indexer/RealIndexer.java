@@ -63,26 +63,11 @@ public class RealIndexer implements IndexerIO {
     }
 
     @Override
-    public void setIsIntooked(boolean intooked) {
-        isIntooked = intooked;
-    }
-
-    @Override
     public boolean getIsBeamBroken() {
         if (isSensorOverriden) {
             return false;
         } else {
             return !indexerSensorBottom.get();
         }
-    }
-
-    @Override
-    public boolean getIsIntooked() {
-        return isIntooked;
-    }
-
-    @Override
-    public boolean isStalling() {
-        return false;
     }
 }

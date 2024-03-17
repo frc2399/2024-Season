@@ -18,11 +18,11 @@ public class Indexer extends SubsystemBase {
   }
 
   public void setIsIntooked(boolean intooked) {
-    isIntooked = true;
+    isIntooked = intooked;
   }
 
   public boolean getIsIntooked() {
-    return indexerIO.getIsIntooked();
+    return isIntooked;
   }
 
   public double getCurrent() {
@@ -51,9 +51,5 @@ public class Indexer extends SubsystemBase {
   public void periodic() {
     indexerIO.periodicUpdate();
     SmartDashboard.putNumber("indexer/ indexer speed", getEncoderSpeed());
-  }
-
-  public boolean isStalling() {
-    return indexerIO.isStalling();
   }
 }

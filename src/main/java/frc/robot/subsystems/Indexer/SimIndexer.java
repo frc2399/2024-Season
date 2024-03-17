@@ -17,10 +17,6 @@ public class SimIndexer implements IndexerIO {
         SmartDashboard.putNumber("indexer sim velocity", 0);
     }
 
-    public void setIsIntooked(boolean intooked) {
-        isIntooked = intooked;
-    }
-
     public void setMotor(double speed) {
         indexerMotorSim.setInput(speed);
     }
@@ -46,16 +42,6 @@ public class SimIndexer implements IndexerIO {
     }
 
     public boolean getIsBeamBroken() {
-        return false;
-    }
-
-    @Override
-    public boolean getIsIntooked() {
-        return false;
-    }
-
-    @Override
-    public boolean isStalling() {
         return false;
     }
 }
