@@ -128,8 +128,6 @@ public class VisionReal extends SubsystemBase implements VisionIO {
 
     //keeps the robot pointed at the speaker; uses PID and yaw
     public double keepPointedAtSpeaker() {
-      SmartDashboard.putNumber("vision/debugging/speakerID", speakerID);
-      SmartDashboard.putNumber("vision/debugging/speaker ID from VisionReal (should be 7) ", speakerID);
       boolean seesSpeaker = false;
       double yawDiff = 0.0;
       //gets yaw to centralized speaker target
@@ -138,8 +136,6 @@ public class VisionReal extends SubsystemBase implements VisionIO {
           seesSpeaker = true;
           //yaw in radians bc p values get too small
           yawDiff = ((result.getYaw()*Math.PI)/180);
-          SmartDashboard.putBoolean("vision/debugging/Sees speaker (only true when in keep pointed mode): ", true);
-          SmartDashboard.putNumber("vision/YawDiff", yawDiff);
           // Add green/red square for if robot aligned within 5 degrees to speaker tag
           if (yawDiff < Math.toRadians(5)) {
             isAligned = true;
@@ -153,7 +149,6 @@ public class VisionReal extends SubsystemBase implements VisionIO {
         }
       }
       if (!seesSpeaker) {
-        SmartDashboard.putBoolean("vision/debugging/Sees speaker (only true when in keep pointed mode): ", false);
         driveTrainIsAligned = false;
       }
       return (keepPointedController.calculate(yawDiff, 0));
@@ -167,17 +162,12 @@ public class VisionReal extends SubsystemBase implements VisionIO {
       final double hundredIntercept = VisionConstants.hundredModelIntercept;
       final double boundary = VisionConstants.eightyModelRange;
       double dist;
-      System.out.println("hi");
       Translation2d speakerDist;
       PhotonTrackedTarget speakerTarget;
       boolean seesSpeaker = false;
       double desiredRadians = 0.37;
-      SmartDashboard.putString("vision/debugging/hi", "hi it calls :)");
       //this should help with the debugging :)
       for (PhotonTrackedTarget result : getCameraResult().getTargets()) {
-        SmartDashboard.putNumber("vision/debugging/hi again", result.getFiducialId());
-        System.out.println(result.getFiducialId());
-        System.out.println(speakerID);
         if (result.getFiducialId() == speakerID) {
           seesSpeaker = true;
           speakerTarget = result;
@@ -192,15 +182,16 @@ public class VisionReal extends SubsystemBase implements VisionIO {
             } else {
               desiredRadians = (Math.atan(hundredSlope * Units.metersToInches(dist) + hundredIntercept));
             }
-            SmartDashboard.putBoolean("vision/debugging/Sees speaker (arm): ", true);
         }
       }
       if (!seesSpeaker) {
-        SmartDashboard.putBoolean("vision/debugging/Sees speaker (arm): ", false);
+        armIsAligned = false;
       }
       if (Math.abs(curArmAngle - desiredRadians) < VisionConstants.armAlignTolerance) {
         armIsAligned = true;
-      }        
+      } else {
+        armIsAligned = false;
+      }
       return desiredRadians;
     }
 
