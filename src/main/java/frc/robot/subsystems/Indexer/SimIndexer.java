@@ -44,4 +44,9 @@ public class SimIndexer implements IndexerIO {
     public boolean getIsBeamBroken() {
         return false;
     }
+
+    @Override
+    public void setIsOverride() {
+        
+    }
 }

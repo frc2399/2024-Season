@@ -70,4 +70,9 @@ public class RealIndexer implements IndexerIO {
             return !indexerSensorBottom.get();
         }
     }
+
+    @Override
+    public void setIsOverride() {
+        isSensorOverriden = !isSensorOverriden;
+    }
 }

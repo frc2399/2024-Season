@@ -14,4 +14,6 @@ public interface IndexerIO {
     public void periodicUpdate();
 
     public boolean getIsBeamBroken();
+
+    public void setIsOverride();
 }
