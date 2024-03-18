@@ -26,7 +26,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class VisionReal extends SubsystemBase implements VisionIO {
-    private static AprilTagFieldLayout kFieldLayout;
+    private static AprilTagFieldLayout KFIELDLAYOUT;
     public static PhotonCamera camera;
     private static PhotonPoseEstimator CamEstimator;
     private boolean updatePoseWithVisionReadings = true;
@@ -55,9 +55,9 @@ public class VisionReal extends SubsystemBase implements VisionIO {
   /** Creates a new Vision. */
   public VisionReal() {
     camera = new PhotonCamera("backup_camera"); //swap if swapping cameras
-    CamEstimator = new PhotonPoseEstimator(VisionConstants.kFieldLayout, 
-    PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camera, VisionConstants.camToRobot);
-    kFieldLayout = VisionConstants.kFieldLayout; 
+    CamEstimator = new PhotonPoseEstimator(VisionConstants.KFIELDLAYOUT, 
+    PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camera, VisionConstants.CAMTOROBOT);
+    KFIELDLAYOUT = VisionConstants.KFIELDLAYOUT; 
   }
 
   @Override
@@ -79,10 +79,8 @@ public class VisionReal extends SubsystemBase implements VisionIO {
         //the robot pose is estimating field to robot using photon utils
         robotPose = PhotonUtils.estimateFieldToRobotAprilTag(
           target.getBestCameraToTarget(),
-          kFieldLayout.getTagPose(target.getFiducialId()).get(), 
-          VisionConstants.camToRobot);
-        SmartDashboard.putNumber("robot pose", robotPose.getX());
-        SmartDashboard.putNumber("robot pose y", robotPose.getY());
+          KFIELDLAYOUT.getTagPose(target.getFiducialId()).get(), 
+          VisionConstants.CAMTOROBOT);
      }
     }
   }
@@ -143,7 +141,7 @@ public class VisionReal extends SubsystemBase implements VisionIO {
           }
           else {
             isAligned = false;
-            driveTrainIsAligned = true;
+            driveTrainIsAligned = false;
           }
           break; //saves a tiny bit of processing power possibly
         }
@@ -156,16 +154,17 @@ public class VisionReal extends SubsystemBase implements VisionIO {
 
   //retrns desired arm radians based on distance from aprilTag
   public double keepArmAtAngle(double curArmAngle) {    
-      final double eightySlope = VisionConstants.eightyModelSlope;
-      final double eightyIntercept = VisionConstants.eightyModelIntercept;
-      final double hundredSlope = VisionConstants.hundredModelSlope;
-      final double hundredIntercept = VisionConstants.hundredModelIntercept;
-      final double boundary = VisionConstants.eightyModelRange;
+      final double EIGHTYSLOPE = VisionConstants.EIGHTYMODELSLOPE;
+      final double EIGHTYINTERCEPT = VisionConstants.EIGHTYMODELINTERCEPT;
+      final double HUNDREDSLOPE = VisionConstants.HUNDREDMODELSLOPE;
+      final double HUNDREDINTERCEPT = VisionConstants.HUNDREDMODELINTERCEPT;
+      final double BOUNDARY = VisionConstants.EIGHTYMODELRANGE;
+      final double STAYDOWNBOUNDARY = VisionConstants.STAYDOWNBOUNDARY;
       double dist;
       Translation2d speakerDist;
       PhotonTrackedTarget speakerTarget;
       boolean seesSpeaker = false;
-      double desiredRadians = 0.37;
+      double desiredRadians = 0.31;
       //this should help with the debugging :)
       for (PhotonTrackedTarget result : getCameraResult().getTargets()) {
         if (result.getFiducialId() == speakerID) {
@@ -177,17 +176,21 @@ public class VisionReal extends SubsystemBase implements VisionIO {
             dist = speakerDist.getNorm();
             //accounts for model measuring from front of frame and pose being to center of robot
             dist -= Units.inchesToMeters(15.75);
-            if (dist <= boundary) {
-              desiredRadians = (Math.atan(eightySlope * Units.metersToInches(dist) + eightyIntercept));
+            dist = Units.metersToInches(dist);
+            if (dist <= STAYDOWNBOUNDARY) {
+              return desiredRadians;
+            }
+            if (dist <= BOUNDARY) {
+              desiredRadians = ((EIGHTYSLOPE * (dist) + EIGHTYINTERCEPT));
             } else {
-              desiredRadians = (Math.atan(hundredSlope * Units.metersToInches(dist) + hundredIntercept));
+              desiredRadians = ((HUNDREDSLOPE * (dist) + HUNDREDINTERCEPT));
             }
         }
       }
       if (!seesSpeaker) {
         armIsAligned = false;
       }
-      if (Math.abs(curArmAngle - desiredRadians) < VisionConstants.armAlignTolerance) {
+      if (Math.abs(curArmAngle - desiredRadians) < VisionConstants.ARMALIGNTOLERANCE) {
         armIsAligned = true;
       } else {
         armIsAligned = false;
@@ -224,7 +227,13 @@ public class VisionReal extends SubsystemBase implements VisionIO {
           facingAwayFromSpeakerStageRightID = 16;
           ampID = 6;
       }
-    SmartDashboard.putNumber("vision/speaker id", speakerID);
+    }
 
+    public void makeDriveTrainAlignedFalse() {
+      driveTrainIsAligned = false;
+    }
+
+    public void makeArmAlignedFalse() {
+      armIsAligned = false;
     }
   }

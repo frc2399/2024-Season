@@ -29,4 +29,6 @@ public interface VisionIO {
     public void assignAprilTags(Optional<Alliance> ally);
     public boolean isDriveTrainAligned();
     public boolean isArmAligned();
+    public void makeDriveTrainAlignedFalse();
+    public void makeArmAlignedFalse();
 }

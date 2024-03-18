@@ -13,11 +13,7 @@ public interface IndexerIO {
 
     public void periodicUpdate();
 
-    public void setIsIntooked(boolean intooked);
-
     public boolean getIsBeamBroken();
 
-    public boolean getIsIntooked();
-
-    public boolean isStalling();
+    public void setIsOverride();
 }

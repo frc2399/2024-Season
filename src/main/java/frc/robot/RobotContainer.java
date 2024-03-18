@@ -68,395 +68,405 @@ import frc.robot.subsystems.vision.VisionSim;
  * (including subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-  // The robot's subsystems
-  public static LED m_led;
-  private DriveSubsystem m_robotDrive;
-  private static GyroIO m_gyro;
+    // The robot's subsystems
+    public static LED m_led;
+    private DriveSubsystem m_robotDrive;
+    private static GyroIO m_gyro;
 
-  public boolean fieldOrientedDrive = true;
-  public static boolean isInClimberMode = false;
+    public boolean fieldOrientedDrive = true;
+    public static boolean isInClimberMode = false;
 
-  // swerve module IOs
-  private SwerveModuleIO m_frontLeftIO;
-  private SwerveModuleIO m_frontRightIO;
-  private SwerveModuleIO m_rearLeftIO;
-  private SwerveModuleIO m_rearRightIO;
+    // swerve module IOs
+    private SwerveModuleIO m_frontLeftIO;
+    private SwerveModuleIO m_frontRightIO;
+    private SwerveModuleIO m_rearLeftIO;
+    private SwerveModuleIO m_rearRightIO;
 
-  // subsystems
-  public static Shooter m_shooter;
-  public static Intake m_intake;
-  public static Indexer m_indexer;
-  public static Climber m_climber;
-  public static Arm m_arm;
-  public static Vision m_vision;
+    // subsystems
+    public static Shooter m_shooter;
+    public static Intake m_intake;
+    public static Indexer m_indexer;
+    public static Climber m_climber;
+    public static Arm m_arm;
+    public static Vision m_vision;
 
-  // subsystem IOs
-  ShooterIO shooterIO;
-  IntakeIO intakeIO;
-  IndexerIO indexerIO;
-  ArmIO armIO;
-  ClimberIO climberIO;
-  VisionIO visionIO;
+    // subsystem IOs
+    ShooterIO shooterIO;
+    IntakeIO intakeIO;
+    IndexerIO indexerIO;
+    ArmIO armIO;
+    ClimberIO climberIO;
+    VisionIO visionIO;
 
-  // auton chooser
-  private static SendableChooser<Command> m_autoChooser;
-  ComplexWidget autonChooserWidget;
+    // auton chooser
+    private static SendableChooser<Command> m_autoChooser;
+    ComplexWidget autonChooserWidget;
 
-  // The driver and operator controllers
-  CommandXboxController m_driverController = new CommandXboxController(OIConstants.kDriverControllerPort);
-  CommandXboxController m_operatorController = new CommandXboxController(OIConstants.kOperatorControllerPort);
+    // The driver and operator controllers
+    CommandXboxController m_driverController = new CommandXboxController(OIConstants.kDriverControllerPort);
+    CommandXboxController m_operatorController = new CommandXboxController(OIConstants.kOperatorControllerPort);
 
-  /**
-   * The container for the robot. Contains subsystems, OI devices, and commands.
-   */
-  public RobotContainer() {
-    setUpSubsystems();
-    configureDefaultCommands();
-    configureButtonBindingsDriver();
-    configureButtonBindingsOperatorClimber();
-    configureButtonBindingsOperatorNotClimber();
-    setUpAuton();
-
-  }
-
-  public Command getAutonomousCommand() {
-    return m_autoChooser.getSelected();
-  }
-
-  private void setUpSubsystems() {
-
-    if (Robot.robotType == RobotType.SIMULATION) {
-      indexerIO = new SimIndexer();
-      shooterIO = new SimShooter();
-      intakeIO = new SimIntake();
-      climberIO = new ClimberSim();
-      armIO = new SimArm();
-      m_gyro = new GyroIOSim();
-      m_frontLeftIO = new SwerveModuleIO_Sim("front left");
-      m_frontRightIO = new SwerveModuleIO_Sim("front right");
-      m_rearLeftIO = new SwerveModuleIO_Sim("rear left");
-      m_rearRightIO = new SwerveModuleIO_Sim("rear right");
-
-      m_robotDrive = new DriveSubsystem(
-          new SwerveModule(m_frontLeftIO),
-          new SwerveModule(m_frontRightIO),
-          new SwerveModule(m_rearLeftIO),
-          new SwerveModule(m_rearRightIO), m_gyro);
-
-      visionIO = new VisionSim(m_robotDrive);
-
-    } else {
-
-      m_frontLeftIO = new SwerveModuleIO_Real(DriveConstants.kFrontLeftDrivingCanId,
-          DriveConstants.kFrontLeftTurningCanId, DriveConstants.kFrontLeftChassisAngularOffset,
-          "front left");
-      m_frontRightIO = new SwerveModuleIO_Real(DriveConstants.kFrontRightDrivingCanId,
-          DriveConstants.kFrontRightTurningCanId, DriveConstants.kFrontRightChassisAngularOffset,
-          "front right");
-      m_rearLeftIO = new SwerveModuleIO_Real(DriveConstants.kRearLeftDrivingCanId,
-          DriveConstants.kRearLeftTurningCanId, DriveConstants.kRearLeftChassisAngularOffset,
-          "rear left");
-      m_rearRightIO = new SwerveModuleIO_Real(DriveConstants.kRearRightDrivingCanId,
-          DriveConstants.kRearRightTurningCanId, DriveConstants.kRearRightChassisAngularOffset,
-          "rear right");
-
-      indexerIO = new RealIndexer();
-      shooterIO = new RealShooter();
-      intakeIO = new RealIntake();
-      climberIO = new ClimberReal();
-      armIO = new RealArm();
-      m_gyro = new GyroIOPigeon2();
-      visionIO = new VisionReal();
-
-      m_robotDrive = new DriveSubsystem(
-          new SwerveModule(m_frontLeftIO),
-          new SwerveModule(m_frontRightIO),
-          new SwerveModule(m_rearLeftIO),
-          new SwerveModule(m_rearRightIO), m_gyro);
+    /**
+     * The container for the robot. Contains subsystems, OI devices, and commands.
+     */
+    public RobotContainer() {
+        setUpSubsystems();
+        configureDefaultCommands();
+        configureButtonBindingsDriver();
+        configureButtonBindingsOperatorClimber();
+        configureButtonBindingsOperatorNotClimber();
+        setUpAuton();
 
     }
 
-    m_climber = new Climber(climberIO);
-    m_arm = new Arm(armIO);
-    m_shooter = new Shooter(shooterIO);
-    m_indexer = new Indexer(indexerIO);
-    m_intake = new Intake(intakeIO);
-    m_vision = new Vision(visionIO);
-    m_led = new LED(m_vision);
-  }
+    public Command getAutonomousCommand() {
+        return m_autoChooser.getSelected();
+    }
 
-  // sets up auton commands
-  private void setUpAuton() {
-    NamedCommands.registerCommand("intake", intakeWithHeightRestriction());
-    NamedCommands.registerCommand("Intake", intakeWithHeightRestriction());
-    NamedCommands.registerCommand("intake for time", intakeForTime(m_intake, m_indexer));
-    NamedCommands.registerCommand("SHORT intake for time", shortIntakeForTime(m_intake, m_indexer));
-    NamedCommands.registerCommand("AimToTarget", Commands.print("aimed to target!"));
-    NamedCommands.registerCommand("SetArmPosition", makeSetPositionCommandAuton(m_arm, 0.475));
-    NamedCommands.registerCommand("Set Arm Wingleft", makeSetPositionCommandAuton(m_arm, 0.745));
-    NamedCommands.registerCommand("SetArmDown", makeSetPositionCommandAuton(m_arm, 0.335));
-    NamedCommands.registerCommand("AutoShoot", outtakeAndShootAfterDelay());
-    NamedCommands.registerCommand("intake and outtake", intakeAndOuttake());
-    NamedCommands.registerCommand("outtake", outtake());
+    private void setUpSubsystems() {
 
-    m_autoChooser = AutoBuilder.buildAutoChooser();
-    SmartDashboard.putData("Autos/Selector", m_autoChooser);
+        if (Robot.robotType == RobotType.SIMULATION) {
+            indexerIO = new SimIndexer();
+            shooterIO = new SimShooter();
+            intakeIO = new SimIntake();
+            climberIO = new ClimberSim();
+            armIO = new SimArm();
+            m_gyro = new GyroIOSim();
+            m_frontLeftIO = new SwerveModuleIO_Sim("front left");
+            m_frontRightIO = new SwerveModuleIO_Sim("front right");
+            m_rearLeftIO = new SwerveModuleIO_Sim("rear left");
+            m_rearRightIO = new SwerveModuleIO_Sim("rear right");
 
-  }
+            m_robotDrive = new DriveSubsystem(
+                    new SwerveModule(m_frontLeftIO),
+                    new SwerveModule(m_frontRightIO),
+                    new SwerveModule(m_rearLeftIO),
+                    new SwerveModule(m_rearRightIO), m_gyro);
 
-  // Configure default commands
-  private void configureDefaultCommands() {
-    // default command for the shooter: do nothing
-    m_shooter.setDefaultCommand(
-        new RunCommand(
-            () -> m_shooter.setMotor(0),
-            m_shooter).withName("drive default"));
+            visionIO = new VisionSim(m_robotDrive);
 
-    // default command for intake: do nothing
-    m_intake.setDefaultCommand(
-        new RunCommand(
-            () -> m_intake.setMotor(0),
-            m_intake).withName("drive default"));
+        } else {
 
-    // default command for indexer: do nothing
-    m_indexer.setDefaultCommand(
-        new RunCommand(
-            () -> m_indexer.setMotor(0),
-            m_indexer).withName("drive default"));
+            m_frontLeftIO = new SwerveModuleIO_Real(DriveConstants.kFrontLeftDrivingCanId,
+                    DriveConstants.kFrontLeftTurningCanId, DriveConstants.kFrontLeftChassisAngularOffset,
+                    "front left");
+            m_frontRightIO = new SwerveModuleIO_Real(DriveConstants.kFrontRightDrivingCanId,
+                    DriveConstants.kFrontRightTurningCanId, DriveConstants.kFrontRightChassisAngularOffset,
+                    "front right");
+            m_rearLeftIO = new SwerveModuleIO_Real(DriveConstants.kRearLeftDrivingCanId,
+                    DriveConstants.kRearLeftTurningCanId, DriveConstants.kRearLeftChassisAngularOffset,
+                    "rear left");
+            m_rearRightIO = new SwerveModuleIO_Real(DriveConstants.kRearRightDrivingCanId,
+                    DriveConstants.kRearRightTurningCanId, DriveConstants.kRearRightChassisAngularOffset,
+                    "rear right");
 
-    // default command for climber: do nothing
-    m_climber.setDefaultCommand(
-        new RunCommand(
-            () -> m_climber.setMotors(0),
-            m_climber));
+            indexerIO = new RealIndexer();
+            shooterIO = new RealShooter();
+            intakeIO = new RealIntake();
+            climberIO = new ClimberReal();
+            armIO = new RealArm();
+            m_gyro = new GyroIOPigeon2();
+            visionIO = new VisionReal();
 
-    // Arm default command; do nothing but with gravity compensation so it stays
-    // where it is.
-    // Setpoint is in RADIANS
-    m_arm.setEncoderPosition(m_arm.getAbsoluteEncoderPosition());
-    m_arm.setDefaultCommand(new RunCommand(() -> m_arm.setSpeedGravityCompensation(0), m_arm).withName("drive default"));
+            m_robotDrive = new DriveSubsystem(
+                    new SwerveModule(m_frontLeftIO),
+                    new SwerveModule(m_frontRightIO),
+                    new SwerveModule(m_rearLeftIO),
+                    new SwerveModule(m_rearRightIO), m_gyro);
 
-    // default command for drivetrain: drive based on controller inputs
-    // actually driving robot
-    m_robotDrive.setDefaultCommand(
-        // The left stick controls translation of the robot.
-        // Turning is controlled by the X axis of the right stick.
-        new RunCommand(
-            () -> m_robotDrive.drive(
-                -Math.pow(MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband), 3),
-                -Math.pow(MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband), 3),
-                -Math.pow(MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband), 3),
-                fieldOrientedDrive),
-            m_robotDrive).withName("drive default"));
+        }
 
-  }
+        m_climber = new Climber(climberIO);
+        m_arm = new Arm(armIO);
+        m_shooter = new Shooter(shooterIO);
+        m_indexer = new Indexer(indexerIO);
+        m_intake = new Intake(intakeIO);
+        m_vision = new Vision(visionIO);
+        m_led = new LED(m_vision, m_indexer);
+    }
 
-  private void configureButtonBindingsDriver() {
-    // while true with run commands
-    m_driverController.y().whileTrue((new RunCommand(() -> m_robotDrive.setZero(), m_robotDrive).withName("setzero")));
-    m_driverController.x().whileTrue((new RunCommand(
-        () -> m_robotDrive.setX(),
-        m_robotDrive).withName("setx")));
+    // sets up auton commands
+    private void setUpAuton() {
+        NamedCommands.registerCommand("intake", intakeWithHeightRestriction());
+        NamedCommands.registerCommand("Intake", intakeWithHeightRestriction());
+        NamedCommands.registerCommand("intake for time", intakeForTime(m_intake, m_indexer));
+        NamedCommands.registerCommand("SHORT intake for time", shortIntakeForTime(m_intake, m_indexer));
+        NamedCommands.registerCommand("AimToTarget", Commands.print("aimed to target!"));
+        NamedCommands.registerCommand("SetArmPosition", makeSetPositionCommandAuton(m_arm, 0.475));
+        NamedCommands.registerCommand("Set Arm Wingleft", makeSetPositionCommandAuton(m_arm, 0.745));
+        NamedCommands.registerCommand("SetArmDown", makeSetPositionCommandAuton(m_arm, 0.335));
+        NamedCommands.registerCommand("AutoShoot", outtakeAndShootAfterDelay());
+        NamedCommands.registerCommand("intake and outtake", intakeAndOuttake());
+        NamedCommands.registerCommand("outtake", outtake());
 
+        m_autoChooser = AutoBuilder.buildAutoChooser();
+        SmartDashboard.putData("Autos/Selector", m_autoChooser);
 
-    // driver left bumper: manual shoot
-    // gets arm height to assign to speed. lower arm, means cloesr to speaekr, so
-    // shoots less forecfully
-    m_driverController.leftBumper().whileTrue(
-        new RunCommand(() -> m_shooter.setMotor(m_arm.getSpeedFromArmHeight()), m_shooter));
+    }
 
-    // driver right bumper: auto-shoot
-    m_driverController.rightBumper().onTrue(shootAfterDelay());
+    // Configure default commands
+    private void configureDefaultCommands() {
+        // default command for the shooter: do nothing
+        m_shooter.setDefaultCommand(
+                new RunCommand(
+                        () -> m_shooter.setMotor(0),
+                        m_shooter).withName("drive default"));
 
-    // driver right trigger: manual intake with arm height restriction
-    // only intakes if arm is lowered
-    m_driverController.rightTrigger().whileTrue(intakeWithHeightRestriction());
+        // default command for intake: do nothing
+        m_intake.setDefaultCommand(
+                new RunCommand(
+                        () -> m_intake.setMotor(0),
+                        m_intake).withName("drive default"));
 
-    // driver left trigger: outtake
-    m_driverController.leftTrigger().whileTrue(new ParallelCommandGroup(
-        new RunCommand(() -> m_intake.setMotor(-0.3), m_intake),
-        new RunCommand(() -> m_indexer.setMotor(-0.3), m_indexer),
-        new RunCommand(() -> m_indexer.setIsIntooked(false))));
+        // default command for indexer: do nothing
+        m_indexer.setDefaultCommand(
+                new RunCommand(
+                        () -> m_indexer.setMotor(0),
+                        m_indexer).withName("drive default"));
 
-    // driver b: reset gyro
-    m_driverController.b().onTrue(new InstantCommand(() -> m_gyro.setYaw(0.0)));
+        // default command for climber: do nothing
+        m_climber.setDefaultCommand(
+                new RunCommand(
+                        () -> m_climber.setMotors(0),
+                        m_climber));
 
-    // driver a: align to speaker mode
-    m_driverController.a().whileTrue(
-        new RunCommand(() -> m_robotDrive.drive(
-            -Math.pow(MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband), 3),
-            -Math.pow(MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband), 3),
-            m_vision.keepPointedAtSpeaker(),
-            fieldOrientedDrive), m_robotDrive));
-  }
+        // Arm default command; do nothing but with gravity compensation so it stays
+        // where it is.
+        // Setpoint is in RADIANS
+        m_arm.setEncoderPosition(m_arm.getAbsoluteEncoderPosition());
+        m_arm.setDefaultCommand(
+                new RunCommand(() -> m_arm.setSpeedGravityCompensation(0), m_arm).withName("drive default"));
 
-  private void configureButtonBindingsOperatorClimber() {
-    // operater left trigger: climber mode: left climber up
-    m_operatorController.leftTrigger().and(() -> isInClimberMode).whileTrue(new RunCommand(
-        () -> m_climber.setLeftSpeed(0.2), m_climber));
+        // default command for drivetrain: drive based on controller inputs
+        // actually driving robot
+        m_robotDrive.setDefaultCommand(
+                // The left stick controls translation of the robot.
+                // Turning is controlled by the X axis of the right stick.
+                new RunCommand(
+                        () -> m_robotDrive.drive(
+                                -Math.pow(MathUtil.applyDeadband(m_driverController.getLeftY(),
+                                        OIConstants.kDriveDeadband), 3),
+                                -Math.pow(MathUtil.applyDeadband(m_driverController.getLeftX(),
+                                        OIConstants.kDriveDeadband), 3),
+                                -Math.pow(MathUtil.applyDeadband(m_driverController.getRightX(),
+                                        OIConstants.kDriveDeadband), 3),
+                                fieldOrientedDrive),
+                        m_robotDrive).withName("drive default"));
 
-    // operater right trigger: climber mode: right climber up
-    m_operatorController.rightTrigger().and(() -> isInClimberMode).whileTrue(new RunCommand(
-        () -> m_climber.setRightSpeed(0.2), m_climber));
+    }
 
-    // operater left bumper: climber mode: left climber down
-    m_operatorController.leftBumper().and(() -> isInClimberMode).whileTrue(new RunCommand(
-        () -> m_climber.setLeftSpeed(-0.2), m_climber));
+    private void configureButtonBindingsDriver() {
+        // while true with run commands
+        m_driverController.y()
+                .whileTrue((new RunCommand(() -> m_robotDrive.setZero(), m_robotDrive).withName("setzero")));
+        m_driverController.x().whileTrue((new RunCommand(
+                () -> m_robotDrive.setX(),
+                m_robotDrive).withName("setx")));
 
-    // operater right bumper: climber mode: right climber down
-    m_operatorController.rightBumper().and(() -> isInClimberMode).whileTrue(new RunCommand(
-        () -> m_climber.setRightSpeed(-0.2), m_climber));
+        // driver left bumper: manual shoot
+        // gets arm height to assign to speed. lower arm, means cloesr to speaekr, so
+        // shoots less forecfully
+        m_driverController.leftBumper().whileTrue(
+                new RunCommand(() -> m_shooter.setMotor(m_arm.getSpeedFromArmHeight()), m_shooter));
 
-    // operator b (climber mode): automatic climber up
-    m_operatorController.b().and(() -> isInClimberMode).whileTrue(new RunCommand(() -> m_climber.setMotors(0.5)));
+        // driver right bumper: auto-shoot
+        m_driverController.rightBumper().onTrue(shootWhenUpToSpeed());
 
-    // operator a (climber mode): automatic climber down
-    m_operatorController.a().and(() -> isInClimberMode).whileTrue(new RunCommand(() -> m_climber.setMotors(-0.5)));
+        // driver right trigger: manual intake with arm height restriction
+        // only intakes if arm is lowered
+        m_driverController.rightTrigger().whileTrue(new automaticIntakeAndIndexer(m_indexer, m_intake, m_arm));
 
-    // operator x: switch operator controller modes
-    m_operatorController.x().onTrue(new InstantCommand(() -> isInClimberMode = !isInClimberMode));
+        // driver left trigger: outtake
+        m_driverController.leftTrigger().whileTrue(new ParallelCommandGroup(
+                new RunCommand(() -> m_intake.setMotor(-0.3), m_intake),
+                new RunCommand(() -> m_indexer.setMotor(-0.3), m_indexer),
+                new RunCommand(() -> m_indexer.setIsIntooked(false))));
 
-  }
+        // driver b: reset gyro
+        m_driverController.b().onTrue(new InstantCommand(() -> m_gyro.setYaw(0.0)));
 
-  private void configureButtonBindingsOperatorNotClimber() {
-    m_operatorController.leftTrigger().and(() -> !isInClimberMode).whileTrue(
-        makeSetPositionCommandVision(m_arm)
-        );
+        // driver a: align to speaker mode
+        m_driverController.a().whileTrue(
+                new RunCommand(() -> m_robotDrive.drive(
+                        -Math.pow(MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband), 3),
+                        -Math.pow(MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband), 3),
+                        m_vision.keepPointedAtSpeaker(),
+                        fieldOrientedDrive), m_robotDrive))
+                .onFalse(new InstantCommand(() -> m_vision.makeDriveTrainAlignedFalse()));
+    }
 
-    // operater a: arm to intake/subwoofer angle
-    m_operatorController.a().and(() -> !isInClimberMode).onTrue(makeSetPositionCommand(m_arm, 0.31));
+    private void configureButtonBindingsOperatorClimber() {
+        // operater left trigger: climber mode: left climber up
+        m_operatorController.leftTrigger().and(() -> isInClimberMode).whileTrue(new RunCommand(
+                () -> m_climber.setLeftSpeed(0.2), m_climber));
 
-    // operator b: arm to podium shot angle
-    m_operatorController.b().and(() -> !isInClimberMode).onTrue(makeSetPositionCommand(m_arm, 0.66));
+        // operater right trigger: climber mode: right climber up
+        m_operatorController.rightTrigger().and(() -> isInClimberMode).whileTrue(new RunCommand(
+                () -> m_climber.setRightSpeed(0.2), m_climber));
 
-    // operator y: arm to amp angle
-    m_operatorController.y().and(() -> !isInClimberMode).onTrue(makeSetPositionCommand(m_arm, 1.58));
+        // operater left bumper: climber mode: left climber down
+        m_operatorController.leftBumper().and(() -> isInClimberMode).whileTrue(new RunCommand(
+                () -> m_climber.setLeftSpeed(-0.2), m_climber));
 
-    // operator left trigger: intake
-    m_operatorController.rightBumper().and(() -> !isInClimberMode)
-        .whileTrue(new RunCommand(() -> m_indexer.setMotor(0.3), m_indexer));
-        
+        // operater right bumper: climber mode: right climber down
+        m_operatorController.rightBumper().and(() -> isInClimberMode).whileTrue(new RunCommand(
+                () -> m_climber.setRightSpeed(-0.2), m_climber));
 
-    // operator right trigger: outtake
-    // outtake a little bittt to get shooter up to speed
-    m_operatorController.leftBumper().and(() -> !isInClimberMode)
-        .onTrue(new SequentialCommandGroup(
-            new RunCommand(() -> m_indexer.setMotor(-0.3), m_indexer).withTimeout(0.1),
-            new RunCommand(() -> m_indexer.setIsIntooked(false))));
+        // operator b (climber mode): automatic climber up
+        m_operatorController.b().and(() -> isInClimberMode).whileTrue(new RunCommand(() -> m_climber.setMotors(0.5)));
 
-        //TODO test this!
-    m_operatorController.axisGreaterThan(5, 0.1)
-        .whileTrue(makeSetSpeedGravityCompensationCommand(m_arm, 0.1));
-    m_operatorController.axisLessThan(5, -0.1)
-       .whileTrue(makeSetSpeedGravityCompensationCommand(m_arm, -0.1));
-  }
+        // operator a (climber mode): automatic climber down
+        m_operatorController.a().and(() -> isInClimberMode).whileTrue(new RunCommand(() -> m_climber.setMotors(-0.5)));
 
-  public static Command makeSetPositionCommand(Arm arm,
-      double target) {
-    return new SequentialCommandGroup(
-        new ConditionalCommand(new InstantCommand(() -> {
-        }), new InstantCommand(() -> arm.enable(), arm), () -> arm.isEnabled()),
-        new RunCommand(() -> arm.setGoal(target), arm));
-  }
+        // operator x: switch operator controller modes
+        m_operatorController.x().onTrue(new InstantCommand(() -> isInClimberMode = !isInClimberMode));
 
-  private Command makeSetPositionCommandVision(Arm arm) {
-    System.out.println("hi");
-    DoubleSupplier target = ()-> (m_vision.keepArmAtAngle((m_arm.getAbsoluteEncoderPosition())));
-    return new SequentialCommandGroup(
-        new ConditionalCommand(new InstantCommand(() -> {
-        }), new InstantCommand(() -> arm.enable(), arm), () -> arm.isEnabled()),
-        new RunCommand(() -> arm.setGoal(target.getAsDouble()), arm));
-  }
+    }
 
-  public static Command makeSetPositionCommandAuton(Arm arm,
-      double target) {
-    return new SequentialCommandGroup(
-        new ConditionalCommand(new InstantCommand(() -> {
-        }), new InstantCommand(() -> arm.enable(), arm), () -> arm.isEnabled()),
-        new InstantCommand(() -> arm.setGoal(target), arm),
-        new WaitCommand(0.5));
-  }
+    private void configureButtonBindingsOperatorNotClimber() {
+        m_operatorController.leftTrigger().and(() -> !isInClimberMode).whileTrue(
+                makeSetPositionCommandVision(m_arm))
+                .onFalse(new InstantCommand(() -> m_vision.makeArmAlignedFalse()));
 
-  private Command makeSetSpeedGravityCompensationCommand(Arm a, double speed) {
-    return new SequentialCommandGroup(
-        new InstantCommand(() -> a.disable(), a),
-        new RunCommand(() -> a.setSpeedGravityCompensation(speed), a));
-  }
+        m_operatorController.rightTrigger().onTrue(new InstantCommand(() -> m_indexer.setIsOverride()));
+       
+        // operater a: arm to intake/subwoofer angle
+        m_operatorController.a().and(() -> !isInClimberMode).onTrue(makeSetPositionCommand(m_arm, 0.31));
 
-  private Command intakeForTime(Intake intake, Indexer indexer) {
-    return new SequentialCommandGroup(
-        new ParallelCommandGroup(
-            new RunCommand(() -> intake.setMotor(.8), intake),
-            new RunCommand(() -> indexer.setMotor(0.8), indexer)
-        ).withTimeout(0.5)
-     );
-  }
+        // operator b: arm to podium shot angle
+        m_operatorController.b().and(() -> !isInClimberMode).onTrue(makeSetPositionCommand(m_arm, 0.66));
 
-  private Command shortIntakeForTime(Intake intake, Indexer indexer) {
-    return new SequentialCommandGroup(
-        new ParallelCommandGroup(
-            new InstantCommand(() -> intake.setMotor(.8)).withTimeout(0.2),
-            new InstantCommand(() -> indexer.setMotor(0.8)).withTimeout(0.2)),
-        new ParallelCommandGroup(
-            new InstantCommand(() -> intake.setMotor(0)),
-            new InstantCommand(() -> indexer.setMotor(0))));
+        // operator y: arm to amp angle
+        m_operatorController.y().and(() -> !isInClimberMode).onTrue(makeSetPositionCommand(m_arm, 1.58));
 
-  }
+        // operator left trigger: intake
+        m_operatorController.rightBumper().and(() -> !isInClimberMode)
+                .whileTrue(new RunCommand(() -> m_indexer.setMotor(0.3), m_indexer));
 
-  private Command setIndexerAndIntakeSpeed(Indexer indexer, Intake intake, double speed) {
-    return new ParallelCommandGroup(
-        new RunCommand(() -> intake.setMotor(speed)),
-        new RunCommand(() -> indexer.setMotor(speed))).withTimeout(0.4);
-  }
+        // operator right trigger: outtake
+        // outtake a little bittt to get shooter up to speed
+        m_operatorController.leftBumper().and(() -> !isInClimberMode)
+                .onTrue(new SequentialCommandGroup(
+                        new RunCommand(() -> m_indexer.setMotor(-0.3), m_indexer).withTimeout(0.1),
+                        new InstantCommand(() -> m_indexer.setIsIntooked(false))));
 
-  // waiting 0.5 seconds to get shooter up to speed
-  private Command shootAfterDelay() {
-    return new SequentialCommandGroup(
-        new ParallelCommandGroup(
-            new SequentialCommandGroup(
-                new WaitUntilCommand(() -> m_shooter.getEncoderSpeed() >= (m_arm.getSpeedFromArmHeight() * Constants.ShooterConstants.SHOOT_MAX_SPEED_RPS)),
-                new RunCommand(() -> m_indexer.setMotor(Constants.IndexerConstants.INDEXER_IN_SPEED), m_indexer),
-                new RunCommand(() -> m_indexer.setIsIntooked(false))),
-            new RunCommand(() -> m_shooter.setMotor(m_arm.getSpeedFromArmHeight()), m_shooter)).withTimeout(0.9), //0.75
-        new InstantCommand(() -> m_shooter.setMotor(0), m_shooter),
-        new InstantCommand(() -> m_indexer.setMotor(0), m_indexer));
+        // TODO test this!
+        m_operatorController.axisGreaterThan(5, 0.1)
+                .whileTrue(makeSetSpeedGravityCompensationCommand(m_arm, 0.1));
+        m_operatorController.axisLessThan(5, -0.1)
+                .whileTrue(makeSetSpeedGravityCompensationCommand(m_arm, -0.1));
+    }
 
-  }
+    public static Command makeSetPositionCommand(Arm arm,
+            double target) {
+        return new SequentialCommandGroup(
+                new ConditionalCommand(new InstantCommand(() -> {
+                }), new InstantCommand(() -> arm.enable(), arm), () -> arm.isEnabled()),
+                new RunCommand(() -> arm.setGoal(target), arm));
+    }
 
-  private Command outtakeAndShootAfterDelay() {
-    return new SequentialCommandGroup(
-        new ParallelCommandGroup(
-            new SequentialCommandGroup(
-                new WaitCommand(0.25),
-                new RunCommand(() -> m_indexer.setMotor(Constants.IndexerConstants.INDEXER_IN_SPEED), m_indexer),
-                new RunCommand(() -> m_indexer.setIsIntooked(false))),
-            new RunCommand(() -> m_shooter.setMotor(m_arm.getSpeedFromArmHeight()), m_shooter)).
-                 withTimeout(0.5),
-        new InstantCommand(() -> m_shooter.setMotor(0), m_shooter),
-        new InstantCommand(() -> m_indexer.setMotor(0), m_indexer)
-        );
-  }
+    private Command makeSetPositionCommandVision(Arm arm) {
+        System.out.println("hi");
+        DoubleSupplier target = () -> (m_vision.keepArmAtAngle((m_arm.getAbsoluteEncoderPosition())));
+        return new SequentialCommandGroup(
+                new ConditionalCommand(new InstantCommand(() -> {
+                }), new InstantCommand(() -> arm.enable(), arm), () -> arm.isEnabled()),
+                new RunCommand(() -> arm.setGoal(target.getAsDouble()), arm));
+    }
 
-  private Command intakeWithHeightRestriction() {
-    return new ConditionalCommand(
-        new automaticIntakeAndIndexer(m_indexer, m_intake),
-        new ParallelCommandGroup(
-            new RunCommand(() -> m_intake.setMotor(0), m_intake),
-            new RunCommand(() -> m_indexer.setMotor(0), m_indexer)),
-        () -> m_arm.getEncoderPosition() < 0.5); 
-  }
+    public static Command makeSetPositionCommandAuton(Arm arm,
+            double target) {
+        return new SequentialCommandGroup(
+                new ConditionalCommand(new InstantCommand(() -> {
+                }), new InstantCommand(() -> arm.enable(), arm), () -> arm.isEnabled()),
+                new InstantCommand(() -> arm.setGoal(target), arm),
+                new WaitCommand(0.5));
+    }
 
-  private Command intakeAndOuttake() {
-    return new SequentialCommandGroup(
-        new RunCommand(() -> m_indexer.setMotor(Constants.IndexerConstants.INDEXER_IN_SPEED), m_indexer)
-            .withTimeout(0.2),
-        new RunCommand(() -> m_indexer.setMotor(-0.05), m_indexer).withTimeout(0.1));
-  }
+    private Command makeSetSpeedGravityCompensationCommand(Arm a, double speed) {
+        return new SequentialCommandGroup(
+                new InstantCommand(() -> a.disable(), a),
+                new RunCommand(() -> a.setSpeedGravityCompensation(speed), a));
+    }
 
-  private Command outtake() {
-     return new SequentialCommandGroup(
-        new RunCommand(() -> m_indexer.setMotor(-0.15), m_indexer)
-            .withTimeout(0.3),
-        new RunCommand(() -> m_indexer.setMotor(0), m_indexer).withTimeout(0.1));
-  }
+    private Command intakeForTime(Intake intake, Indexer indexer) {
+        return new SequentialCommandGroup(
+                new ParallelCommandGroup(
+                        new RunCommand(() -> intake.setMotor(.8), intake),
+                        new RunCommand(() -> indexer.setMotor(0.8), indexer)).withTimeout(0.5));
+    }
+
+    private Command shortIntakeForTime(Intake intake, Indexer indexer) {
+        return new SequentialCommandGroup(
+                new ParallelCommandGroup(
+                        new InstantCommand(() -> intake.setMotor(.8)).withTimeout(0.2),
+                        new InstantCommand(() -> indexer.setMotor(0.8)).withTimeout(0.2)),
+                new ParallelCommandGroup(
+                        new InstantCommand(() -> intake.setMotor(0)),
+                        new InstantCommand(() -> indexer.setMotor(0))));
+
+    }
+
+    private Command setIndexerAndIntakeSpeed(Indexer indexer, Intake intake, double speed) {
+        return new ParallelCommandGroup(
+                new RunCommand(() -> intake.setMotor(speed)),
+                new RunCommand(() -> indexer.setMotor(speed))).withTimeout(0.4);
+    }
+
+    // waiting 0.5 seconds to get shooter up to speed
+    private Command shootWhenUpToSpeed() {
+        return new SequentialCommandGroup(
+                new ParallelCommandGroup(
+                        new SequentialCommandGroup(
+                                new WaitUntilCommand(() -> m_shooter.getEncoderSpeed() >= (m_arm.getSpeedFromArmHeight()
+                                        * Constants.ShooterConstants.SHOOT_MAX_SPEED_RPS)),
+                                new RunCommand(() -> m_indexer.setMotor(Constants.IndexerConstants.INDEXER_IN_SPEED),
+                                        m_indexer)),
+                        new RunCommand(() -> m_shooter.setMotor(m_arm.getSpeedFromArmHeight()), m_shooter))
+                        .withTimeout(0.9), // 0.75
+                new InstantCommand(() -> m_shooter.setMotor(0), m_shooter),
+                new InstantCommand(() -> m_indexer.setMotor(0), m_indexer),
+                new InstantCommand(() -> m_indexer.setIsIntooked(false)));
+
+    }
+
+    private Command outtakeAndShootAfterDelay() {
+        return new SequentialCommandGroup(
+                new ParallelCommandGroup(
+                        new SequentialCommandGroup(
+                                new WaitCommand(0.25),
+                                new RunCommand(() -> m_indexer.setMotor(Constants.IndexerConstants.INDEXER_IN_SPEED),
+                                        m_indexer),
+                                new RunCommand(() -> m_indexer.setIsIntooked(false))),
+                        new RunCommand(() -> m_shooter.setMotor(m_arm.getSpeedFromArmHeight()), m_shooter))
+                        .withTimeout(0.5),
+                new InstantCommand(() -> m_shooter.setMotor(0), m_shooter),
+                new InstantCommand(() -> m_indexer.setMotor(0), m_indexer),
+                new InstantCommand(() -> m_indexer.setIsIntooked(false)));
+    }
+
+    private Command intakeWithHeightRestriction() {
+        return new ConditionalCommand(
+               new ParallelCommandGroup(
+                        new RunCommand(() -> m_intake.setMotor(1), m_intake),
+                        new RunCommand(() -> m_indexer.setMotor(1), m_indexer)),
+                new ParallelCommandGroup(
+                        new RunCommand(() -> m_intake.setMotor(0), m_intake),
+                        new RunCommand(() -> m_indexer.setMotor(0), m_indexer)),
+                () -> m_arm.getEncoderPosition() < 0.5 && m_indexer.isIntooked == false);
+    }
+
+    private Command intakeAndOuttake() {
+        return new SequentialCommandGroup(
+                new RunCommand(() -> m_indexer.setMotor(Constants.IndexerConstants.INDEXER_IN_SPEED), m_indexer)
+                        .withTimeout(0.2),
+                new RunCommand(() -> m_indexer.setMotor(-0.05), m_indexer).withTimeout(0.1));
+    }
+
+    private Command outtake() {
+        return new SequentialCommandGroup(
+                new RunCommand(() -> m_indexer.setMotor(-0.15), m_indexer)
+                        .withTimeout(0.3),
+                new RunCommand(() -> m_indexer.setMotor(0), m_indexer).withTimeout(0.1));
+    }
 }

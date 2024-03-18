@@ -3,6 +3,7 @@ package frc.robot.subsystems.intake;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkPIDController;
 
 import frc.robot.Constants;
 import frc.robot.Constants.IntakeConstants;
@@ -16,7 +17,10 @@ public class RealIntake implements IntakeIO {
     public static RelativeEncoder leftCenteringIntakeEncoder;
     public static RelativeEncoder rightCenteringIntakeEncoder;
     public static RelativeEncoder intakeEncoder;
+    public static SparkPIDController intakePIDController;
     private double slewRate = 0.0;
+    private double FEEDFORWARD = 0.01;
+    private double PVALUE = 0.01;
 
     public RealIntake()
     {
@@ -33,6 +37,14 @@ public class RealIntake implements IntakeIO {
         leftCenteringIntakeEncoder = leftCenteringIntakeMotorController.getEncoder();
         rightCenteringIntakeEncoder = rightCenteringIntakeMotorController.getEncoder();
         intakeEncoder = intakeMotorController.getEncoder();
+        
+        intakeEncoder.setVelocityConversionFactor(1/60.0); //convert to rps
+
+        intakePIDController = intakeMotorController.getPIDController();
+        intakePIDController.setFeedbackDevice(intakeEncoder);
+        
+        intakePIDController.setFF(FEEDFORWARD);
+        intakePIDController.setP(PVALUE);
     }
 
     @Override
