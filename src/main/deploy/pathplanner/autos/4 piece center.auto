@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.31,
-      "y": 5.54
+      "x": 1.28,
+      "y": 5.52
     },
-    "rotation": 0
+    "rotation": 0.0
   },
   "command": {
     "type": "sequential",
@@ -36,13 +36,19 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "C to 2"
+                  "pathName": "Copy of 3 to C"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "outtake"
+                  "name": "SetArm4Piece"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "intake and outtake"
                 }
               }
             ]
@@ -55,15 +61,22 @@
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "2 to B"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "intake for time"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "SetArmDown"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "strafing center line to B"
+                }
+              }
+            ]
           }
         },
         {
@@ -73,13 +86,19 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "B to 2"
+                  "pathName": "strafing b to center line"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "outtake"
+                  "name": "SetArm4Piece"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "intake and outtake"
                 }
               }
             ]
@@ -92,15 +111,28 @@
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "2 to A"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "SetArmDown"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Copy of center line to center b"
+                }
+              }
+            ]
           }
         },
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "intake for time"
+            "pathName": "A line to a"
           }
         },
         {
@@ -110,13 +142,19 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "A to 2"
+                  "pathName": "Copy of a to center line"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "outtake"
+                  "name": "SetArm4Piece"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "intake and outtake"
                 }
               }
             ]
@@ -126,6 +164,12 @@
           "type": "named",
           "data": {
             "name": "AutoShoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SetArmDown"
           }
         }
       ]

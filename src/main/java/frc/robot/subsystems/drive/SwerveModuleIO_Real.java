@@ -84,6 +84,10 @@ public class SwerveModuleIO_Real implements SwerveModuleIO {
       m_turningPIDController.setPositionPIDWrappingMinInput(SwerveModuleConstants.kTurningEncoderPositionPIDMinInput);
       m_turningPIDController.setPositionPIDWrappingMaxInput(SwerveModuleConstants.kTurningEncoderPositionPIDMaxInput);
 
+      errors += check(m_turningPIDController.setPositionPIDWrappingEnabled(true));
+      errors += check(m_turningPIDController.setPositionPIDWrappingMinInput(SwerveModuleConstants.kTurningEncoderPositionPIDMinInput));
+      errors += check(m_turningPIDController.setPositionPIDWrappingMaxInput(SwerveModuleConstants.kTurningEncoderPositionPIDMaxInput));
+
       // Set the PID gains for the driving motor
       m_drivingPIDController.setP(SwerveModuleConstants.kDrivingP);
       m_drivingPIDController.setI(SwerveModuleConstants.kDrivingI);
