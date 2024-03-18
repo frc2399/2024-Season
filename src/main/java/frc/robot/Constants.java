@@ -261,11 +261,12 @@ public final class Constants {
      //5.33E-03*x + 0.206 - https://docs.google.com/spreadsheets/d/1TCEiHto6ypUku9VXPN79PGwONyrlhI2SbMsfn337yTw/edit#gid=0
     // inverse tan of function above to get angle
     //all in inches except for eightyModelRange
-    public static final double EIGHTYMODELSLOPE = 0.00533;
-    public static final double EIGHTYMODELINTERCEPT = 0.215;
+    public static final double STAYDOWNBOUNDARY =  (46.5);
+    public static final double EIGHTYMODELSLOPE = 0.00346;
+    public static final double EIGHTYMODELINTERCEPT = 0.298;
     public static final double EIGHTYMODELRANGE = Units.feetToMeters(12);
-    public static final double HUNDREDMODELSLOPE = 0.00533;
-    public static final double HUNDREDMODELINTERCEPT = 0.210;
+    public static final double HUNDREDMODELSLOPE = 0.00346;
+    public static final double HUNDREDMODELINTERCEPT = 0.298;
     public static final double ARMALIGNTOLERANCE = 0.01;
 
   }

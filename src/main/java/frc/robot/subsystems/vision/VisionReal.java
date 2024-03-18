@@ -159,11 +159,12 @@ public class VisionReal extends SubsystemBase implements VisionIO {
       final double HUNDREDSLOPE = VisionConstants.HUNDREDMODELSLOPE;
       final double HUNDREDINTERCEPT = VisionConstants.HUNDREDMODELINTERCEPT;
       final double BOUNDARY = VisionConstants.EIGHTYMODELRANGE;
+      final double STAYDOWNBOUNDARY = VisionConstants.STAYDOWNBOUNDARY;
       double dist;
       Translation2d speakerDist;
       PhotonTrackedTarget speakerTarget;
       boolean seesSpeaker = false;
-      double desiredRadians = 0.37;
+      double desiredRadians = 0.31;
       //this should help with the debugging :)
       for (PhotonTrackedTarget result : getCameraResult().getTargets()) {
         if (result.getFiducialId() == speakerID) {
@@ -175,10 +176,14 @@ public class VisionReal extends SubsystemBase implements VisionIO {
             dist = speakerDist.getNorm();
             //accounts for model measuring from front of frame and pose being to center of robot
             dist -= Units.inchesToMeters(15.75);
+            dist = Units.metersToInches(dist);
+            if (dist <= STAYDOWNBOUNDARY) {
+              return desiredRadians;
+            }
             if (dist <= BOUNDARY) {
-              desiredRadians = (Math.atan(EIGHTYSLOPE * Units.metersToInches(dist) + EIGHTYINTERCEPT));
+              desiredRadians = ((EIGHTYSLOPE * (dist) + EIGHTYINTERCEPT));
             } else {
-              desiredRadians = (Math.atan(HUNDREDSLOPE * Units.metersToInches(dist) + HUNDREDINTERCEPT));
+              desiredRadians = ((HUNDREDSLOPE * (dist) + HUNDREDINTERCEPT));
             }
         }
       }
