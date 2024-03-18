@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.28,
-      "y": 5.52
+      "x": 1.31,
+      "y": 5.54
     },
-    "rotation": 0.0
+    "rotation": 0
   },
   "command": {
     "type": "sequential",
@@ -36,19 +36,13 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Copy of 3 to C"
+                  "pathName": "C to 2"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "SetArm4Piece"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "intake and outtake"
+                  "name": "outtake"
                 }
               }
             ]
@@ -58,81 +52,18 @@
           "type": "named",
           "data": {
             "name": "AutoShoot"
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "SetArmDown"
-                }
-              },
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "strafing center line to B"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "strafing b to center line"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "SetArm4Piece"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "intake and outtake"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "AutoShoot"
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "SetArmDown"
-                }
-              },
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Copy of center line to center b"
-                }
-              }
-            ]
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "A line to a"
+            "pathName": "2 to B"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "intake for time"
           }
         },
         {
@@ -142,19 +73,13 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Copy of a to center line"
+                  "pathName": "B to 2"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "SetArm4Piece"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "intake and outtake"
+                  "name": "outtake"
                 }
               }
             ]
@@ -167,9 +92,40 @@
           }
         },
         {
+          "type": "path",
+          "data": {
+            "pathName": "2 to A"
+          }
+        },
+        {
           "type": "named",
           "data": {
-            "name": "SetArmDown"
+            "name": "intake for time"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "A to 2"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "outtake"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AutoShoot"
           }
         }
       ]
