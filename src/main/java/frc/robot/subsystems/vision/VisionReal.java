@@ -19,20 +19,21 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.VisionConstants;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class VisionReal extends SubsystemBase implements VisionIO {
-    private static AprilTagFieldLayout kFieldLayout;
+    private static AprilTagFieldLayout KFIELDLAYOUT;
     public static PhotonCamera camera;
     private static PhotonPoseEstimator CamEstimator;
     private boolean updatePoseWithVisionReadings = true;
     public Pose3d robotPose;
+    private boolean driveTrainIsAligned = false;
+    private boolean armIsAligned = false;
+    
 
     //apriltags
     public  int facingSourceLeftID;
@@ -43,6 +44,7 @@ public class VisionReal extends SubsystemBase implements VisionIO {
     public  int facingAwayFromSpeakerStageLeftID;
     public   int facingAwayFromSpeakerStageRightID;
     public  int ampID;
+    public boolean isAligned= false;
 
     //PID for the speaker-aiming method
     final double ANGULAR_P = 0.8; // TODO: tune
@@ -53,9 +55,9 @@ public class VisionReal extends SubsystemBase implements VisionIO {
   /** Creates a new Vision. */
   public VisionReal() {
     camera = new PhotonCamera("backup_camera"); //swap if swapping cameras
-    CamEstimator = new PhotonPoseEstimator(VisionConstants.kFieldLayout, 
-    PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camera, VisionConstants.camToRobot);
-    kFieldLayout = VisionConstants.kFieldLayout; 
+    CamEstimator = new PhotonPoseEstimator(VisionConstants.KFIELDLAYOUT, 
+    PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camera, VisionConstants.CAMTOROBOT);
+    KFIELDLAYOUT = VisionConstants.KFIELDLAYOUT; 
   }
 
   @Override
@@ -77,10 +79,8 @@ public class VisionReal extends SubsystemBase implements VisionIO {
         //the robot pose is estimating field to robot using photon utils
         robotPose = PhotonUtils.estimateFieldToRobotAprilTag(
           target.getBestCameraToTarget(),
-          kFieldLayout.getTagPose(target.getFiducialId()).get(), 
-          VisionConstants.camToRobot);
-        SmartDashboard.putNumber("robot pose", robotPose.getX());
-        SmartDashboard.putNumber("robot pose y", robotPose.getY());
+          KFIELDLAYOUT.getTagPose(target.getFiducialId()).get(), 
+          VisionConstants.CAMTOROBOT);
      }
     }
   }
@@ -93,7 +93,6 @@ public class VisionReal extends SubsystemBase implements VisionIO {
   //estimates the robot pose
     public Optional<EstimatedRobotPose> getCameraEst() {
       var visionest = CamEstimator.update();
-      //System.out.println(visionest);
       return visionest;
     }
 
@@ -127,8 +126,6 @@ public class VisionReal extends SubsystemBase implements VisionIO {
 
     //keeps the robot pointed at the speaker; uses PID and yaw
     public double keepPointedAtSpeaker() {
-      SmartDashboard.putNumber("visiontesting/speakerID", speakerID);
-      SmartDashboard.putNumber("speaker ID from VisionReal (should be 7) ", speakerID);
       boolean seesSpeaker = false;
       double yawDiff = 0.0;
       //gets yaw to centralized speaker target
@@ -137,64 +134,80 @@ public class VisionReal extends SubsystemBase implements VisionIO {
           seesSpeaker = true;
           //yaw in radians bc p values get too small
           yawDiff = ((result.getYaw()*Math.PI)/180);
-          SmartDashboard.putBoolean("Sees speaker (only true when in keep pointed mode): ", true);
-          SmartDashboard.putNumber("YawDiff", yawDiff);
+          // Add green/red square for if robot aligned within 5 degrees to speaker tag
+          if (yawDiff < Math.toRadians(5)) {
+            isAligned = true;
+            driveTrainIsAligned = true;
+          }
+          else {
+            isAligned = false;
+            driveTrainIsAligned = false;
+          }
           break; //saves a tiny bit of processing power possibly
         }
       }
       if (!seesSpeaker) {
-        SmartDashboard.putBoolean("Sees speaker (only true when in keep pointed mode): ", false);
+        driveTrainIsAligned = false;
       }
-      System.out.println(keepPointedController.calculate(yawDiff, 0));
       return (keepPointedController.calculate(yawDiff, 0));
     }
 
-    public double keepArmAtAngle() {    
-      final double eightySlope = VisionConstants.eightyModelSlope;
-      final double eightyIntercept = VisionConstants.eightyModelIntercept;
-      final double hundredSlope = VisionConstants.hundredModelSlope;
-      final double hundredIntercept = VisionConstants.hundredModelIntercept;
-      final double boundary = VisionConstants.eightyModelRange;
+  //retrns desired arm radians based on distance from aprilTag
+  public double keepArmAtAngle(double curArmAngle) {    
+      final double EIGHTYSLOPE = VisionConstants.EIGHTYMODELSLOPE;
+      final double EIGHTYINTERCEPT = VisionConstants.EIGHTYMODELINTERCEPT;
+      final double HUNDREDSLOPE = VisionConstants.HUNDREDMODELSLOPE;
+      final double HUNDREDINTERCEPT = VisionConstants.HUNDREDMODELINTERCEPT;
+      final double BOUNDARY = VisionConstants.EIGHTYMODELRANGE;
+      final double STAYDOWNBOUNDARY = VisionConstants.STAYDOWNBOUNDARY;
       double dist;
       Translation2d speakerDist;
       PhotonTrackedTarget speakerTarget;
       boolean seesSpeaker = false;
-      double desiredRadians = 0.37;
-      SmartDashboard.putString("debugging/hi", "hi it calls :)");
+      double desiredRadians = 0.31;
       //this should help with the debugging :)
       for (PhotonTrackedTarget result : getCameraResult().getTargets()) {
-        SmartDashboard.putNumber("debugging/hi again", result.getFiducialId());
-        if (result.getFiducialId() == speakerID) {// FIXME: any alliance
+        if (result.getFiducialId() == speakerID) {
           seesSpeaker = true;
           speakerTarget = result;
             //gets the translation from the robot's current (x,y) to the (x,y) of the speaker-center
-            speakerDist = speakerTarget.getBestCameraToTarget().getTranslation().toTranslation2d();
-            SmartDashboard.putNumber("debugging/x", speakerDist.getX());
-            SmartDashboard.putNumber("debugging/y", speakerDist.getY());
-            
+            speakerDist = speakerTarget.getBestCameraToTarget().getTranslation().toTranslation2d();            
             //gets distance + calculates models (returning desired arm)
             dist = speakerDist.getNorm();
-
-            SmartDashboard.putNumber("debugging/dist w/o 15.75", dist);
             //accounts for model measuring from front of frame and pose being to center of robot
             dist -= Units.inchesToMeters(15.75);
-            SmartDashboard.putNumber("deubgingg/distance", dist);
-            SmartDashboard.putNumber("debugging/radians", Math.atan(eightySlope * Units.metersToInches(dist) + eightyIntercept));
-            if (dist <= boundary) {
-              desiredRadians = (Math.atan(eightySlope * Units.metersToInches(dist) + eightyIntercept));
+            dist = Units.metersToInches(dist);
+            if (dist <= STAYDOWNBOUNDARY) {
+              return desiredRadians;
+            }
+            if (dist <= BOUNDARY) {
+              desiredRadians = ((EIGHTYSLOPE * (dist) + EIGHTYINTERCEPT));
             } else {
-              desiredRadians = (Math.atan(hundredSlope * Units.metersToInches(dist) + hundredIntercept));
+              desiredRadians = ((HUNDREDSLOPE * (dist) + HUNDREDINTERCEPT));
             }
         }
       }
       if (!seesSpeaker) {
-        SmartDashboard.putBoolean("Sees speaker (only true when in arm align mode): ", false);
-      }      
+        armIsAligned = false;
+      }
+      if (Math.abs(curArmAngle - desiredRadians) < VisionConstants.ARMALIGNTOLERANCE) {
+        armIsAligned = true;
+      } else {
+        armIsAligned = false;
+      }
       return desiredRadians;
     }
 
+    public boolean isDriveTrainAligned() {
+      return driveTrainIsAligned;
+    }
+
+    public boolean isArmAligned() {
+      return armIsAligned;
+    }
+
+    //assigns aprilTags based on alliance
     public void assignAprilTags(Optional<Alliance> ally) {
-        
       if (ally.get() == Alliance.Red) {
           facingSourceLeftID = 10;
           facingSourceRightID = 9;
@@ -214,7 +227,13 @@ public class VisionReal extends SubsystemBase implements VisionIO {
           facingAwayFromSpeakerStageRightID = 16;
           ampID = 6;
       }
-    SmartDashboard.putNumber("robotcontainer/speaker id", speakerID);
+    }
 
+    public void makeDriveTrainAlignedFalse() {
+      driveTrainIsAligned = false;
+    }
+
+    public void makeArmAlignedFalse() {
+      armIsAligned = false;
     }
   }

@@ -19,7 +19,8 @@ public class GyroIOPigeon2 implements GyroIO {
   public GyroIOPigeon2() {
 
     pigeon = new Pigeon2(Constants.DriveConstants.kGyroCanId, "rio");
-    pigeon.setYaw(0.0);
+    this.setYaw(0.0);
+    
   }
 
   public double getYaw() {

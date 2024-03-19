@@ -4,7 +4,6 @@
 
 package frc.robot.subsystems.shooter;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Shooter extends SubsystemBase {
@@ -19,7 +18,6 @@ public class Shooter extends SubsystemBase {
 
   public void setMotor(double shooterSpeed) {
     shooterIO.setMotor(shooterSpeed);
-    SmartDashboard.putNumber("intake/motor input (%)", shooterSpeed);
   }
 
   public double getCurrent() {
@@ -37,11 +35,6 @@ public class Shooter extends SubsystemBase {
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("intake/current (A)", getCurrent());
     shooterIO.periodicUpdate();
   }
-
-public void setSpeed(double speed) {
-    shooterIO.setSpeed(speed);
-}
 }

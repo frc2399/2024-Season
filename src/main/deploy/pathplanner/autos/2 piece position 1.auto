@@ -14,26 +14,13 @@
         {
           "type": "named",
           "data": {
-            "name": "shoot"
+            "name": "AutoShoot"
           }
         },
         {
-          "type": "parallel",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "1 to A"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Intake"
-                }
-              }
-            ]
+            "pathName": "1 to A"
           }
         },
         {
@@ -43,28 +30,15 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "AimToTarget"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "SetArmPosition"
-                }
-              }
-            ]
+            "pathName": "A to 1"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "shoot"
+            "name": "AutoShoot"
           }
         }
       ]

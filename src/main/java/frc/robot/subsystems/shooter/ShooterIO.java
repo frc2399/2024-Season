@@ -10,6 +10,4 @@ public interface ShooterIO {
     public void setCurrentLimit(int current);
 
     public void periodicUpdate();
-
-    public void setSpeed(double speed);
 }

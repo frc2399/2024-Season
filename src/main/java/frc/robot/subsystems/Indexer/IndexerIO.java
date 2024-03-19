@@ -3,8 +3,6 @@ package frc.robot.subsystems.Indexer;
 public interface IndexerIO {
     public void setMotor(double speed);
 
-    public void setSpeed(double speed);
-
     public double getCurrent();
 
     public double getEncoderSpeed();
@@ -15,11 +13,7 @@ public interface IndexerIO {
 
     public void periodicUpdate();
 
-    public void setIsIntooked(boolean intooked);
-
     public boolean getIsBeamBroken();
 
-    public boolean getIsIntooked();
-
-    public boolean isStalling();
+    public void setIsOverride();
 }

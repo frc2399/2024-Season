@@ -15,5 +15,4 @@ public interface ArmIO {
 
     public void setEncoderPosition(double angle);
 
-    public double getSpeedFromArmHeight();
 }

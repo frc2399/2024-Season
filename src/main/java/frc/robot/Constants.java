@@ -72,7 +72,7 @@ public final class Constants {
 
   public static final class SwerveModuleConstants {
     //THIS IS 13 ON COMP BOT
-    public static final int kDrivingMotorPinionTeeth = 13;
+    public static final int kDrivingMotorPinionTeeth = 14;
 
     // Invert the turning encoder, since the output shaft rotates in the opposite
     // direction of the steering motor in the MAXSwerve Module.
@@ -128,7 +128,7 @@ public final class Constants {
     public static final int LEFT_CENTERING_MOTOR_ID = 5;
     public static final int RIGHT_CENTERING_MOTOR_ID = 4;
     public static final int INTAKE_CENTERING_ID = 2; 
-    public static final double INTAKING_SPEED = 0.8;
+    public static final double INTAKING_SPEED = 1.0;
     public static final double OUTTAKING_SPEED = -0.6;
   }
 
@@ -171,7 +171,9 @@ public final class Constants {
     //absolute encoder only needs the sprocket/chain reduction, since it comes after the gearboxes
     public static final double ABSOLUTE_RADIANS_PER_REVOLUTION = 2 * Math.PI / 4;
 
-    public static final double INITIAL_OFFSET = Units.degreesToRadians(14);
+    public static final double ARM_ABSOLUTE_MEASURED = 0.533;
+    public static final double ARM_ABSOLUTE_CAD = 0.274;
+    public static final double INITIAL_OFFSET = 0.274;
 
     // can be 2 degrees off from goal setpoints in auton and still considered at goal
     public static final double ANGLE_TOLERANCE_AUTON = Units.degreesToRadians(2);
@@ -215,7 +217,7 @@ public final class Constants {
   }
 
   public static final class AutoConstants {
-    public static final double kMaxSpeedMetersPerSecond = 3;
+    public static final double kMaxSpeedMetersPerSecond = 4;
     public static final double kMaxAccelerationMetersPerSecondSquared = 3;
     public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI;
     public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.PI;
@@ -241,28 +243,31 @@ public final class Constants {
   }
 
   public static final class VisionConstants {
-    public static final AprilTagFieldLayout kFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
-    public static final Transform3d camToRobot = new Transform3d(
-        new Translation3d(Units.inchesToMeters(5), Units.inchesToMeters(14.25), Units.inchesToMeters(0)),
+    public static final AprilTagFieldLayout KFIELDLAYOUT = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
+    public static final double XOFFSETTOROBOT = Units.inchesToMeters(-7.494);
+    public static final double YOFFSETTOROBOT = Units.inchesToMeters(13.674);
+    public static final double ZOFFSETTOROBOT = Units.inchesToMeters(5.944);
+    public static final Transform3d CAMTOROBOT = new Transform3d(
+        new Translation3d(
+          Units.inchesToMeters(XOFFSETTOROBOT), 
+          Units.inchesToMeters(YOFFSETTOROBOT), 
+          Units.inchesToMeters(ZOFFSETTOROBOT)),
         new Rotation3d(0.0, Units.degreesToRadians(15.0), 0.0));
-        // TODO: measure camera height
-    //these need to be changed on Comp Bot
-    public static final Transform2d camToRobot2d = new Transform2d(
-      Units.inchesToMeters(5),
-      Units.inchesToMeters(14.25),
+    public static final Transform2d CAMTOROBOT2D = new Transform2d(
+      Units.inchesToMeters(XOFFSETTOROBOT),
+      Units.inchesToMeters(YOFFSETTOROBOT),
       new Rotation2d(0));
-    public static final double xOffsetToRobot = Units.inchesToMeters(5);
-    public static final double yOffsetToRobot = Units.inchesToMeters(14.25);
-    public static final double zOffsetToRobot = Units.inchesToMeters(0);
 
      //5.33E-03*x + 0.206 - https://docs.google.com/spreadsheets/d/1TCEiHto6ypUku9VXPN79PGwONyrlhI2SbMsfn337yTw/edit#gid=0
     // inverse tan of function above to get angle
     //all in inches except for eightyModelRange
-    public static final double eightyModelSlope = 0.00533;
-    public static final double eightyModelIntercept = 0.206;
-    public static final double eightyModelRange = Units.feetToMeters(12);
-    public static final double hundredModelSlope = 0.00533;
-    public static final double hundredModelIntercept = 0.206;
+    public static final double STAYDOWNBOUNDARY =  (46.5);
+    public static final double EIGHTYMODELSLOPE = 0.00346;
+    public static final double EIGHTYMODELINTERCEPT = 0.298;
+    public static final double EIGHTYMODELRANGE = Units.feetToMeters(12);
+    public static final double HUNDREDMODELSLOPE = 0.00346;
+    public static final double HUNDREDMODELINTERCEPT = 0.298;
+    public static final double ARMALIGNTOLERANCE = 0.01;
 
   }
 

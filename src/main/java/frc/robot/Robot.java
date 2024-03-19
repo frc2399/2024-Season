@@ -84,7 +84,13 @@ public class Robot extends TimedRobot {
 
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+
+    //Disables arm and elevator PID loops so it won't remember/try to get to the last setpoint
+    //Otherwise, if the arm fell after disabling, it would go up really quickly on enabling
+    //Also disables gravity compensation b/c no command with gravity compensation running after disable
+    RobotContainer.m_arm.disable();
+  }
 
   @Override
   public void disabledPeriodic() {}
@@ -115,6 +121,7 @@ public class Robot extends TimedRobot {
     // continue until interrupted by another command, remove
     // this line or comment it out.
     Optional<Alliance> ally = DriverStation.getAlliance();
+    m_robotContainer.m_led.turnTeleop();
     m_robotContainer.m_vision.assignAprilTags(ally);
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();

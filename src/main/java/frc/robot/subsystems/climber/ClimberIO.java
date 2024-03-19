@@ -14,5 +14,4 @@ public interface ClimberIO {
     public boolean isLeftSideStalling(); 
     public boolean isRightSideStalling();
     public void periodicUpdate();
-    public boolean isInClimberMode();
 }

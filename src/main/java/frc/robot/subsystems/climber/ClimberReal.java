@@ -31,6 +31,7 @@ public class ClimberReal implements ClimberIO {
 
     public ClimberReal() {
 
+        //TODO no more PID
         // initialize motor controllers
         leftMotorController = MotorUtil.createSparkMAX(ClimberConstants.LEFT_CLIMBER_MOTOR_ID, MotorType.kBrushless, 50,
                 true,
@@ -89,10 +90,6 @@ public class ClimberReal implements ClimberIO {
         // This method will be called once per scheduler run
         SmartDashboard.putNumber("climber/Left Climber Height", getLeftEncoderPosition());
         SmartDashboard.putNumber("climber/Right Climber Hieght", getRightEncoderPosition());
-    }
-
-    public boolean isInClimberMode(){
-        return true;
     }
 
     // left basic climbing with just speed

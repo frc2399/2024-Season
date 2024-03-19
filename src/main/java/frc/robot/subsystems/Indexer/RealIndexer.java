@@ -1,6 +1,5 @@
 package frc.robot.subsystems.Indexer;
 
-import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
@@ -29,9 +28,6 @@ public class RealIndexer implements IndexerIO {
 
         // initialize motor encoder
         indexerEncoder = indexerMotorController.getEncoder();
-        indexerController = indexerMotorController.getPIDController();
-        indexerController.setFeedbackDevice(indexerEncoder);
-        indexerController.setFF(0.0001);
         indexerSensorTop = new DigitalInput(IndexerConstants.INDEXER_SENSOR_CHANNEL_TOP);
         indexerSensorBottom = new DigitalInput(IndexerConstants.INDEXER_SENSOR_CHANNEL_BOTTOM);
     }
@@ -39,12 +35,6 @@ public class RealIndexer implements IndexerIO {
     @Override
     public void setMotor(double indexerSpeed) {
         indexerMotorController.set(indexerSpeed);
-    }
-
-    public void setSpeed(double speedPercent) {
-        indexerController.setReference(speedPercent * Constants.NEO550_MAX_SPEED_RPM, ControlType.kVelocity);
-        SmartDashboard.putNumber("indexer/shooter reference", speedPercent);
-        SmartDashboard.putNumber("indexer/shooter speed (RPM)", getEncoderSpeed() / Constants.NEO550_MAX_SPEED_RPM);
     }
 
     public double getCurrent() {
@@ -70,12 +60,6 @@ public class RealIndexer implements IndexerIO {
     public void periodicUpdate() {
         SmartDashboard.putBoolean("indexer/isIntooked:", isIntooked);
         SmartDashboard.putBoolean("indexer/getIsBeamBroken", getIsBeamBroken());
-        SmartDashboard.putNumber("indexer/indexer current", getCurrent());
-    }
-
-    @Override
-    public void setIsIntooked(boolean intooked) {
-        isIntooked = intooked;
     }
 
     @Override
@@ -83,17 +67,12 @@ public class RealIndexer implements IndexerIO {
         if (isSensorOverriden) {
             return false;
         } else {
-            return indexerSensorBottom.get();
+            return !indexerSensorBottom.get();
         }
     }
 
     @Override
-    public boolean getIsIntooked() {
-        return isIntooked;
-    }
-
-    @Override
-    public boolean isStalling() {
-        return false;
+    public void setIsOverride() {
+        isSensorOverriden = !isSensorOverriden;
     }
 }

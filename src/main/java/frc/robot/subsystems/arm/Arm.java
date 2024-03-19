@@ -16,15 +16,17 @@ import frc.utils.PIDUtil;
 public class Arm extends ProfiledPIDSubsystem {
   /** Creates a new Arm. */
   private ArmIO armIO;
- 
+
   public static double speedFromArmHeight;
 
   // Trapezoidal profile constants and variables
-  private static final double max_vel = 2; // rad/s (NEO specs / gear ratio, converted into rad/s ~ 4.1, give it a slightly lower one to make it acheivable)
-  private static final double max_accel = 2; // rad/s/s
+  // TODO tune max_vel and max_accel
+  private static final double max_vel = 4; // rad/s (NEO specs / gear ratio, converted into rad/s ~ 4.1, give it a
+                                           // slightly lower one to make it acheivable)
+  private static final double max_accel = 6; // rad/s/s
   private static final Constraints constraints = new Constraints(max_vel, max_accel);
   private static double gravityCompensation = 0.025;
-  private static double feedForward = 1/max_vel;
+  private static double feedForward = 1 / max_vel;
   private static double kpPos = 3.0;
   private static double kd = 0.01;
 
@@ -49,7 +51,6 @@ public class Arm extends ProfiledPIDSubsystem {
   }
 
   public void setSpeed(double speed) {
-    //speed = Math.max(Math.min(speed, 0.5), -0.5);
     armIO.setSpeed(speed);
   }
 
@@ -90,18 +91,15 @@ public class Arm extends ProfiledPIDSubsystem {
     return (PIDUtil.checkWithinRange(getGoal(), getMeasurement(), ArmConstants.ANGLE_TOLERANCE_AUTON));
   }
 
-  public void setkG(double kG) {
-    gravityCompensation = kG;
-  }
-
   public double getAbsoluteEncoderPosition() {
     return armIO.getAbsoluteEncoderPosition();
   }
 
-public void setEncoderPosition(double angle) {
+  public void setEncoderPosition(double angle) {
     armIO.setEncoderPosition(angle);
-}
+  }
 
+  //TODO there's a duplicate of this in RealArm. Also, do we want this in Robotçontainer instead?
   public double getSpeedFromArmHeight() {
     if (getEncoderPosition() <= 0.37) {
       speedFromArmHeight = Constants.ShooterConstants.SUBWOOFER_SPEED;
@@ -110,14 +108,17 @@ public void setEncoderPosition(double angle) {
     } else if (getEncoderPosition() > 0.76 & getEncoderPosition() <= 1) {
       speedFromArmHeight = Constants.ShooterConstants.FAR_AWAY_SPEED;
     } else if (getEncoderPosition() > 1) {
-        speedFromArmHeight = Constants.ShooterConstants.AMP_SPEED;
+      speedFromArmHeight = Constants.ShooterConstants.AMP_SPEED;
     }
     return speedFromArmHeight;
-    }
-  
+  }
 
-    //5.33E-03*x + 0.206 - https://docs.google.com/spreadsheets/d/1TCEiHto6ypUku9VXPN79PGwONyrlhI2SbMsfn337yTw/edit#gid=0
-    // inverse tan of function above to get angle
+  // public void setArmAngle(DoubleSupplier desiredAngleSupplier) {
+  //   setGoal(desiredAngleSupplier.get());
+  // }
 
+  // 5.33E-03*x + 0.206 
+  // https://docs.google.com/spreadsheets/d/1TCEiHto6ypUku9VXPN79PGwONyrlhI2SbMsfn337yTw/edit#gid=0
+  // inverse tan of function above to get angle
 
 }

@@ -7,7 +7,6 @@ import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonPipelineResult;
 
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Vision extends SubsystemBase {
@@ -39,12 +38,28 @@ public class Vision extends SubsystemBase {
     public double keepPointedAtSpeaker() {
         return io.keepPointedAtSpeaker();
     }
-    public double keepArmAtAngle() {
-        return io.keepArmAtAngle();
+    public double keepArmAtAngle(double curArmAngle) {
+        return io.keepArmAtAngle(curArmAngle);
+    }
+
+    public boolean isDriveTrainAligned() {
+        return io.isDriveTrainAligned();
+    }
+
+    public boolean isArmAligned() {
+        return io.isArmAligned();
     }
 
     public void assignAprilTags(Optional<Alliance> ally) {
       io.assignAprilTags(ally);
+    }
+
+    public void makeDriveTrainAlignedFalse() {
+        io.makeDriveTrainAlignedFalse();
+    }
+
+    public void makeArmAlignedFalse() {
+        io.makeArmAlignedFalse();
     }
 
 }
