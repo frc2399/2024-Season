@@ -268,8 +268,9 @@ public class RobotContainer {
         // driver left bumper: manual shoot
         // gets arm height to assign to speed. lower arm, means cloesr to speaekr, so
         // shoots less forecfully
-        m_driverController.leftBumper().whileTrue(
-                new RunCommand(() -> m_shooter.setMotor(m_arm.getSpeedFromArmHeight()), m_shooter));
+        m_driverController.leftBumper().whileTrue(new ParallelCommandGroup(
+                new RunCommand(() -> m_shooter.setMotor(m_arm.getSpeedFromArmHeight()), m_shooter),
+                new RunCommand(() -> m_indexer.setIsIntooked(false))));
 
         // driver right bumper: auto-shoot
         m_driverController.rightBumper().onTrue(shootWhenUpToSpeed());
@@ -330,7 +331,10 @@ public class RobotContainer {
                 makeSetPositionCommandVision(m_arm))
                 .onFalse(new InstantCommand(() -> m_vision.makeArmAlignedFalse()));
 
-        m_operatorController.rightTrigger().onTrue(new InstantCommand(() -> m_indexer.setIsOverride()));
+        m_operatorController.rightTrigger().and(() -> !isInClimberMode).whileTrue( 
+                new ParallelCommandGroup(
+                        new InstantCommand(() -> m_intake.setMotor(1)),
+                        new InstantCommand(() -> m_indexer.setMotor(1))));
        
         // operater a: arm to intake/subwoofer angle
         m_operatorController.a().and(() -> !isInClimberMode).onTrue(makeSetPositionCommand(m_arm, 0.31));
