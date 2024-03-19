@@ -44,14 +44,14 @@
                 "data": {
                   "name": "outtake"
                 }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Set Arm Wingleft"
+                }
               }
             ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Set Arm Wingleft"
           }
         },
         {
@@ -106,14 +106,14 @@
                 "data": {
                   "pathName": "E to Wingleft"
                 }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Set Arm Wingleft"
+                }
               }
             ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Set Arm Wingleft"
           }
         },
         {

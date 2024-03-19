@@ -192,8 +192,10 @@ public class RobotContainer {
         NamedCommands.registerCommand("intake for time", intakeForTime(m_intake, m_indexer));
         NamedCommands.registerCommand("SHORT intake for time", shortIntakeForTime(m_intake, m_indexer));
         NamedCommands.registerCommand("AimToTarget", Commands.print("aimed to target!"));
-        NamedCommands.registerCommand("SetArmPosition", makeSetPositionCommandAuton(m_arm, 0.475));
-        NamedCommands.registerCommand("Set Arm Wingleft", makeSetPositionCommandAuton(m_arm, 0.745));
+        NamedCommands.registerCommand("SetArmPosition", makeSetPositionCommandAuton(m_arm, 0.74
+        ));
+        NamedCommands.registerCommand("Set Arm Wingleft", makeSetPositionCommandAuton(m_arm, 0.785
+        ));
         NamedCommands.registerCommand("SetArmDown", makeSetPositionCommandAuton(m_arm, 0.335));
         NamedCommands.registerCommand("AutoShoot", outtakeAndShootAfterDelay());
         NamedCommands.registerCommand("intake and outtake", intakeAndOuttake());
@@ -393,7 +395,12 @@ public class RobotContainer {
         return new SequentialCommandGroup(
                 new ParallelCommandGroup(
                         new RunCommand(() -> intake.setMotor(.8), intake),
-                        new RunCommand(() -> indexer.setMotor(0.8), indexer)).withTimeout(0.5));
+                        new RunCommand(() -> indexer.setMotor(0.8), indexer)).withTimeout(0.3), 
+                new ParallelCommandGroup(
+                        new InstantCommand(() -> intake.setMotor(.0), intake),
+                        new InstantCommand(() -> indexer.setMotor(0.0), indexer)));
+
+                
     }
 
     private Command shortIntakeForTime(Intake intake, Indexer indexer) {
