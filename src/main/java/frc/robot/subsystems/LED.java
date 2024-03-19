@@ -10,8 +10,8 @@ import frc.robot.subsystems.vision.Vision;
 public class LED extends SubsystemBase {
     AddressableLED m_led = new AddressableLED(9);
     AddressableLEDBuffer m_ledBuffer = new AddressableLEDBuffer(16);
-    int m_rainbowFirstPixelHue = 140;
-    int m_rainbowLastPixelHue = 10;
+    int m_rainbowFirstPixelHue = 0;
+    //int m_rainbowLastPixelHue = 10;
     boolean isAutonomous = true;
     private Vision vision;
     private Indexer indexer;
@@ -25,24 +25,17 @@ public class LED extends SubsystemBase {
     }
 
     private void rainbow() {
-        // for every pixel
         for (var i = 0; i < m_ledBuffer.getLength(); i++) {
             // Calculate the hue - hue is easier for rainbows because the color
             // shape is a circle so only one value needs to precess
-            var hue = (int) (m_rainbowFirstPixelHue + (i * (50) / m_ledBuffer.getLength())) % (180);
-            if (hue > m_rainbowLastPixelHue && hue < m_rainbowFirstPixelHue) {
-                hue += 130;
-            }
+            final var hue = (m_rainbowFirstPixelHue + (i * 180 / m_ledBuffer.getLength())) % 180;
             // Set the value
             m_ledBuffer.setHSV(i, hue, 255, 128);
-        }
-        // Increase by 1 to make the rainbow "move"
-        m_rainbowFirstPixelHue += 1;
-        m_rainbowFirstPixelHue %= 180;
-        // Check bounds
-        if (m_rainbowFirstPixelHue == (m_rainbowLastPixelHue + 1)) {
-            m_rainbowFirstPixelHue = 140;
-        }
+          }
+          // Increase by to make the rainbow "move"
+          m_rainbowFirstPixelHue += 3;
+          // Check bounds
+          m_rainbowFirstPixelHue %= 180;
     }
 
     public void turnTeleop() {
