@@ -29,18 +29,19 @@ public class LED extends SubsystemBase {
         for (var i = 0; i < m_ledBuffer.getLength(); i++) {
             // Calculate the hue - hue is easier for rainbows because the color
             // shape is a circle so only one value needs to precess
-            var hue = (int) (m_rainbowFirstPixelHue + (i * (58) / m_ledBuffer.getLength()));
-            if (hue >= 155) {
-                hue -= 58;
+            var hue = (int) (m_rainbowFirstPixelHue + (i * (50) / m_ledBuffer.getLength())) % (180);
+            if (hue > m_rainbowLastPixelHue && hue < m_rainbowFirstPixelHue) {
+                hue += 130;
             }
             // Set the value
             m_ledBuffer.setHSV(i, hue, 255, 128);
         }
         // Increase by 1 to make the rainbow "move"
         m_rainbowFirstPixelHue += 1;
+        m_rainbowFirstPixelHue %= 180;
         // Check bounds
         if (m_rainbowFirstPixelHue == (m_rainbowLastPixelHue + 1)) {
-            m_rainbowFirstPixelHue = 97;
+            m_rainbowFirstPixelHue = 140;
         }
     }
 
