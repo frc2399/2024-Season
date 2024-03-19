@@ -75,8 +75,8 @@ public class ClimberReal implements ClimberIO {
         rightMotorController.setInverted(true);
 
         // set encoder velocity to meters/second
-        leftEncoder.setPositionConversionFactor(Constants.ClimberConstants.ENCODER_VELOCITY_MPS);
-        rightEncoder.setPositionConversionFactor(Constants.ClimberConstants.ENCODER_VELOCITY_MPS);
+        leftEncoder.setVelocityConversionFactor(Constants.ClimberConstants.ENCODER_VELOCITY_MPS);
+        rightEncoder.setVelocityConversionFactor(Constants.ClimberConstants.ENCODER_VELOCITY_MPS);
 
 
         // reset encoders to zero
