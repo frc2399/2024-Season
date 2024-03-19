@@ -178,9 +178,8 @@ public class VisionReal extends SubsystemBase implements VisionIO {
             dist -= Units.inchesToMeters(15.75);
             dist = Units.metersToInches(dist);
             if (dist <= STAYDOWNBOUNDARY) {
-              return desiredRadians;
-            }
-            if (dist <= BOUNDARY) {
+              desiredRadians = 0.31;
+            } else if (dist <= BOUNDARY) {
               desiredRadians = ((EIGHTYSLOPE * (dist) + EIGHTYINTERCEPT));
             } else {
               desiredRadians = ((HUNDREDSLOPE * (dist) + HUNDREDINTERCEPT));
