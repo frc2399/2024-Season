@@ -210,6 +210,7 @@ public final class Constants {
     public static final double ENCODER_METERS = Units.inchesToMeters((2 * (Math.PI) * 0.75 / 20));
 
     public static final double ENCODER_VELOCITY_MPS = ENCODER_METERS / 60;
+    public static final double CURRENT_THRESHOLD = 10;
 
   }
 
