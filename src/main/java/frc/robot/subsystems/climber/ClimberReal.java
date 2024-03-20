@@ -44,8 +44,8 @@ public class ClimberReal implements ClimberIO {
         rightEncoder = rightMotorController.getEncoder();
 
         // initialize debouncers
-        leftDebouncer = new Debouncer(0.15);
-        rightDebouncer = new Debouncer(0.15);
+        leftDebouncer = new Debouncer(0.025);
+        rightDebouncer = new Debouncer(0.025);
 
         // converts encoder rotations to distance (meters)
         leftEncoder.setPositionConversionFactor(Constants.ClimberConstants.ENCODER_METERS);
@@ -90,11 +90,12 @@ public class ClimberReal implements ClimberIO {
         // This method will be called once per scheduler run
         SmartDashboard.putNumber("climber/Left Climber Height", getLeftEncoderPosition());
         SmartDashboard.putNumber("climber/Right Climber Hieght", getRightEncoderPosition());
+        SmartDashboard.putNumber("climber/left climber current", leftMotorController.getOutputCurrent());
     }
 
     // left basic climbing with just speed
     public void setLeftSpeed(double speed) {
-        if (((isLeftRetracted() && speed < 0)) || ((isLeftExtended() && speed > 0))) {
+        if (((isLeftRetracted() && speed < 0)) || ((isLeftExtended() && speed > 0)) || (isLeftSideStalling() && !isRightSideStalling())) {
             leftMotorController.set(0);
         } else {
             leftMotorController.set(speed);
@@ -113,7 +114,7 @@ public class ClimberReal implements ClimberIO {
 
     // right basic climbing with just speed
     public void setRightSpeed(double speed) {
-        if ((isRightRetracted() && speed < 0) || ((isRightExtended() && speed > 0))) {
+        if ((isRightRetracted() && speed < 0) || ((isRightExtended() && speed > 0)) || (isRightSideStalling() && !isLeftSideStalling())) {
             rightMotorController.set(0);
         } else {
             rightMotorController.set(speed);
@@ -161,11 +162,11 @@ public class ClimberReal implements ClimberIO {
 
     // if the left side is stalling, tell climber to stop
     public boolean isLeftSideStalling() {
-        return leftDebouncer.calculate(Math.abs(leftEncoder.getVelocity()) < ClimberConstants.VELOCITY_THRESHHOLD);
+        return leftDebouncer.calculate(Math.abs(leftMotorController.getOutputCurrent()) > ClimberConstants.CURRENT_THRESHOLD);
     }
 
     // if the right side is stalling, tell climber to stop
     public boolean isRightSideStalling() {
-        return rightDebouncer.calculate(Math.abs(rightEncoder.getVelocity()) < ClimberConstants.VELOCITY_THRESHHOLD);
+        return rightDebouncer.calculate(Math.abs(rightMotorController.getOutputCurrent()) > ClimberConstants.CURRENT_THRESHOLD);
     }
 }

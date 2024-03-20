@@ -301,19 +301,19 @@ public class RobotContainer {
     private void configureButtonBindingsOperatorClimber() {
         // operater left trigger: climber mode: left climber up
         m_operatorController.leftTrigger().and(() -> isInClimberMode).whileTrue(new RunCommand(
-                () -> m_climber.setLeftSpeed(0.2), m_climber));
+                () -> m_climber.setLeftSpeed(0.5), m_climber));
 
         // operater right trigger: climber mode: right climber up
         m_operatorController.rightTrigger().and(() -> isInClimberMode).whileTrue(new RunCommand(
-                () -> m_climber.setRightSpeed(0.2), m_climber));
+                () -> m_climber.setRightSpeed(0.5), m_climber));
 
         // operater left bumper: climber mode: left climber down
         m_operatorController.leftBumper().and(() -> isInClimberMode).whileTrue(new RunCommand(
-                () -> m_climber.setLeftSpeed(-0.2), m_climber));
+                () -> m_climber.setLeftSpeed(-0.5), m_climber));
 
         // operater right bumper: climber mode: right climber down
         m_operatorController.rightBumper().and(() -> isInClimberMode).whileTrue(new RunCommand(
-                () -> m_climber.setRightSpeed(-0.2), m_climber));
+                () -> m_climber.setRightSpeed(-0.5), m_climber));
 
         // operator b (climber mode): automatic climber up
         m_operatorController.b().and(() -> isInClimberMode).whileTrue(new RunCommand(() -> m_climber.setMotors(0.7)));
