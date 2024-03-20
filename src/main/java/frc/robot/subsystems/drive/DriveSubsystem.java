@@ -121,6 +121,7 @@ public class DriveSubsystem extends SubsystemBase {
     // in the previous article while in simulation, but will use
     // real values on the robot itself.
     SmartDashboard.putNumber("left front distance (meters)", m_frontLeft.getDriveEncoderPosition());
+    SmartDashboard.putNumber("drive/gyro angle(degrees)", Math.toDegrees(m_gyro.getYaw()));
     m_poseEstimator.updateWithTime(Timer.getFPGATimestamp(), Rotation2d.fromRadians(m_gyro.getYaw()),
         new SwerveModulePosition[] {
             m_frontLeft.getPosition(),

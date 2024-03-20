@@ -30,9 +30,22 @@
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "C to 3"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "C to 3"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "outtake"
+                }
+              }
+            ]
           }
         },
         {
