@@ -100,6 +100,8 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     // Optional<Alliance> ally = DriverStation.getAlliance();
     // m_robotContainer.m_vision.assignAprilTags(ally);
+    RobotContainer.m_arm.setEncoderPosition(RobotContainer.m_arm.getAbsoluteEncoderPosition());
+
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
     RobotContainer.makeSetPositionCommand(RobotContainer.m_arm, 0.335);
 

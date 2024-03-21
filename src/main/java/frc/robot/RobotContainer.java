@@ -260,7 +260,7 @@ public class RobotContainer {
     private void configureButtonBindingsDriver() {
         // while true with run commands
         m_driverController.y()
-                .whileTrue((new RunCommand(() -> m_robotDrive.setZero(), m_robotDrive).withName("setzero")));
+                .onTrue(new InstantCommand(() -> m_arm.setEncoderPosition(m_arm.getAbsoluteEncoderPosition())));
         m_driverController.x().whileTrue((new RunCommand(
                 () -> m_robotDrive.setX(),
                 m_robotDrive).withName("setx")));
@@ -316,10 +316,10 @@ public class RobotContainer {
                 () -> m_climber.setRightSpeed(-0.8), m_climber));
 
         // operator b (climber mode): automatic climber up
-        m_operatorController.b().and(() -> isInClimberMode).whileTrue(new RunCommand(() -> m_climber.setMotors(0.7)));
+        m_operatorController.b().and(() -> isInClimberMode).whileTrue(new RunCommand(() -> m_climber.setMotors(0.7), m_climber));
 
         // operator a (climber mode): automatic climber down
-        m_operatorController.a().and(() -> isInClimberMode).whileTrue(new RunCommand(() -> m_climber.setMotors(-0.7)));
+        m_operatorController.a().and(() -> isInClimberMode).whileTrue(new RunCommand(() -> m_climber.setMotors(-0.7), m_climber));
 
         // operator x: switch operator controller modes
         m_operatorController.x().onTrue(new InstantCommand(() -> isInClimberMode = !isInClimberMode));
@@ -333,8 +333,8 @@ public class RobotContainer {
 
         m_operatorController.rightTrigger().and(() -> !isInClimberMode).whileTrue( 
                 new ParallelCommandGroup(
-                        new InstantCommand(() -> m_intake.setMotor(1)),
-                        new InstantCommand(() -> m_indexer.setMotor(1))));
+                        new RunCommand(() -> m_intake.setMotor(1), m_intake),
+                        new RunCommand(() -> m_indexer.setMotor(1), m_indexer)));
        
         // operater a: arm to intake/subwoofer angle
         m_operatorController.a().and(() -> !isInClimberMode).onTrue(makeSetPositionCommand(m_arm, 0.31));
@@ -420,8 +420,8 @@ public class RobotContainer {
 
     private Command setIndexerAndIntakeSpeed(Indexer indexer, Intake intake, double speed) {
         return new ParallelCommandGroup(
-                new RunCommand(() -> intake.setMotor(speed)),
-                new RunCommand(() -> indexer.setMotor(speed))).withTimeout(0.4);
+                new RunCommand(() -> intake.setMotor(speed), m_intake),
+                new RunCommand(() -> indexer.setMotor(speed), m_indexer)).withTimeout(0.4);
     }
 
     // waiting 0.5 seconds to get shooter up to speed
