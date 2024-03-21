@@ -188,6 +188,7 @@ public class VisionReal extends SubsystemBase implements VisionIO {
       }
       if (!seesSpeaker) {
         armIsAligned = false;
+        desiredRadians= curArmAngle;
       }
       if (Math.abs(curArmAngle - desiredRadians) < VisionConstants.ARMALIGNTOLERANCE) {
         armIsAligned = true;

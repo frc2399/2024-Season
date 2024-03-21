@@ -197,7 +197,7 @@ public final class Constants {
     // not actually being implemented
     public static final double CLIMBER_SPEED = 0.8;
 
-    public static final double MAX_HEIGHT = 0.81;
+    public static final double MAX_HEIGHT = 0.80;
     public static final double MIN_HEIGHT = 0;
 
     public static final double VELOCITY_THRESHHOLD = 20;

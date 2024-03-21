@@ -3,6 +3,7 @@ package frc.robot.subsystems.climber;
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 
@@ -71,7 +72,7 @@ public class ClimberReal implements ClimberIO {
         // rightPIDController.setOutputRange(CLIMBER_K_MIN_OUTPUT, CLIMBER_K_MAX_OUTPUT);
 
         // invert the motor controllers so climber climbs right
-        leftMotorController.setInverted(true);
+        leftMotorController.setInverted(false);
         rightMotorController.setInverted(true);
 
         // set encoder velocity to meters/second
@@ -80,8 +81,16 @@ public class ClimberReal implements ClimberIO {
 
 
         // reset encoders to zero
-        leftEncoder.setPosition(0.0);
-        rightEncoder.setPosition(0.0);
+        //leftEncoder.setPosition(0.0);
+        //rightEncoder.setPosition(0.0);
+
+        if (leftEncoder.setPosition(0.0) != REVLibError.kOk) {
+            System.out.println("****************left encoder set position is not successful");
+        }
+
+        if (rightEncoder.setPosition(0.0) != REVLibError.kOk) {
+            System.out.println("****************right encoder set position is not successful");
+        }
     }
 
     @Override
@@ -91,12 +100,28 @@ public class ClimberReal implements ClimberIO {
         SmartDashboard.putNumber("climber/Left Climber Height", getLeftEncoderPosition());
         SmartDashboard.putNumber("climber/Right Climber Hieght", getRightEncoderPosition());
         SmartDashboard.putNumber("climber/left climber current", leftMotorController.getOutputCurrent());
+        SmartDashboard.putBoolean("climber/is left retracted", isLeftRetracted());
+        SmartDashboard.putNumber("climber/right climber current", rightMotorController.getOutputCurrent());
+        SmartDashboard.putBoolean("climber/is right retracted", isRightRetracted());
+        SmartDashboard.putNumber("climber/leftspeed", leftMotorController.getAppliedOutput());
+        SmartDashboard.putBoolean("climber/is left extended", isLeftExtended());
+        SmartDashboard.putBoolean("climber/is right extended", isRightExtended());
+        SmartDashboard.putBoolean("climber/is left side stalling", isLeftSideStalling());
+        SmartDashboard.putBoolean("climber/is right side stalling", isRightSideStalling());
+
     }
 
     // left basic climbing with just speed
     public void setLeftSpeed(double speed) {
-        if (((isLeftRetracted() && speed < 0)) || ((isLeftExtended() && speed > 0)) || (isLeftSideStalling() && !isRightSideStalling())) {
+
+
+        SmartDashboard.putBoolean("climber/at bottom left", (isLeftRetracted() && speed < 0));
+        SmartDashboard.putBoolean("climber/at top left", (isLeftExtended() && speed > 0));
+        SmartDashboard.putBoolean("climber/left stalling", (isLeftSideStalling() && !isRightSideStalling()));
+        if ((isLeftRetracted() && speed < 0) || ((isLeftExtended() && speed > 0)) || (isLeftSideStalling() && !isRightSideStalling())) {
             leftMotorController.set(0);
+        } else if (leftEncoder.getPosition() < 0.10 && speed < 0) {
+            leftMotorController.set(-0.15);
         } else {
             leftMotorController.set(speed);
         }
@@ -109,6 +134,8 @@ public class ClimberReal implements ClimberIO {
     public void setRightSpeed(double speed) {
         if ((isRightRetracted() && speed < 0) || ((isRightExtended() && speed > 0)) || (isRightSideStalling() && !isLeftSideStalling())) {
             rightMotorController.set(0);
+        } else if (rightEncoder.getPosition() < 0.10 && speed < 0) {
+            rightMotorController.set(-0.15);
         } else {
             rightMotorController.set(speed);
         }
@@ -127,11 +154,11 @@ public class ClimberReal implements ClimberIO {
     }
 
     public boolean isLeftRetracted() {
-        return (leftEncoder.getPosition() < ClimberConstants.MIN_HEIGHT + .05);
+        return (leftEncoder.getPosition() < ClimberConstants.MIN_HEIGHT + .01);
     }
 
     public boolean isRightRetracted() {
-        return (rightEncoder.getPosition() < ClimberConstants.MIN_HEIGHT + .05);
+        return (rightEncoder.getPosition() < ClimberConstants.MIN_HEIGHT + .01);
     }
 
     public double getLeftEncoderPosition() {
