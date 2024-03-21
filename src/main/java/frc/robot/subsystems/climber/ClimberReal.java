@@ -56,19 +56,19 @@ public class ClimberReal implements ClimberIO {
         rightPIDController = rightMotorController.getPIDController();
 
         // assigns values to PID controllers
-        leftPIDController.setP(CLIMBER_KP);
-        leftPIDController.setI(CLIMBER_KI);
-        leftPIDController.setD(CLIMBER_KD);
-        leftPIDController.setIZone(CLIMBER_KIZ);
-        leftPIDController.setFF(CLIMBER_KF);
-        leftPIDController.setOutputRange(CLIMBER_K_MIN_OUTPUT, CLIMBER_K_MAX_OUTPUT);
+        // leftPIDController.setP(CLIMBER_KP);
+        // leftPIDController.setI(CLIMBER_KI);
+        // leftPIDController.setD(CLIMBER_KD);
+        // leftPIDController.setIZone(CLIMBER_KIZ);
+        // leftPIDController.setFF(CLIMBER_KF);
+        // leftPIDController.setOutputRange(CLIMBER_K_MIN_OUTPUT, CLIMBER_K_MAX_OUTPUT);
 
-        rightPIDController.setP(CLIMBER_KP);
-        rightPIDController.setI(CLIMBER_KI);
-        rightPIDController.setD(CLIMBER_KD);
-        rightPIDController.setIZone(CLIMBER_KIZ);
-        rightPIDController.setFF(CLIMBER_KF);
-        rightPIDController.setOutputRange(CLIMBER_K_MIN_OUTPUT, CLIMBER_K_MAX_OUTPUT);
+        // rightPIDController.setP(CLIMBER_KP);
+        // rightPIDController.setI(CLIMBER_KI);
+        // rightPIDController.setD(CLIMBER_KD);
+        // rightPIDController.setIZone(CLIMBER_KIZ);
+        // rightPIDController.setFF(CLIMBER_KF);
+        // rightPIDController.setOutputRange(CLIMBER_K_MIN_OUTPUT, CLIMBER_K_MAX_OUTPUT);
 
         // invert the motor controllers so climber climbs right
         leftMotorController.setInverted(true);
@@ -103,14 +103,7 @@ public class ClimberReal implements ClimberIO {
 
     }
 
-    // left climbing with setpoint
-    public void setLeftMotor(double setpoint) {
-        if ((isLeftRetracted() && setpoint < 0) || (isLeftSideStalling() && !isRightSideStalling())) {
-            leftMotorController.set(0);
-        } else {
-            leftPIDController.setReference(setpoint, CANSparkBase.ControlType.kPosition);
-        }
-    }
+    
 
     // right basic climbing with just speed
     public void setRightSpeed(double speed) {
@@ -123,14 +116,7 @@ public class ClimberReal implements ClimberIO {
     }
 
     // right climing with setpoint
-    public void setRightMotor(double setpoint) {
-        if ((isRightRetracted() && setpoint < 0) || (isRightSideStalling() && !isLeftSideStalling())) {
-            rightMotorController.set(0);
-        } else {
-
-            rightPIDController.setReference(setpoint, CANSparkBase.ControlType.kPosition);
-        }
-    }
+    
 
     public boolean isLeftExtended() {
         return (leftEncoder.getPosition() > ClimberConstants.MAX_HEIGHT);
@@ -141,11 +127,11 @@ public class ClimberReal implements ClimberIO {
     }
 
     public boolean isLeftRetracted() {
-        return (leftEncoder.getPosition() < ClimberConstants.MIN_HEIGHT);
+        return (leftEncoder.getPosition() < ClimberConstants.MIN_HEIGHT + .05);
     }
 
     public boolean isRightRetracted() {
-        return (rightEncoder.getPosition() < ClimberConstants.MIN_HEIGHT);
+        return (rightEncoder.getPosition() < ClimberConstants.MIN_HEIGHT + .05);
     }
 
     public double getLeftEncoderPosition() {
