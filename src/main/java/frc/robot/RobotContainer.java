@@ -316,10 +316,10 @@ public class RobotContainer {
                 () -> m_climber.setRightSpeed(-0.5), m_climber));
 
         // operator b (climber mode): automatic climber up
-        m_operatorController.b().and(() -> isInClimberMode).whileTrue(new RunCommand(() -> m_climber.setMotors(0.15), m_climber));
+        m_operatorController.b().and(() -> isInClimberMode).whileTrue(new RunCommand(() -> m_climber.setMotors(0.9), m_climber));
 
         // operator a (climber mode): automatic climber down
-        m_operatorController.a().and(() -> isInClimberMode).whileTrue(new RunCommand(() -> m_climber.setMotors(-0.15), m_climber));
+        m_operatorController.a().and(() -> isInClimberMode).whileTrue(new RunCommand(() -> m_climber.setMotors(-0.9), m_climber));
 
         // operator x: switch operator controller modes
         m_operatorController.x().onTrue(new InstantCommand(() -> isInClimberMode = !isInClimberMode));

@@ -6,6 +6,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
+import com.revrobotics.CANSparkBase.SoftLimitDirection;
 
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -34,11 +35,10 @@ public class ClimberReal implements ClimberIO {
 
         //TODO no more PID
         // initialize motor controllers
-        leftMotorController = MotorUtil.createSparkMAX(ClimberConstants.LEFT_CLIMBER_MOTOR_ID, MotorType.kBrushless, 50,
-                true,
-                true, 0.5);
+        leftMotorController = MotorUtil.createSparkMAX(ClimberConstants.LEFT_CLIMBER_MOTOR_ID, MotorType.kBrushless, 
+        50,true,true, 0.0);
         rightMotorController = MotorUtil.createSparkMAX(ClimberConstants.RIGHT_CLIMBER_MOTOR_ID, MotorType.kBrushless,
-                50, true, true, 0.5);
+                50, true, true, 0.0);
 
         // initialize motor encoders
         leftEncoder = leftMotorController.getEncoder();
@@ -51,6 +51,16 @@ public class ClimberReal implements ClimberIO {
         // converts encoder rotations to distance (meters)
         leftEncoder.setPositionConversionFactor(Constants.ClimberConstants.ENCODER_METERS);
         rightEncoder.setPositionConversionFactor(Constants.ClimberConstants.ENCODER_METERS);
+
+        leftMotorController.setSoftLimit(SoftLimitDirection.kReverse, (float)(ClimberConstants.MIN_HEIGHT + .01));
+        leftMotorController.enableSoftLimit(SoftLimitDirection.kReverse, true);
+        rightMotorController.setSoftLimit(SoftLimitDirection.kReverse, (float)(ClimberConstants.MIN_HEIGHT + .01));
+        rightMotorController.enableSoftLimit(SoftLimitDirection.kReverse, true);
+
+        leftMotorController.setSoftLimit(SoftLimitDirection.kForward, (float)(ClimberConstants.MAX_HEIGHT - .01));
+        leftMotorController.enableSoftLimit(SoftLimitDirection.kForward, true);
+        rightMotorController.setSoftLimit(SoftLimitDirection.kForward, (float)(ClimberConstants.MAX_HEIGHT - .01));
+        rightMotorController.enableSoftLimit(SoftLimitDirection.kForward, true);
 
         // initialize motor pid controllers
         leftPIDController = leftMotorController.getPIDController();
