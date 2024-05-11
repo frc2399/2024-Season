@@ -128,7 +128,7 @@ public class ClimberReal implements ClimberIO {
         SmartDashboard.putBoolean("climber/at bottom left", (isLeftRetracted() && speed < 0));
         SmartDashboard.putBoolean("climber/at top left", (isLeftExtended() && speed > 0));
         SmartDashboard.putBoolean("climber/left stalling", (isLeftSideStalling() && !isRightSideStalling()));
-        if ((isLeftRetracted() && speed < 0) || ((isLeftExtended() && speed > 0)) || (isLeftSideStalling() && !isRightSideStalling())) {
+        if ((isLeftRetracted() && speed < 0) || ((isLeftExtended() && speed > 0)) || (isLeftSideStalling() && !isRightSideStalling() && speed < 0)) {
             leftMotorController.set(0);
         } else if (leftEncoder.getPosition() < 0.10 && speed < 0) {
             leftMotorController.set(-0.15);
@@ -142,7 +142,7 @@ public class ClimberReal implements ClimberIO {
 
     // right basic climbing with just speed
     public void setRightSpeed(double speed) {
-        if ((isRightRetracted() && speed < 0) || ((isRightExtended() && speed > 0)) || (isRightSideStalling() && !isLeftSideStalling())) {
+        if ((isRightRetracted() && speed < 0) || ((isRightExtended() && speed > 0)) || (isRightSideStalling() && !isLeftSideStalling() && speed < 0)) {
             rightMotorController.set(0);
         } else if (rightEncoder.getPosition() < 0.10 && speed < 0) {
             rightMotorController.set(-0.15);
