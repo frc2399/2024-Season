@@ -9,7 +9,7 @@ import frc.robot.subsystems.vision.Vision;
 
 public class LED extends SubsystemBase {
     AddressableLED m_led = new AddressableLED(9);
-    AddressableLEDBuffer m_ledBuffer = new AddressableLEDBuffer(16);
+    AddressableLEDBuffer m_ledBuffer = new AddressableLEDBuffer(15);
     int m_rainbowFirstPixelHue = 0;
     //int m_rainbowLastPixelHue = 10;
     boolean isAutonomous = true;

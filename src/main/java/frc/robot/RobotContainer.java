@@ -399,7 +399,7 @@ public class RobotContainer {
         return new SequentialCommandGroup(
                 new ParallelCommandGroup(
                         new RunCommand(() -> intake.setMotor(.8), intake),
-                        new RunCommand(() -> indexer.setMotor(0.8), indexer)).withTimeout(0.3), 
+                        new RunCommand(() -> indexer.setMotor(0.8), indexer)).withTimeout(0.25), 
                 new ParallelCommandGroup(
                         new InstantCommand(() -> intake.setMotor(.0), intake),
                         new InstantCommand(() -> indexer.setMotor(0.0), indexer)));

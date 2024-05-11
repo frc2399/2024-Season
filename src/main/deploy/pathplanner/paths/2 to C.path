@@ -3,13 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.31,
-        "y": 5.501784471161535
+        "x": 1.45,
+        "y": 5.54
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.5343713722612629,
-        "y": 6.229922953179241
+        "x": 1.9687553682963268,
+        "y": 5.997814757782293
+      },
+      "isLocked": false,
+      "linkedName": "actual actual center subwoofer"
+    },
+    {
+      "anchor": {
+        "x": 1.7986031598148269,
+        "y": 6.647237676492136
+      },
+      "prevControl": {
+        "x": 1.7389988740119267,
+        "y": 6.286205246925829
+      },
+      "nextControl": {
+        "x": 1.8555853142686882,
+        "y": 6.99238744864827
       },
       "isLocked": false,
       "linkedName": null
@@ -20,8 +36,8 @@
         "y": 7.0
       },
       "prevControl": {
-        "x": 1.8629526147941182,
-        "y": 7.0
+        "x": 2.4023028910858173,
+        "y": 7.041985122743394
       },
       "nextControl": null,
       "isLocked": false,
@@ -30,7 +46,7 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.65,
+      "waypointRelativePos": 1.3,
       "rotationDegrees": 0,
       "rotateFast": false
     }
@@ -39,7 +55,7 @@
   "eventMarkers": [
     {
       "name": "New Event Marker",
-      "waypointRelativePos": 0.25,
+      "waypointRelativePos": 0.5,
       "command": {
         "type": "parallel",
         "data": {

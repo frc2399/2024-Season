@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.6,
-        "y": 3.95
+        "x": 2.5789203822692945,
+        "y": 4.089683346033359
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.8388132981741,
-        "y": 4.644351098235208
+        "x": 1.8177336804433946,
+        "y": 4.784034444268567
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "3rd note"
     },
     {
       "anchor": {
-        "x": 1.12,
-        "y": 5.5
+        "x": 1.45,
+        "y": 5.54
       },
       "prevControl": {
-        "x": 1.6107634412692335,
-        "y": 4.9908379521751
+        "x": 1.9407634412692334,
+        "y": 5.0308379521751
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "actual actual center subwoofer"
     }
   ],
   "rotationTargets": [],
