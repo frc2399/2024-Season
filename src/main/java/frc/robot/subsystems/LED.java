@@ -5,7 +5,6 @@ import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.Indexer.Indexer;
-import frc.robot.subsystems.vision.Vision;
 
 public class LED extends SubsystemBase {
     AddressableLED m_led = new AddressableLED(9);
@@ -13,11 +12,9 @@ public class LED extends SubsystemBase {
     int m_rainbowFirstPixelHue = 0;
     //int m_rainbowLastPixelHue = 10;
     boolean isAutonomous = true;
-    private Vision vision;
     private Indexer indexer;
 
-    public LED(Vision vision, Indexer indexer) {
-        this.vision = vision;
+    public LED(Indexer indexer) {
         this.indexer = indexer;
         m_led.setLength(m_ledBuffer.getLength());
         m_led.setData(m_ledBuffer);
@@ -37,43 +34,11 @@ public class LED extends SubsystemBase {
           // Check bounds
           m_rainbowFirstPixelHue %= 180;
     }
-
-    public void turnTeleop() {
-        isAutonomous = false;
-    }
-
-    public void teleopLed() {
-        //purple if driveTrainAligned AND arm aligned
-        if (vision.isArmAligned() && vision.isDriveTrainAligned()) {
-            for (var i = 0; i < m_ledBuffer.getLength(); i++) {
-                m_ledBuffer.setRGB(i, 128, 102, 236);
-            }
-        //blue if just arm aligned
-        } else if (vision.isArmAligned() && !vision.isDriveTrainAligned()) {
-            for (var i = 0; i < m_ledBuffer.getLength(); i++) {
-                m_ledBuffer.setRGB(i, 0, 204, 255);
-            }
-        //pink if just drive aligned
-        } else if (!vision.isArmAligned() && vision.isDriveTrainAligned()) {
-            for (var i = 0; i < m_ledBuffer.getLength(); i++) {
-                m_ledBuffer.setRGB(i, 255, 0, 216);
-            }
-        //turns green if note is intook
-        } else if (indexer.isIntooked) {
-            for (var i = 0; i < m_ledBuffer.getLength(); i++) {
-                m_ledBuffer.setRGB(i, 7, 250, 20);
-            }
-        //turns off if nothing
-        } else {
-            rainbow();
-        }
-    }
+   
     public void periodic() {
         if (isAutonomous) {
             rainbow();
-        } else {
-            teleopLed();
-        }
+        } 
         m_led.setData(m_ledBuffer);
     }
 }

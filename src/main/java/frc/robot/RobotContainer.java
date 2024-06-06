@@ -56,10 +56,6 @@ import frc.robot.subsystems.shooter.RealShooter;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterIO;
 import frc.robot.subsystems.shooter.SimShooter;
-import frc.robot.subsystems.vision.Vision;
-import frc.robot.subsystems.vision.VisionIO;
-import frc.robot.subsystems.vision.VisionReal;
-import frc.robot.subsystems.vision.VisionSim;
 
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -69,7 +65,6 @@ import frc.robot.subsystems.vision.VisionSim;
  */
 public class RobotContainer {
     // The robot's subsystems
-    public static LED m_led;
     private DriveSubsystem m_robotDrive;
     private static GyroIO m_gyro;
 
@@ -88,7 +83,6 @@ public class RobotContainer {
     public static Indexer m_indexer;
     public static Climber m_climber;
     public static Arm m_arm;
-    public static Vision m_vision;
 
     // subsystem IOs
     ShooterIO shooterIO;
@@ -96,7 +90,6 @@ public class RobotContainer {
     IndexerIO indexerIO;
     ArmIO armIO;
     ClimberIO climberIO;
-    VisionIO visionIO;
 
     // auton chooser
     private static SendableChooser<Command> m_autoChooser;
@@ -143,7 +136,6 @@ public class RobotContainer {
                     new SwerveModule(m_rearLeftIO),
                     new SwerveModule(m_rearRightIO), m_gyro);
 
-            visionIO = new VisionSim(m_robotDrive);
 
         } else {
 
@@ -166,7 +158,6 @@ public class RobotContainer {
             climberIO = new ClimberReal();
             armIO = new RealArm();
             m_gyro = new GyroIOPigeon2();
-            visionIO = new VisionReal();
 
             m_robotDrive = new DriveSubsystem(
                     new SwerveModule(m_frontLeftIO),
@@ -181,8 +172,7 @@ public class RobotContainer {
         m_shooter = new Shooter(shooterIO);
         m_indexer = new Indexer(indexerIO);
         m_intake = new Intake(intakeIO);
-        m_vision = new Vision(visionIO);
-        m_led = new LED(m_vision, m_indexer);
+        
     }
 
     // sets up auton commands
@@ -288,14 +278,6 @@ public class RobotContainer {
         // driver b: reset gyro
         m_driverController.b().onTrue(new InstantCommand(() -> m_gyro.setYaw(0.0)));
 
-        // driver a: align to speaker mode
-        m_driverController.a().whileTrue(
-                new RunCommand(() -> m_robotDrive.drive(
-                        -Math.pow(MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband), 3),
-                        -Math.pow(MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband), 3),
-                        m_vision.keepPointedAtSpeaker(),
-                        fieldOrientedDrive), m_robotDrive))
-                .onFalse(new InstantCommand(() -> m_vision.makeDriveTrainAlignedFalse()));
     }
 
     private void configureButtonBindingsOperatorClimber() {
@@ -327,9 +309,6 @@ public class RobotContainer {
     }
 
     private void configureButtonBindingsOperatorNotClimber() {
-        m_operatorController.leftTrigger().and(() -> !isInClimberMode).whileTrue(
-                makeSetPositionCommandVision(m_arm))
-                .onFalse(new InstantCommand(() -> m_vision.makeArmAlignedFalse()));
 
         m_operatorController.rightTrigger().and(() -> !isInClimberMode).whileTrue( 
                 new ParallelCommandGroup(
@@ -369,15 +348,6 @@ public class RobotContainer {
                 new ConditionalCommand(new InstantCommand(() -> {
                 }), new InstantCommand(() -> arm.enable(), arm), () -> arm.isEnabled()),
                 new RunCommand(() -> arm.setGoal(target), arm));
-    }
-
-    private Command makeSetPositionCommandVision(Arm arm) {
-        System.out.println("hi");
-        DoubleSupplier target = () -> (m_vision.keepArmAtAngle((m_arm.getAbsoluteEncoderPosition())));
-        return new SequentialCommandGroup(
-                new ConditionalCommand(new InstantCommand(() -> {
-                }), new InstantCommand(() -> arm.enable(), arm), () -> arm.isEnabled()),
-                new RunCommand(() -> arm.setGoal(target.getAsDouble()), arm));
     }
 
     public static Command makeSetPositionCommandAuton(Arm arm,

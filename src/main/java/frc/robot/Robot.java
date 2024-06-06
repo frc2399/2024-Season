@@ -123,8 +123,6 @@ public class Robot extends TimedRobot {
     // continue until interrupted by another command, remove
     // this line or comment it out.
     Optional<Alliance> ally = DriverStation.getAlliance();
-    m_robotContainer.m_led.turnTeleop();
-    m_robotContainer.m_vision.assignAprilTags(ally);
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
