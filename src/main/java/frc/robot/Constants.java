@@ -139,7 +139,7 @@ public final class Constants {
     public static final double SPEAKER_SPEED = 0.8;
     public static final double AMP_SPEED = 0.3;
     public static final double FAR_AWAY_SPEED = 1;
-    public static final double SUBWOOFER_SPEED = 0.6;
+    public static final double SUBWOOFER_SPEED = 0.55;
     public static final double SHOOTER_FEEDFORWRD = 0.03;
     public static final double SHOOTER_PVALUE = 0.01;
     public static final double SHOOT_MAX_SPEED_RPS = NEO_MAX_SPEED_RPM / 60;
@@ -171,7 +171,7 @@ public final class Constants {
     //absolute encoder only needs the sprocket/chain reduction, since it comes after the gearboxes
     public static final double ABSOLUTE_RADIANS_PER_REVOLUTION = 2 * Math.PI / 4;
 
-    public static final double ARM_ABSOLUTE_MEASURED = 0.533;
+    public static final double ARM_ABSOLUTE_MEASURED = 1.03;
     public static final double ARM_ABSOLUTE_CAD = 0.274;
     public static final double INITIAL_OFFSET = 0.274;
 
@@ -194,19 +194,24 @@ public final class Constants {
 
     public static final int LEFT_CLIMBER_MOTOR_ID = 13;
     public static final int RIGHT_CLIMBER_MOTOR_ID = 14;
-    public static final double CLIMBER_SPEED = 0.5;
+    // not actually being implemented
+    public static final double CLIMBER_SPEED = 0.8;
 
-    public static final double MAX_HEIGHT = 0.15;
+    public static final double MAX_HEIGHT = 0.80;
     public static final double MIN_HEIGHT = 0;
 
     public static final double VELOCITY_THRESHHOLD = 20;
 
-    public static final double CLIMBER_RADIUS = 0.375;
+    public static final double CLIMBER_RADIUS = 0.75;
 
     public static final double SETPOINT_RANGE = 0.05;
 
-    public static final double ENCODER_VELOCITY_MPS = (2 * (Math.PI) * 0.375) / 60 / 12;
-    public static final double ENCODER_METERS = (2 * (Math.PI) * 0.375 / 12);
+    
+    //2pi * radius of the spool / gear ration (20) converted into meters
+    public static final double ENCODER_METERS = Units.inchesToMeters((2 * (Math.PI) * 0.75 / 20));
+
+    public static final double ENCODER_VELOCITY_MPS = ENCODER_METERS / 60;
+    public static final double CURRENT_THRESHOLD = 10;
 
   }
 
@@ -217,7 +222,7 @@ public final class Constants {
   }
 
   public static final class AutoConstants {
-    public static final double kMaxSpeedMetersPerSecond = 4;
+    public static final double kMaxSpeedMetersPerSecond = 4.7;
     public static final double kMaxAccelerationMetersPerSecondSquared = 3;
     public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI;
     public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.PI;

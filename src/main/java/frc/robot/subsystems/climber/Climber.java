@@ -23,13 +23,8 @@ public class Climber extends SubsystemBase {
         climberIO.setRightSpeed(speed);
     }
 
-    public void setRightMotor(double setpoint) {
-        climberIO.setRightMotor(setpoint);
-    }
-
-    public void setLeftMotor(double setpoint) {
-        climberIO.setLeftMotor(setpoint);
-    }
+    
+   
 
     public void setMotors(double speed) {
         climberIO.setLeftSpeed(speed);

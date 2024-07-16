@@ -1,5 +1,6 @@
 package frc.robot.subsystems.intake;
 
+import com.revrobotics.CANSparkLowLevel;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
@@ -31,7 +32,7 @@ public class RealIntake implements IntakeIO {
             Constants.NEO550_CURRENT_LIMIT, false, true, slewRate);
 
         intakeMotorController = MotorUtil.createSparkMAX(IntakeConstants.INTAKE_CENTERING_ID, MotorType.kBrushless,
-        Constants.NEO550_CURRENT_LIMIT, true, true, slewRate);
+        Constants.NEO550_CURRENT_LIMIT, false, true, slewRate);
 
         // initialize motor encoder
         leftCenteringIntakeEncoder = leftCenteringIntakeMotorController.getEncoder();
@@ -45,6 +46,20 @@ public class RealIntake implements IntakeIO {
         
         intakePIDController.setFF(FEEDFORWARD);
         intakePIDController.setP(PVALUE);
+
+        leftCenteringIntakeMotorController.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus2, 32767);
+        leftCenteringIntakeMotorController.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus3, 32767);
+        leftCenteringIntakeMotorController.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus4, 32767);
+        leftCenteringIntakeMotorController.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus5, 32767);
+        leftCenteringIntakeMotorController.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus6, 32767);
+        leftCenteringIntakeMotorController.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus2, 32767);
+
+        
+
+
+
+
+
     }
 
     @Override

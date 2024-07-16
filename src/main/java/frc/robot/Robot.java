@@ -46,8 +46,8 @@ public class Robot extends TimedRobot {
 
     DataLogManager.start();
     DriverStation.startDataLog(DataLogManager.getLog());
-    SmartDashboard.putString("branch and date", MyVersion.GIT_BRANCH + " " + MyVersion.GIT_DATE);
-    Shuffleboard.getTab("Driver").add("robot/branch info", MyVersion.GIT_BRANCH + " " + MyVersion.GIT_DATE + " " + MyVersion.GIT_SHA);
+    SmartDashboard.putString("branch and date", MyVersion.GIT_BRANCH + " " + MyVersion.GIT_DATE );
+    Shuffleboard.getTab("Driver").add("robot/branch info", MyVersion.GIT_BRANCH + " " + MyVersion.BUILD_DATE + " " + MyVersion.GIT_SHA);
 
     if (RobotBase.isSimulation())
     {
@@ -100,6 +100,8 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     // Optional<Alliance> ally = DriverStation.getAlliance();
     // m_robotContainer.m_vision.assignAprilTags(ally);
+    RobotContainer.m_arm.setEncoderPosition(RobotContainer.m_arm.getAbsoluteEncoderPosition());
+
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
     RobotContainer.makeSetPositionCommand(RobotContainer.m_arm, 0.335);
 
@@ -121,8 +123,6 @@ public class Robot extends TimedRobot {
     // continue until interrupted by another command, remove
     // this line or comment it out.
     Optional<Alliance> ally = DriverStation.getAlliance();
-    m_robotContainer.m_led.turnTeleop();
-    m_robotContainer.m_vision.assignAprilTags(ally);
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }

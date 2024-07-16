@@ -20,43 +20,6 @@
         {
           "type": "path",
           "data": {
-            "pathName": "2 to C"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "intake for time"
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "C to 2"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "outtake"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "AutoShoot"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
             "pathName": "2 to B"
           }
         },

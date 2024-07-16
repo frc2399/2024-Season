@@ -30,9 +30,22 @@
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "A to 1"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "A to 1"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "outtake"
+                }
+              }
+            ]
           }
         },
         {

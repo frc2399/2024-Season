@@ -3,52 +3,34 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.45,
-        "y": 5.54
+        "x": 0.7718481866382481,
+        "y": 6.680400169815762
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.450000000000001,
-        "y": 5.54
+        "x": 5.160788593182125,
+        "y": 7.483293978933637
       },
       "isLocked": false,
-      "linkedName": "actual actual center subwoofer"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.86,
-        "y": 5.54
+        "x": 7.945386754971041,
+        "y": 5.747561124751879
       },
       "prevControl": {
-        "x": 1.8599999999999999,
-        "y": 5.54
+        "x": 6.720163563783918,
+        "y": 5.896073026713954
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "note B"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
-  "eventMarkers": [
-    {
-      "name": "New Event Marker",
-      "waypointRelativePos": 0.05,
-      "command": {
-        "type": "parallel",
-        "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "intake"
-              }
-            }
-          ]
-        }
-      }
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.75,
     "maxAcceleration": 3.5,
@@ -63,7 +45,7 @@
   "reversed": false,
   "folder": null,
   "previewStartingState": {
-    "rotation": 0,
+    "rotation": 59.85861444792467,
     "velocity": 0
   },
   "useDefaultConstraints": true

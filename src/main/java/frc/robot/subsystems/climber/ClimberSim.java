@@ -5,17 +5,13 @@ public class ClimberSim implements ClimberIO {
 
     }
 
-    public void setLeftMotor(double setpoint) {
-
-    }
+    
 
     public void setRightSpeed(double speed) {
 
     }
 
-    public void setRightMotor(double setpoint) {
-
-    }
+    
 
     public boolean isLeftExtended() {
         return true;
