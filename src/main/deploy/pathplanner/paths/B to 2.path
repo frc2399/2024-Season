@@ -12,27 +12,27 @@
         "y": 5.541766344748375
       },
       "isLocked": false,
-      "linkedName": "note B"
+      "linkedName": "B"
     },
     {
       "anchor": {
-        "x": 1.45,
-        "y": 5.54
+        "x": 1.31,
+        "y": 5.501784471161535
       },
       "prevControl": {
-        "x": 2.4499981448951136,
-        "y": 5.541926189588875
+        "x": 2.3099981448951135,
+        "y": 5.503710660750411
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "actual actual center subwoofer"
+      "linkedName": "2"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.75,
+    "maxVelocity": 3.0,
     "maxAcceleration": 3.5,
     "maxAngularVelocity": 270.0,
     "maxAngularAcceleration": 270.0

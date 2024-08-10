@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.45,
-        "y": 5.54
+        "x": 1.31,
+        "y": 5.501784471161535
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.450000000000001,
-        "y": 5.54
+        "x": 2.3100000000000014,
+        "y": 5.501784471161535
       },
       "isLocked": false,
-      "linkedName": "actual actual center subwoofer"
+      "linkedName": "2"
     },
     {
       "anchor": {
@@ -25,7 +25,7 @@
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "note B"
+      "linkedName": "B"
     }
   ],
   "rotationTargets": [],
@@ -50,14 +50,14 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 3.75,
+    "maxVelocity": 3.0,
     "maxAcceleration": 3.5,
     "maxAngularVelocity": 270.0,
     "maxAngularAcceleration": 270.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0,
+    "rotation": 0.0,
     "rotateFast": false
   },
   "reversed": false,

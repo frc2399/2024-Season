@@ -62,7 +62,9 @@ public class DriveSubsystem extends SubsystemBase {
 
   public Rotation2d lastAngle = new Rotation2d();
 
-  StructArrayPublisher<SwerveModuleState> swerveModuleStatePublisher = NetworkTableInstance.getDefault().getStructArrayTopic("/SmartDashboard/Swerve/Current Modules States", SwerveModuleState.struct).publish(); 
+  StructArrayPublisher<SwerveModuleState> actualSwerveModuleStatePublisher = NetworkTableInstance.getDefault().getStructArrayTopic("/SmartDashboard/Swerve/Actual Modules States", SwerveModuleState.struct).publish(); 
+  StructArrayPublisher<SwerveModuleState> commandedSwerveModuleStatePublisher = NetworkTableInstance.getDefault().getStructArrayTopic("/SmartDashboard/Swerve/Commanded Modules States", SwerveModuleState.struct).publish(); 
+
 
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem(SwerveModule m_frontLeft, SwerveModule m_frontRight, SwerveModule m_rearLeft,
@@ -93,8 +95,8 @@ public class DriveSubsystem extends SubsystemBase {
         this::getRobotRelativeSpeeds,
         this::setRobotRelativeSpeeds,
         new HolonomicPathFollowerConfig(
-            new PIDConstants(5, 0, 0.03), // Translation
-            new PIDConstants(5, 0, 0.1), // Rotation
+            new PIDConstants(1, 0, 0), // Translation
+            new PIDConstants(1, 0, 0), // Rotation
             AutoConstants.kMaxSpeedMetersPerSecond,
             0.385, /* Distance from furthest module to robot center in meters */
             new ReplanningConfig()),
@@ -151,16 +153,16 @@ public class DriveSubsystem extends SubsystemBase {
         new Rotation2d(m_rearRight.getTurnEncoderPosition()))));
 
     
-    SwerveModuleState[] swerveModuleStates = new SwerveModuleState[]{
+    SwerveModuleState[] actualSwerveModuleStates = new SwerveModuleState[]{
       m_frontLeft.getState(),
       m_frontRight.getState(),
       m_rearLeft.getState(),
       m_rearRight.getState(),
     };
-    swerveModuleStatePublisher.set(swerveModuleStates);
+    actualSwerveModuleStatePublisher.set(actualSwerveModuleStates);
 
     if (Robot.isSimulation()) {
-    double angleChange = Constants.DriveConstants.kDriveKinematics.toChassisSpeeds(swerveModuleStates).omegaRadiansPerSecond * (1/Constants.CodeConstants.kMainLoopFrequency);
+    double angleChange = Constants.DriveConstants.kDriveKinematics.toChassisSpeeds(actualSwerveModuleStates).omegaRadiansPerSecond * (1/Constants.CodeConstants.kMainLoopFrequency);
     lastAngle = lastAngle.plus(Rotation2d.fromRadians(angleChange));
     m_gyro.setYaw(lastAngle.getRadians());}
   }
@@ -355,6 +357,14 @@ public class DriveSubsystem extends SubsystemBase {
     m_frontRight.setDesiredState(swerveModuleStates[1]);
     m_rearLeft.setDesiredState(swerveModuleStates[2]);
     m_rearRight.setDesiredState(swerveModuleStates[3]);
+
+     SwerveModuleState[] commandedSwerveModuleStates = new SwerveModuleState[]{
+      swerveModuleStates[0],
+      swerveModuleStates[1],
+      swerveModuleStates[2],
+      swerveModuleStates[3],
+    };
+    commandedSwerveModuleStatePublisher.set(commandedSwerveModuleStates);
   }
 
   //makes sure odometry's (0,0) is the same as global (0,0) (according to PhotonVision)

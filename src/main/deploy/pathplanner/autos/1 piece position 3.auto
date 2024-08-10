@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.7718481866382481,
-      "y": 6.680400169815762
+      "x": 0.6405516514736732,
+      "y": 6.575038335261856
     },
     "rotation": 60.0
   },
@@ -15,24 +15,6 @@
           "type": "named",
           "data": {
             "name": "AutoShoot"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 11.0
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "leave"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "intake for time"
           }
         }
       ]
