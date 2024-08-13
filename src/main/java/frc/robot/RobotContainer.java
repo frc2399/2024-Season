@@ -345,11 +345,11 @@ public class RobotContainer {
         // operator y: arm to amp angle
         m_operatorController.y().and(() -> !isInClimberMode).onTrue(makeSetPositionCommand(m_arm, 1.58));
 
-        // operator left trigger: intake
+        // operator right bumper: intake
         m_operatorController.rightBumper().and(() -> !isInClimberMode)
                 .whileTrue(new RunCommand(() -> m_indexer.setMotor(0.3), m_indexer));
 
-        // operator right trigger: outtake
+        // operator left bumper: outtake
         // outtake a little bittt to get shooter up to speed
         m_operatorController.leftBumper().and(() -> !isInClimberMode)
                 .onTrue(new SequentialCommandGroup(
@@ -372,7 +372,6 @@ public class RobotContainer {
     }
 
     private Command makeSetPositionCommandVision(Arm arm) {
-        System.out.println("hi");
         DoubleSupplier target = () -> (m_vision.keepArmAtAngle((m_arm.getAbsoluteEncoderPosition())));
         return new SequentialCommandGroup(
                 new ConditionalCommand(new InstantCommand(() -> {

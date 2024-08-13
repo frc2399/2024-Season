@@ -10,6 +10,7 @@ import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import com.pathplanner.lib.util.ReplanningConfig;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -34,6 +35,12 @@ import frc.robot.Robot;
 import frc.robot.subsystems.gyro.GyroIO;
 
 public class DriveSubsystem extends SubsystemBase {
+  
+  //correction PID
+  int DRIVE_P = 2;
+  int DRIVE_D = 0;
+
+  PIDController drivePIDController = new PIDController(DRIVE_P,0,DRIVE_D);
 
   // Odometry
   private SwerveDrivePoseEstimator m_poseEstimator;
@@ -72,6 +79,7 @@ public class DriveSubsystem extends SubsystemBase {
     this.m_frontRight = m_frontRight;
     this.m_rearLeft = m_rearLeft;
     this.m_rearRight = m_rearRight;
+    
 
 
     SmartDashboard.putData(field2d);
@@ -83,7 +91,8 @@ public class DriveSubsystem extends SubsystemBase {
           m_frontLeft.getPosition(),
           m_frontRight.getPosition(),
           m_rearLeft.getPosition(),
-          m_rearRight.getPosition()}, new Pose2d (0, 0, new Rotation2d(0,0)));
+          m_rearRight.getPosition()}, 
+      new Pose2d (0, 0, new Rotation2d(0,0))); //TODO: make these constants in the constants file rather than free-floating numbers
 
 
 
@@ -128,7 +137,7 @@ public class DriveSubsystem extends SubsystemBase {
             m_frontRight.getPosition(),
             m_rearLeft.getPosition(),
             m_rearRight.getPosition()
-        });
+        }); //TODO: look at updating without time
 
     var pose = getPose();
     SmartDashboard.putNumber("robot pose theta", pose.getRotation().getDegrees());
@@ -176,15 +185,6 @@ public class DriveSubsystem extends SubsystemBase {
 
   }
 
-  /** Resets the current odometry pose. */
-  public void setPose(Pose2d pose) {
-    if (RobotBase.isReal()) {
-      m_poseEstimator.resetPosition(new Rotation2d(m_gyro.getYaw()), getModulePositions(), pose);
-    } else {
-      m_poseEstimator.resetPosition(pose.getRotation(), getModulePositions(), pose);
-    }
-  }
-
   /** Resets the odometry to the specified pose. */
   public void resetOdometry(Pose2d pose) {
     m_poseEstimator.resetPosition(
@@ -198,27 +198,6 @@ public class DriveSubsystem extends SubsystemBase {
         pose);
   }
 
-  public void updateOdometry () {
-    m_poseEstimator.update(Rotation2d.fromDegrees(m_gyro.getYaw()),
-    new SwerveModulePosition[] {
-            m_frontLeft.getPosition(),
-            m_frontRight.getPosition(),
-            m_rearLeft.getPosition(),
-            m_rearRight.getPosition()
-        });
-  }
-
-  public void alignOrigins(Pose2d pose) {
-    m_poseEstimator.resetPosition(
-        Rotation2d.fromDegrees(m_gyro.getYaw()),
-        new SwerveModulePosition[] {
-            m_frontLeft.getPosition(),
-            m_frontRight.getPosition(),
-            m_rearLeft.getPosition(),
-            m_rearRight.getPosition()
-        },
-        pose);
-  }
   /**
    * Method to drive the robot using joystick info.
    *
@@ -241,17 +220,19 @@ public class DriveSubsystem extends SubsystemBase {
     }   
 
     //Apply correction if needed
-    if (rotRate == 0 && (xSpeed != 0 || ySpeed != 0)) {
+    // if (rotRate == 0 && (xSpeed != 0 || ySpeed != 0)) {
       newRotRate = 0;
       // correction algorithm
       if (Math.abs(desiredAngle - currentAngle) > Math.toRadians(1)) {
-        newRotRate = (2.0 * (desiredAngle - currentAngle)) % (2 * Math.PI) / (2 * Math.PI);
+        drivePIDController.calculate(currentAngle,desiredAngle);
+        // newRotRate = (2.0 * (desiredAngle - currentAngle)) % (2 * Math.PI) / (2 * Math.PI); 
+        //TODO: look at this; check for algorithm turning on and off, tune the P value, look into autonomous implementation, look into using a PID controller here
       }
-    }
-    else {
-      newRotRate = rotRate;
-      desiredAngle = currentAngle;
-    }
+        // }
+    // else {
+    //   newRotRate = rotRate;
+    //   desiredAngle = currentAngle; //TODO: this causes a slight pause on correction during sudden switches in direction which is weird
+    // }
   
       xSpeedCommanded = xSpeed;
       ySpeedCommanded = ySpeed;
@@ -312,15 +293,7 @@ public class DriveSubsystem extends SubsystemBase {
     m_frontRight.setDesiredState(desiredStates[1]);
     m_rearLeft.setDesiredState(desiredStates[2]);
     m_rearRight.setDesiredState(desiredStates[3]);
-  }
-
-  /** Resets the drive encoders to currently read a position of 0. */
-  public void resetEncoders() {
-    m_frontLeft.resetEncoders();
-    m_rearLeft.resetEncoders();
-    m_frontRight.resetEncoders();
-    m_rearRight.resetEncoders();
-  }
+  } //TODO: a duplicate of this code is found in the drive method; just put this there instead to avoid having multiple copies of the same code
 
   /**
    * Returns the heading of the robot.
@@ -357,7 +330,6 @@ public class DriveSubsystem extends SubsystemBase {
     m_rearRight.setDesiredState(swerveModuleStates[3]);
   }
 
-  //makes sure odometry's (0,0) is the same as global (0,0) (according to PhotonVision)
    private void configurePathPlannerLogging() {        
         PathPlannerLogging.setLogCurrentPoseCallback((pose) -> {
             field2d.setRobotPose(pose);
