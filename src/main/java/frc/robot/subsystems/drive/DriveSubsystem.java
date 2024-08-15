@@ -35,12 +35,12 @@ import frc.robot.Robot;
 import frc.robot.subsystems.gyro.GyroIO;
 
 public class DriveSubsystem extends SubsystemBase {
-  
-  //correction PID
-  int DRIVE_P = 2;
-  int DRIVE_D = 0;
 
-  PIDController drivePIDController = new PIDController(DRIVE_P,0,DRIVE_D);
+  // correction PID
+  private double DRIVE_P = 1;
+  private double DRIVE_D = 0.05;
+
+  PIDController drivePIDController = new PIDController(DRIVE_P, 0, DRIVE_D);
 
   // Odometry
   private SwerveDrivePoseEstimator m_poseEstimator;
@@ -55,21 +55,21 @@ public class DriveSubsystem extends SubsystemBase {
   private double m_currentRotationRate = 0.0;
 
   private double desiredAngle = 0;
-  
+
   private GyroIO m_gyro;
 
-  
   private final Field2d field2d = new Field2d();
   private FieldObject2d frontLeftField2dModule = field2d.getObject("front left module");
   private FieldObject2d rearLeftField2dModule = field2d.getObject("rear left module");
   private FieldObject2d frontRightField2dModule = field2d.getObject("front right module");
   private FieldObject2d rearRightField2dModule = field2d.getObject("rear right module");
 
-  private ChassisSpeeds relativeRobotSpeeds; 
+  private ChassisSpeeds relativeRobotSpeeds;
 
   public Rotation2d lastAngle = new Rotation2d();
 
-  StructArrayPublisher<SwerveModuleState> swerveModuleStatePublisher = NetworkTableInstance.getDefault().getStructArrayTopic("/SmartDashboard/Swerve/Current Modules States", SwerveModuleState.struct).publish(); 
+  StructArrayPublisher<SwerveModuleState> swerveModuleStatePublisher = NetworkTableInstance.getDefault()
+      .getStructArrayTopic("/SmartDashboard/Swerve/Current Modules States", SwerveModuleState.struct).publish();
 
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem(SwerveModule m_frontLeft, SwerveModule m_frontRight, SwerveModule m_rearLeft,
@@ -79,22 +79,19 @@ public class DriveSubsystem extends SubsystemBase {
     this.m_frontRight = m_frontRight;
     this.m_rearLeft = m_rearLeft;
     this.m_rearRight = m_rearRight;
-    
-
 
     SmartDashboard.putData(field2d);
 
     m_poseEstimator = new SwerveDrivePoseEstimator(
-      DriveConstants.kDriveKinematics,
-      Rotation2d.fromDegrees(m_gyro.getYaw()), 
-      new SwerveModulePosition[] {
-          m_frontLeft.getPosition(),
-          m_frontRight.getPosition(),
-          m_rearLeft.getPosition(),
-          m_rearRight.getPosition()}, 
-      new Pose2d (0, 0, new Rotation2d(0,0))); //TODO: make these constants in the constants file rather than free-floating numbers
-
-
+        DriveConstants.kDriveKinematics,
+        Rotation2d.fromDegrees(m_gyro.getYaw()),
+        new SwerveModulePosition[] {
+            m_frontLeft.getPosition(),
+            m_frontRight.getPosition(),
+            m_rearLeft.getPosition(),
+            m_rearRight.getPosition() },
+        new Pose2d(0, 0, new Rotation2d(0, 0))); // TODO: make these constants in the constants file rather than
+                                                 // free-floating numbers
 
     AutoBuilder.configureHolonomic(
         this::getPose,
@@ -109,7 +106,8 @@ public class DriveSubsystem extends SubsystemBase {
             new ReplanningConfig()),
 
         () -> {
-          // Basically flips the path for path planner depending on alliance(Origin is Blue Alliance)
+          // Basically flips the path for path planner depending on alliance(Origin is
+          // Blue Alliance)
 
           var alliance = DriverStation.getAlliance();
 
@@ -121,7 +119,7 @@ public class DriveSubsystem extends SubsystemBase {
 
         this);
 
-        configurePathPlannerLogging();
+    configurePathPlannerLogging();
   }
 
   @Override
@@ -137,7 +135,7 @@ public class DriveSubsystem extends SubsystemBase {
             m_frontRight.getPosition(),
             m_rearLeft.getPosition(),
             m_rearRight.getPosition()
-        }); //TODO: look at updating without time
+        }); // TODO: look at updating without time
 
     var pose = getPose();
     SmartDashboard.putNumber("robot pose theta", pose.getRotation().getDegrees());
@@ -159,19 +157,20 @@ public class DriveSubsystem extends SubsystemBase {
         Constants.DriveConstants.REAR_RIGHT_OFFSET,
         new Rotation2d(m_rearRight.getTurnEncoderPosition()))));
 
-    
-    SwerveModuleState[] swerveModuleStates = new SwerveModuleState[]{
-      m_frontLeft.getState(),
-      m_frontRight.getState(),
-      m_rearLeft.getState(),
-      m_rearRight.getState(),
+    SwerveModuleState[] swerveModuleStates = new SwerveModuleState[] {
+        m_frontLeft.getState(),
+        m_frontRight.getState(),
+        m_rearLeft.getState(),
+        m_rearRight.getState(),
     };
     swerveModuleStatePublisher.set(swerveModuleStates);
 
     if (Robot.isSimulation()) {
-    double angleChange = Constants.DriveConstants.kDriveKinematics.toChassisSpeeds(swerveModuleStates).omegaRadiansPerSecond * (1/Constants.CodeConstants.kMainLoopFrequency);
-    lastAngle = lastAngle.plus(Rotation2d.fromRadians(angleChange));
-    m_gyro.setYaw(lastAngle.getRadians());}
+      double angleChange = Constants.DriveConstants.kDriveKinematics
+          .toChassisSpeeds(swerveModuleStates).omegaRadiansPerSecond * (1 / Constants.CodeConstants.kMainLoopFrequency);
+      lastAngle = lastAngle.plus(Rotation2d.fromRadians(angleChange));
+      m_gyro.setYaw(lastAngle.getRadians());
+    }
   }
 
   /** Returns the currently-estimated pose of the robot. */
@@ -214,44 +213,50 @@ public class DriveSubsystem extends SubsystemBase {
     double ySpeedCommanded;
     double currentAngle = (m_gyro.getYaw());
 
-      // //Account for edge case when gyro resets
+    // //Account for edge case when gyro resets
     if (currentAngle == 0) {
       desiredAngle = 0;
-    }   
+    }
 
-    //Apply correction if needed
-    // if (rotRate == 0 && (xSpeed != 0 || ySpeed != 0)) {
+    // Apply correction if needed
+    if (rotRate == 0 && (xSpeed != 0 || ySpeed != 0)) {
       newRotRate = 0;
       // correction algorithm
-      if (Math.abs(desiredAngle - currentAngle) > Math.toRadians(1)) {
-        drivePIDController.calculate(currentAngle,desiredAngle);
-        // newRotRate = (2.0 * (desiredAngle - currentAngle)) % (2 * Math.PI) / (2 * Math.PI); 
-        //TODO: look at this; check for algorithm turning on and off, tune the P value, look into autonomous implementation, look into using a PID controller here
-      }
-        // }
-    // else {
-    //   newRotRate = rotRate;
-    //   desiredAngle = currentAngle; //TODO: this causes a slight pause on correction during sudden switches in direction which is weird
-    // }
-  
-      xSpeedCommanded = xSpeed;
-      ySpeedCommanded = ySpeed;
-      m_currentRotationRate = newRotRate;
-  
+      // if (Math.abs(desiredAngle - currentAngle) > Math.toRadians(1)) {
+      newRotRate = drivePIDController.calculate(currentAngle, desiredAngle);
+      // newRotRate = (2.0 * (desiredAngle - currentAngle)) % (2 * Math.PI) / (2 *
+      // Math.PI);
+      // TODO: look at this; check for algorithm turning on and off, tune the P value,
+      // look into autonomous implementation, look into using a PID controller here
+    } else {
+      newRotRate = rotRate;
+      desiredAngle = currentAngle;
+    }
+
+    xSpeedCommanded = xSpeed;
+    ySpeedCommanded = ySpeed;
+    m_currentRotationRate = newRotRate;
 
     // Convert the commanded speeds into the correct units for the drivetrain
     double xSpeedDelivered = xSpeedCommanded * DriveConstants.kMaxSpeedMetersPerSecond;
     double ySpeedDelivered = ySpeedCommanded * DriveConstants.kMaxSpeedMetersPerSecond;
     double rotRateDelivered = m_currentRotationRate * DriveConstants.kMaxAngularSpeed;
-    
 
-    relativeRobotSpeeds = fieldRelative
-            ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotRateDelivered,
-                Rotation2d.fromRadians(m_gyro.getYaw()))
-            : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotRateDelivered);
+    if (fieldRelative) {
+      relativeRobotSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotRateDelivered,
+          Rotation2d.fromRadians(m_gyro.getYaw()));
+    } else {
+      relativeRobotSpeeds = new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotRateDelivered);
+    }
+
+    // fieldRelative
+    // ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered,
+    // rotRateDelivered,
+    // Rotation2d.fromRadians(m_gyro.getYaw()))
+    // : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotRateDelivered);
 
     SmartDashboard.putNumber("Swerve/ velocity", relativeRobotSpeeds.vxMetersPerSecond);
-    
+
     var swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(relativeRobotSpeeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(
         swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
@@ -293,7 +298,8 @@ public class DriveSubsystem extends SubsystemBase {
     m_frontRight.setDesiredState(desiredStates[1]);
     m_rearLeft.setDesiredState(desiredStates[2]);
     m_rearRight.setDesiredState(desiredStates[3]);
-  } //TODO: a duplicate of this code is found in the drive method; just put this there instead to avoid having multiple copies of the same code
+  } // TODO: a duplicate of this code is found in the drive method; just put this
+    // there instead to avoid having multiple copies of the same code
 
   /**
    * Returns the heading of the robot.
@@ -319,7 +325,6 @@ public class DriveSubsystem extends SubsystemBase {
         m_rearLeft.getState(), m_rearRight.getState());
   }
 
-
   public void setRobotRelativeSpeeds(ChassisSpeeds speeds) {
     var swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(speeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(
@@ -330,17 +335,17 @@ public class DriveSubsystem extends SubsystemBase {
     m_rearRight.setDesiredState(swerveModuleStates[3]);
   }
 
-   private void configurePathPlannerLogging() {        
-        PathPlannerLogging.setLogCurrentPoseCallback((pose) -> {
-            field2d.setRobotPose(pose);
-        });
+  private void configurePathPlannerLogging() {
+    PathPlannerLogging.setLogCurrentPoseCallback((pose) -> {
+      field2d.setRobotPose(pose);
+    });
 
-        PathPlannerLogging.setLogTargetPoseCallback((pose) -> {
-            field2d.getObject("ROBOT target pose").setPose(pose);
-        });
+    PathPlannerLogging.setLogTargetPoseCallback((pose) -> {
+      field2d.getObject("ROBOT target pose").setPose(pose);
+    });
 
-        PathPlannerLogging.setLogActivePathCallback((poses) -> {
-            field2d.getObject("ROBOT path").setPoses(poses);
-        });
-    }
+    PathPlannerLogging.setLogActivePathCallback((poses) -> {
+      field2d.getObject("ROBOT path").setPoses(poses);
+    });
+  }
 }
