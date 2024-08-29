@@ -37,7 +37,7 @@ import frc.robot.subsystems.gyro.GyroIO;
 public class DriveSubsystem extends SubsystemBase {
 
   // correction PID
-  private double DRIVE_P = 1;
+  private double DRIVE_P = 1.1;
   private double DRIVE_D = 0.05;
 
   PIDController drivePIDController = new PIDController(DRIVE_P, 0, DRIVE_D);
@@ -221,13 +221,7 @@ public class DriveSubsystem extends SubsystemBase {
     // Apply correction if needed
     if (rotRate == 0 && (xSpeed != 0 || ySpeed != 0)) {
       newRotRate = 0;
-      // correction algorithm
-      // if (Math.abs(desiredAngle - currentAngle) > Math.toRadians(1)) {
-      newRotRate = drivePIDController.calculate(currentAngle, desiredAngle);
-      // newRotRate = (2.0 * (desiredAngle - currentAngle)) % (2 * Math.PI) / (2 *
-      // Math.PI);
-      // TODO: look at this; check for algorithm turning on and off, tune the P value,
-      // look into autonomous implementation, look into using a PID controller here
+      newRotRate = newRotRate + drivePIDController.calculate(currentAngle, desiredAngle);
     } else {
       newRotRate = rotRate;
       desiredAngle = currentAngle;
@@ -248,12 +242,6 @@ public class DriveSubsystem extends SubsystemBase {
     } else {
       relativeRobotSpeeds = new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotRateDelivered);
     }
-
-    // fieldRelative
-    // ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered,
-    // rotRateDelivered,
-    // Rotation2d.fromRadians(m_gyro.getYaw()))
-    // : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotRateDelivered);
 
     SmartDashboard.putNumber("Swerve/ velocity", relativeRobotSpeeds.vxMetersPerSecond);
 
