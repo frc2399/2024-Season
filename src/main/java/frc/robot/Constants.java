@@ -61,17 +61,17 @@ public final class Constants {
     public static final int kFrontLeftDrivingCanId = 11;
     public static final int kRearLeftDrivingCanId = 21;
     public static final int kFrontRightDrivingCanId = 31;
-    public static final int kRearRightDrivingCanId = 41;
+    public static final int kRearRightDrivingCanId = 38;
 
     public static final int kFrontLeftTurningCanId = 12;
     public static final int kRearLeftTurningCanId = 22;
     public static final int kFrontRightTurningCanId = 32;
-    public static final int kRearRightTurningCanId = 42;
+    public static final int kRearRightTurningCanId = 39;
 
   }
 
   public static final class SwerveModuleConstants {
-    //THIS IS 13 ON COMP BOT
+    // THIS IS 13 ON COMP BOT
     public static final int kDrivingMotorPinionTeeth = 14;
 
     // Invert the turning encoder, since the output shaft rotates in the opposite
@@ -127,7 +127,7 @@ public final class Constants {
 
     public static final int LEFT_CENTERING_MOTOR_ID = 5;
     public static final int RIGHT_CENTERING_MOTOR_ID = 4;
-    public static final int INTAKE_CENTERING_ID = 2; 
+    public static final int INTAKE_CENTERING_ID = 2;
     public static final double INTAKING_SPEED = 1.0;
     public static final double OUTTAKING_SPEED = -0.6;
   }
@@ -147,8 +147,8 @@ public final class Constants {
 
   public static final class IndexerConstants {
 
-    public static final int INDEXER_MOTOR_ID = 6; 
-    public static final int INDEXER_SENSOR_CHANNEL_TOP = 0; 
+    public static final int INDEXER_MOTOR_ID = 6;
+    public static final int INDEXER_SENSOR_CHANNEL_TOP = 0;
     public static final int INDEXER_SENSOR_CHANNEL_BOTTOM = 1;
     public static final double INDEXER_IN_SPEED = 0.8;
     public static final double INDEXER_OUTTAKING_SPEED = -0.6;
@@ -166,27 +166,30 @@ public final class Constants {
     public static final double SPEAKER_PODIUM_ANGLE = -0.06;
     public static final double AMP_ANGLE = Units.degreesToRadians(90);
 
-    //1 4-1 gearbox, 2 3-1 gearboxes, then a 4-1 reduction from the sprocket/chain; 4^2 * 3^2 = 144
+    // 1 4-1 gearbox, 2 3-1 gearboxes, then a 4-1 reduction from the sprocket/chain;
+    // 4^2 * 3^2 = 144
     public static final double RADIANS_PER_REVOLUTION = 2 * Math.PI / 144;
-    //absolute encoder only needs the sprocket/chain reduction, since it comes after the gearboxes
+    // absolute encoder only needs the sprocket/chain reduction, since it comes
+    // after the gearboxes
     public static final double ABSOLUTE_RADIANS_PER_REVOLUTION = 2 * Math.PI / 4;
 
     public static final double ARM_ABSOLUTE_MEASURED = 1.03;
     public static final double ARM_ABSOLUTE_CAD = 0.274;
     public static final double INITIAL_OFFSET = 0.274;
 
-    // can be 2 degrees off from goal setpoints in auton and still considered at goal
+    // can be 2 degrees off from goal setpoints in auton and still considered at
+    // goal
     public static final double ANGLE_TOLERANCE_AUTON = Units.degreesToRadians(2);
 
-    //sim constants
-     // arm min and max angles in radians
-     public static final double MAX_ARM_ANGLE = Math.PI / 4 * 3;
-     // initial offset -5 degrees
-     public static final double MIN_ARM_ANGLE = 0;
-     // arm mass in kg
-     public static final double ARM_MASS = 2.72155;
-     // arm length in meters
-     public static final double ARM_LENGTH = 0.65;
+    // sim constants
+    // arm min and max angles in radians
+    public static final double MAX_ARM_ANGLE = Math.PI / 4 * 3;
+    // initial offset -5 degrees
+    public static final double MIN_ARM_ANGLE = 0;
+    // arm mass in kg
+    public static final double ARM_MASS = 2.72155;
+    // arm length in meters
+    public static final double ARM_LENGTH = 0.65;
 
   }
 
@@ -206,8 +209,7 @@ public final class Constants {
 
     public static final double SETPOINT_RANGE = 0.05;
 
-    
-    //2pi * radius of the spool / gear ration (20) converted into meters
+    // 2pi * radius of the spool / gear ration (20) converted into meters
     public static final double ENCODER_METERS = Units.inchesToMeters((2 * (Math.PI) * 0.75 / 20));
 
     public static final double ENCODER_VELOCITY_MPS = ENCODER_METERS / 60;
@@ -237,7 +239,7 @@ public final class Constants {
     public static final double kFreeSpeedRpm = 5676;
   }
 
-    public static final class LEDConstants {
+  public static final class LEDConstants {
     public static final int RED_CHANNEL = 5;
     public static final int GREEN_CHANNEL = 6;
     public static final int BLUE_CHANNEL = 7;
@@ -254,19 +256,20 @@ public final class Constants {
     public static final double ZOFFSETTOROBOT = Units.inchesToMeters(5.944);
     public static final Transform3d CAMTOROBOT = new Transform3d(
         new Translation3d(
-          Units.inchesToMeters(XOFFSETTOROBOT), 
-          Units.inchesToMeters(YOFFSETTOROBOT), 
-          Units.inchesToMeters(ZOFFSETTOROBOT)),
+            Units.inchesToMeters(XOFFSETTOROBOT),
+            Units.inchesToMeters(YOFFSETTOROBOT),
+            Units.inchesToMeters(ZOFFSETTOROBOT)),
         new Rotation3d(0.0, Units.degreesToRadians(15.0), 0.0));
     public static final Transform2d CAMTOROBOT2D = new Transform2d(
-      Units.inchesToMeters(XOFFSETTOROBOT),
-      Units.inchesToMeters(YOFFSETTOROBOT),
-      new Rotation2d(0));
+        Units.inchesToMeters(XOFFSETTOROBOT),
+        Units.inchesToMeters(YOFFSETTOROBOT),
+        new Rotation2d(0));
 
-     //5.33E-03*x + 0.206 - https://docs.google.com/spreadsheets/d/1TCEiHto6ypUku9VXPN79PGwONyrlhI2SbMsfn337yTw/edit#gid=0
+    // 5.33E-03*x + 0.206 -
+    // https://docs.google.com/spreadsheets/d/1TCEiHto6ypUku9VXPN79PGwONyrlhI2SbMsfn337yTw/edit#gid=0
     // inverse tan of function above to get angle
-    //all in inches except for eightyModelRange
-    public static final double STAYDOWNBOUNDARY =  (46.5);
+    // all in inches except for eightyModelRange
+    public static final double STAYDOWNBOUNDARY = (46.5);
     public static final double EIGHTYMODELSLOPE = 0.00346;
     public static final double EIGHTYMODELINTERCEPT = 0.298;
     public static final double EIGHTYMODELRANGE = Units.feetToMeters(12);
