@@ -1,6 +1,13 @@
 {
   "NTProvider": {
     "types": {
+<<<<<<< HEAD
+      "/FMSInfo": "FMSInfo"
+    }
+  },
+  "NetworkTables Info": {
+    "visible": true
+=======
       "/FMSInfo": "FMSInfo",
       "/Shuffleboard/Driver/Autos/Selector": "String Chooser",
       "/SmartDashboard/Autos/Selector": "String Chooser",
@@ -67,5 +74,6 @@
   },
   "NetworkTables View": {
     "visible": false
+>>>>>>> dev-testing
   }
 }
