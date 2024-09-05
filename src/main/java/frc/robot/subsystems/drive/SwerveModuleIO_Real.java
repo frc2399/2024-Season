@@ -47,7 +47,7 @@ public class SwerveModuleIO_Real implements SwerveModuleIO {
       m_turningEncoder = m_turningSparkMax.getAbsoluteEncoder(Type.kDutyCycle);
       m_drivingPIDController = m_drivingSparkMax.getPIDController();
       m_turningPIDController = m_turningSparkMax.getPIDController();
-      m_turningPIDController.setFeedbackDevice(m_turningEncoder);
+      // m_turningPIDController.setFeedbackDevice(m_turningEncoder);
 
       errors += check(m_drivingPIDController.setFeedbackDevice(m_drivingEncoder));
       errors += check(m_turningPIDController.setFeedbackDevice(m_turningEncoder));

@@ -12,6 +12,8 @@ import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
+import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -40,7 +42,11 @@ public class DriveSubsystem extends SubsystemBase {
   private double DRIVE_P = 1.1;
   private double DRIVE_D = 0.05;
 
-  PIDController drivePIDController = new PIDController(DRIVE_P, 0, DRIVE_D);
+  private PIDController drivePIDController = new PIDController(DRIVE_P, 0, DRIVE_D);
+
+  // debouncer for turning
+  private double ROTATION_DEBOUNCE_TIME = 0.5;
+  private Debouncer rotationDebouncer = new Debouncer(ROTATION_DEBOUNCE_TIME);
 
   // Odometry
   private SwerveDrivePoseEstimator m_poseEstimator;
@@ -219,8 +225,7 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     // Apply correction if needed
-    if (rotRate == 0 && (xSpeed != 0 || ySpeed != 0)) {
-      newRotRate = 0;
+    if (rotationDebouncer.calculate(rotRate == 0) && (Math.abs(xSpeed) >= 0.075 || Math.abs(ySpeed) != 0.075)) {
       newRotRate = newRotRate + drivePIDController.calculate(currentAngle, desiredAngle);
     } else {
       newRotRate = rotRate;
