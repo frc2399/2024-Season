@@ -59,7 +59,6 @@ import frc.robot.subsystems.shooter.SimShooter;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionReal;
-import frc.robot.subsystems.vision.VisionSim;
 
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -141,8 +140,8 @@ public class RobotContainer {
                                         new SwerveModule(m_frontLeftIO),
                                         new SwerveModule(m_frontRightIO),
                                         new SwerveModule(m_rearLeftIO),
-                                        new SwerveModule(m_rearRightIO), m_gyro);
-                        visionIO = new VisionSim(m_robotDrive);
+                                        new SwerveModule(m_rearRightIO), m_gyro, visionIO);
+                        // visionIO = new VisionSim(m_robotDrive);
 
                 } else {
 
@@ -175,7 +174,7 @@ public class RobotContainer {
                                         new SwerveModule(m_frontLeftIO),
                                         new SwerveModule(m_frontRightIO),
                                         new SwerveModule(m_rearLeftIO),
-                                        new SwerveModule(m_rearRightIO), m_gyro);
+                                        new SwerveModule(m_rearRightIO), m_gyro, visionIO);
 
                 }
 

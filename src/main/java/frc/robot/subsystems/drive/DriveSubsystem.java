@@ -14,6 +14,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -34,8 +35,18 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Robot;
 import frc.robot.subsystems.gyro.GyroIO;
+import frc.robot.subsystems.vision.VisionIO;
 
 public class DriveSubsystem extends SubsystemBase {
+
+  // vision
+  private VisionIO m_vision;
+  private boolean updateWithVision = false;
+  private Pose3d visionPose;
+  private double MAX_VISION_UPDATE_SPEED_MPS = 1.0;
+  private double velocityXMPS;
+  private double velocityYMPS;
+  private double velocityMPS;
 
   // correction PID
   private double DRIVE_P = 1.1;
@@ -78,7 +89,8 @@ public class DriveSubsystem extends SubsystemBase {
 
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem(SwerveModule m_frontLeft, SwerveModule m_frontRight, SwerveModule m_rearLeft,
-      SwerveModule m_rearRight, GyroIO m_gyro) {
+      SwerveModule m_rearRight, GyroIO m_gyro, VisionIO m_vision) {
+    this.m_vision = m_vision;
     this.m_gyro = m_gyro;
     this.m_frontLeft = m_frontLeft;
     this.m_frontRight = m_frontRight;
@@ -143,6 +155,24 @@ public class DriveSubsystem extends SubsystemBase {
         }); // TODO: look at updating without time
 
     var pose = getPose();
+
+    velocityXMPS = getRobotRelativeSpeeds().vxMetersPerSecond;
+    velocityYMPS = getRobotRelativeSpeeds().vyMetersPerSecond;
+    velocityMPS = Math.sqrt((Math.pow(velocityXMPS, 2) + Math.pow(velocityYMPS, 2)));
+
+    if (velocityMPS <= MAX_VISION_UPDATE_SPEED_MPS) {
+      updateWithVision = true;
+      m_vision.enableUpdatePoseWithVisionReading();
+    } else {
+      updateWithVision = false;
+      m_vision.disableUpdatePoseWithVisionReading();
+    }
+
+    if (updateWithVision) {
+      visionPose = m_vision.getRobotPoseVision();
+      m_poseEstimator.addVisionMeasurement(visionPose.toPose2d(), Timer.getFPGATimestamp());
+    }
+
     SmartDashboard.putNumber("robot pose theta", pose.getRotation().getDegrees());
     field2d.setRobotPose(pose);
 

@@ -6,6 +6,7 @@ import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonPipelineResult;
 
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -18,26 +19,31 @@ public class Vision extends SubsystemBase {
         // this.name = io.getName();
 
     }
-    
+
     public PhotonPipelineResult getCameraResult() {
         return io.getCameraResult();
     }
+
     public Optional<EstimatedRobotPose> getCameraEst() {
         return io.getCameraEst();
     }
-    public void enableUpdatePoseWithVisionReading () {
+
+    public void enableUpdatePoseWithVisionReading() {
         io.enableUpdatePoseWithVisionReading();
     }
-    public void disableUpdatePoseWithVisionReading () {
+
+    public void disableUpdatePoseWithVisionReading() {
         io.disableUpdatePoseWithVisionReading();
     }
-    public PhotonCamera getCamera () {
+
+    public PhotonCamera getCamera() {
         return io.getCamera();
-    } 
+    }
 
     public double keepPointedAtSpeaker() {
         return io.keepPointedAtSpeaker();
     }
+
     public double keepArmAtAngle(double curArmAngle) {
         return io.keepArmAtAngle(curArmAngle);
     }
@@ -51,7 +57,7 @@ public class Vision extends SubsystemBase {
     }
 
     public void assignAprilTags(Optional<Alliance> ally) {
-      io.assignAprilTags(ally);
+        io.assignAprilTags(ally);
     }
 
     public void makeDriveTrainAlignedFalse() {
@@ -60,6 +66,10 @@ public class Vision extends SubsystemBase {
 
     public void makeArmAlignedFalse() {
         io.makeArmAlignedFalse();
+    }
+
+    public Pose3d getRobotPoseVision() {
+        return io.getRobotPoseVision();
     }
 
 }
