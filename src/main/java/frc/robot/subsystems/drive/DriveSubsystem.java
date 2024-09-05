@@ -223,8 +223,7 @@ public class DriveSubsystem extends SubsystemBase {
       desiredAngle = 0;
     }
 
-    // Debouncer for turning and driving at the same time - otherwise it turns
-    // backwards and undoes the driver's work
+    // Debouncer ensures that there is no back-correction immediately after turning
     // Deadband for small movements - they are so slight they do not need correction
     // and correction causes robot to spasm
     if (rotationDebouncer.calculate(rotRate == 0) && (Math.abs(xSpeed) >= 0.075 || Math.abs(ySpeed) != 0.075)) {
