@@ -105,8 +105,8 @@ public class DriveSubsystem extends SubsystemBase {
         this::getRobotRelativeSpeeds,
         this::setRobotRelativeSpeeds,
         new HolonomicPathFollowerConfig(
-            new PIDConstants(5, 0, 0.03), // Translation
-            new PIDConstants(5, 0, 0.1), // Rotation
+            new PIDConstants(5, 0, 0), // Translation
+            new PIDConstants(5, 0, 0), // Rotation
             AutoConstants.kMaxSpeedMetersPerSecond,
             0.385, /* Distance from furthest module to robot center in meters */
             new ReplanningConfig()),
@@ -319,6 +319,7 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void setRobotRelativeSpeeds(ChassisSpeeds speeds) {
+    speeds = ChassisSpeeds.discretize(speeds, .02);
     var swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(speeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(
         swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
