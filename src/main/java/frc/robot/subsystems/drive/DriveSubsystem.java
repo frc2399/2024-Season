@@ -4,12 +4,22 @@
 
 package frc.robot.subsystems.drive;
 
+import java.util.Optional;
+
+import org.photonvision.EstimatedRobotPose;
+import org.photonvision.PhotonCamera;
+import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+import org.photonvision.PhotonUtils;
+import org.photonvision.targeting.PhotonTrackedTarget;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import com.pathplanner.lib.util.ReplanningConfig;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.Debouncer;
@@ -24,6 +34,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -33,9 +44,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.VisionConstants;
 import frc.robot.Robot;
 import frc.robot.subsystems.gyro.GyroIO;
-import frc.robot.subsystems.vision.VisionIO;
 
 public class DriveSubsystem extends SubsystemBase {
 
@@ -47,6 +58,27 @@ public class DriveSubsystem extends SubsystemBase {
   private double velocityXMPS;
   private double velocityYMPS;
   private double velocityMPS;
+  private Pose3d visionEstimatedPose;
+  private Pose2d robotPose;
+
+  // apriltags
+  public int facingSourceLeftID;
+  public int facingSourceRightID;
+  public int speakerID;
+  public int speakerOffsetID;
+  public int stageBackID;
+  public int facingAwayFromSpeakerStageLeftID;
+  public int facingAwayFromSpeakerStageRightID;
+  public int ampID;
+  public boolean isAligned = false;
+
+  // PID for the speaker-aiming method
+  final double ANGULAR_P = 0.8; // TODO: tune
+  final double ANGULAR_D = 0.0;
+  PIDController keepPointedController = new PIDController(
+      ANGULAR_P, 0, ANGULAR_D);
+
+  Optional<EstimatedRobotPose> possiblePose;
 
   // correction PID
   private double DRIVE_P = 1.1;
@@ -154,7 +186,7 @@ public class DriveSubsystem extends SubsystemBase {
             m_rearRight.getPosition()
         }); // TODO: look at updating without time
 
-    var pose = getPose();
+    Pose2d pose = getPose();
 
     velocityXMPS = getRobotRelativeSpeeds().vxMetersPerSecond;
     velocityYMPS = getRobotRelativeSpeeds().vyMetersPerSecond;
@@ -162,16 +194,21 @@ public class DriveSubsystem extends SubsystemBase {
 
     if (velocityMPS <= MAX_VISION_UPDATE_SPEED_MPS) {
       updateWithVision = true;
-      m_vision.enableUpdatePoseWithVisionReading();
     } else {
       updateWithVision = false;
-      m_vision.disableUpdatePoseWithVisionReading();
     }
 
     if (updateWithVision) {
-      visionPose = m_vision.getRobotPoseVision();
+      possiblePose = m_vision.getVisionPose();
+      // makes sure that there is a new pose and that there are targets before getting
+      // a robot pose
+      if (possiblePose.isPresent()) {
+        visionEstimatedPose = possiblePose.get().estimatedPose;
+      }
       m_poseEstimator.addVisionMeasurement(visionPose.toPose2d(), Timer.getFPGATimestamp());
     }
+
+    robotPose = m_poseEstimator.getEstimatedPosition();
 
     SmartDashboard.putNumber("robot pose theta", pose.getRotation().getDegrees());
     field2d.setRobotPose(pose);
@@ -241,7 +278,8 @@ public class DriveSubsystem extends SubsystemBase {
    * @param fieldRelative Whether the provided x and y speeds are relative to the
    *                      field.
    */
-  public void drive(double xSpeed, double ySpeed, double rotRate, boolean fieldRelative) {
+  public void drive(double xSpeed, double ySpeed, double rotRate, boolean fieldRelative,
+      boolean alignToSpeakerWithVision) {
 
     double newRotRate = 0;
     double xSpeedCommanded;
@@ -257,11 +295,11 @@ public class DriveSubsystem extends SubsystemBase {
     // backwards and undoes the driver's work
     // Deadband for small movements - they are so slight they do not need correction
     // and correction causes robot to spasm
-    if (rotationDebouncer.calculate(rotRate == 0) && (Math.abs(xSpeed) >= 0.075 || Math.abs(ySpeed) != 0.075)) {
-      newRotRate = newRotRate + drivePIDController.calculate(currentAngle, desiredAngle);
+
+    if (alignToSpeakerWithVision) {
+      newRotRate = getAlignToSpeakerRotRate(currentAngle);
     } else {
-      newRotRate = rotRate;
-      desiredAngle = currentAngle;
+      newRotRate = getHeadingCorrectionRotRate(currentAngle, rotRate, xSpeed, ySpeed);
     }
 
     xSpeedCommanded = xSpeed;
@@ -328,5 +366,43 @@ public class DriveSubsystem extends SubsystemBase {
     PathPlannerLogging.setLogActivePathCallback((poses) -> {
       field2d.getObject("ROBOT path").setPoses(poses);
     });
+  }
+
+  // assigns aprilTags based on alliance
+  public void assignAprilTags(Optional<Alliance> ally) {
+    if (ally.get() == Alliance.Red) {
+      facingSourceLeftID = 10;
+      facingSourceRightID = 9;
+      speakerID = 4;
+      speakerOffsetID = 3;
+      stageBackID = 13;
+      facingAwayFromSpeakerStageLeftID = 11;
+      facingAwayFromSpeakerStageRightID = 12;
+      ampID = 5;
+    } else {
+      facingSourceLeftID = 1;
+      facingSourceRightID = 2;
+      speakerID = 7;
+      speakerOffsetID = 8;
+      stageBackID = 14;
+      facingAwayFromSpeakerStageLeftID = 15;
+      facingAwayFromSpeakerStageRightID = 16;
+      ampID = 6;
+    }
+  }
+
+  private double getAlignToSpeakerRotRate(double currentAngle) {
+    return 0.0;
+  }
+
+  private double getHeadingCorrectionRotRate(double currentAngle, double rotRate, double xSpeed, double ySpeed) {
+    double newRotRate = 0;
+    if (rotationDebouncer.calculate(rotRate == 0) && (Math.abs(xSpeed) >= 0.075 || Math.abs(ySpeed) != 0.075)) {
+      newRotRate = newRotRate + drivePIDController.calculate(currentAngle, desiredAngle);
+    } else {
+      newRotRate = rotRate;
+      desiredAngle = currentAngle;
+    }
+    return newRotRate;
   }
 }

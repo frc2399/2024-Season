@@ -45,6 +45,9 @@ import frc.robot.subsystems.drive.SwerveModule;
 import frc.robot.subsystems.drive.SwerveModuleIO;
 import frc.robot.subsystems.drive.SwerveModuleIO_Real;
 import frc.robot.subsystems.drive.SwerveModuleIO_Sim;
+import frc.robot.subsystems.drive.VisionIO;
+import frc.robot.subsystems.drive.VisionIO_Hardware;
+import frc.robot.subsystems.drive.VisionIO_Placebo;
 import frc.robot.subsystems.gyro.GyroIO;
 import frc.robot.subsystems.gyro.GyroIOPigeon2;
 import frc.robot.subsystems.gyro.GyroIOSim;
@@ -56,9 +59,6 @@ import frc.robot.subsystems.shooter.RealShooter;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterIO;
 import frc.robot.subsystems.shooter.SimShooter;
-import frc.robot.subsystems.vision.Vision;
-import frc.robot.subsystems.vision.VisionIO;
-import frc.robot.subsystems.vision.VisionReal;
 
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -68,7 +68,7 @@ import frc.robot.subsystems.vision.VisionReal;
  */
 public class RobotContainer {
         // The robot's subsystems
-        private DriveSubsystem m_robotDrive;
+        public DriveSubsystem m_robotDrive;
         private static GyroIO m_gyro;
 
         public boolean fieldOrientedDrive = true;
@@ -86,7 +86,6 @@ public class RobotContainer {
         public static Indexer m_indexer;
         public static Climber m_climber;
         public static Arm m_arm;
-        public static Vision m_vision;
         public static LED m_Led;
 
         // subsystem IOs
@@ -130,6 +129,7 @@ public class RobotContainer {
                         intakeIO = new SimIntake();
                         climberIO = new ClimberSim();
                         armIO = new SimArm();
+                        visionIO = new VisionIO_Placebo();
                         m_gyro = new GyroIOSim();
                         m_frontLeftIO = new SwerveModuleIO_Sim("front left");
                         m_frontRightIO = new SwerveModuleIO_Sim("front right");
@@ -141,7 +141,6 @@ public class RobotContainer {
                                         new SwerveModule(m_frontRightIO),
                                         new SwerveModule(m_rearLeftIO),
                                         new SwerveModule(m_rearRightIO), m_gyro, visionIO);
-                        // visionIO = new VisionSim(m_robotDrive);
 
                 } else {
 
@@ -168,7 +167,7 @@ public class RobotContainer {
                         climberIO = new ClimberReal();
                         armIO = new RealArm();
                         m_gyro = new GyroIOPigeon2();
-                        visionIO = new VisionReal();
+                        visionIO = new VisionIO_Hardware();
 
                         m_robotDrive = new DriveSubsystem(
                                         new SwerveModule(m_frontLeftIO),
@@ -183,8 +182,7 @@ public class RobotContainer {
                 m_shooter = new Shooter(shooterIO);
                 m_indexer = new Indexer(indexerIO);
                 m_intake = new Intake(intakeIO);
-                m_vision = new Vision(visionIO);
-                m_Led = new LED(m_vision, m_indexer);
+                m_Led = new LED(m_indexer);
 
         }
 
@@ -257,7 +255,7 @@ public class RobotContainer {
                                                                 -Math.pow(MathUtil.applyDeadband(
                                                                                 m_driverController.getRightX(),
                                                                                 OIConstants.kDriveDeadband), 3),
-                                                                fieldOrientedDrive),
+                                                                fieldOrientedDrive, false),
                                                 m_robotDrive).withName("drive default"));
 
         }
@@ -301,7 +299,7 @@ public class RobotContainer {
                                                 -Math.pow(MathUtil.applyDeadband(m_driverController.getLeftX(),
                                                                 OIConstants.kDriveDeadband), 3),
                                                 m_vision.keepPointedAtSpeaker(),
-                                                fieldOrientedDrive), m_robotDrive))
+                                                fieldOrientedDrive, true), m_robotDrive))
                                 .onFalse(new InstantCommand(() -> m_vision.makeDriveTrainAlignedFalse()));
 
         }
