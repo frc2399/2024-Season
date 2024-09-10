@@ -76,6 +76,9 @@ public class DriveSubsystem extends SubsystemBase {
   StructArrayPublisher<SwerveModuleState> swerveModuleStatePublisher = NetworkTableInstance.getDefault()
       .getStructArrayTopic("/SmartDashboard/Swerve/Current Modules States", SwerveModuleState.struct).publish();
 
+  StructArrayPublisher<SwerveModuleState> swerveModuleDesiredStatePublisher = NetworkTableInstance.getDefault()
+      .getStructArrayTopic("/SmartDashboard/Swerve/Desired Modules States", SwerveModuleState.struct).publish();
+
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem(SwerveModule m_frontLeft, SwerveModule m_frontRight, SwerveModule m_rearLeft,
       SwerveModule m_rearRight, GyroIO m_gyro) {
@@ -258,6 +261,9 @@ public class DriveSubsystem extends SubsystemBase {
     m_frontRight.setDesiredState(swerveModuleStates[1]);
     m_rearLeft.setDesiredState(swerveModuleStates[2]);
     m_rearRight.setDesiredState(swerveModuleStates[3]);
+
+    swerveModuleDesiredStatePublisher.set(swerveModuleStates);
+
   }
 
   /**
@@ -284,6 +290,9 @@ public class DriveSubsystem extends SubsystemBase {
     m_frontRight.setDesiredState(swerveModuleStates[1]);
     m_rearLeft.setDesiredState(swerveModuleStates[2]);
     m_rearRight.setDesiredState(swerveModuleStates[3]);
+
+    swerveModuleDesiredStatePublisher.set(swerveModuleStates);
+
   }
 
   private void configurePathPlannerLogging() {
