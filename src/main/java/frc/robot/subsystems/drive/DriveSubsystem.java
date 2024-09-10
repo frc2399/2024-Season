@@ -13,7 +13,6 @@ import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.Debouncer;
-import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -108,8 +107,8 @@ public class DriveSubsystem extends SubsystemBase {
         this::getRobotRelativeSpeeds,
         this::setRobotRelativeSpeeds,
         new HolonomicPathFollowerConfig(
-            new PIDConstants(5, 0, 0.03), // Translation
-            new PIDConstants(5, 0, 0.1), // Rotation
+            new PIDConstants(5, 0, 0), // Translation
+            new PIDConstants(5, 0, 0), // Rotation
             AutoConstants.kMaxSpeedMetersPerSecond,
             0.385, /* Distance from furthest module to robot center in meters */
             new ReplanningConfig()),
@@ -227,7 +226,9 @@ public class DriveSubsystem extends SubsystemBase {
       desiredAngle = 0;
     }
 
-    // Apply correction if needed
+    // Debouncer ensures that there is no back-correction immediately after turning
+    // Deadband for small movements - they are so slight they do not need correction
+    // and correction causes robot to spasm
     if (rotationDebouncer.calculate(rotRate == 0) && (Math.abs(xSpeed) >= 0.075 || Math.abs(ySpeed) != 0.075)) {
       newRotRate = newRotRate + drivePIDController.calculate(currentAngle, desiredAngle);
     } else {
@@ -275,56 +276,13 @@ public class DriveSubsystem extends SubsystemBase {
     m_rearRight.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
   }
 
-  /**
-   * Sets all wheels to 0.
-   */
-  public void setZero() {
-    m_frontLeft.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(0)));
-    m_frontRight.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(0)));
-    m_rearLeft.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(0)));
-    m_rearRight.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(0)));
-  }
-
-  /**
-   * Sets the swerve ModuleStates.
-   *
-   * @param desiredStates The desired SwerveModule states.
-   */
-  public void setModuleStates(SwerveModuleState[] desiredStates) {
-    SwerveDriveKinematics.desaturateWheelSpeeds(
-        desiredStates, DriveConstants.kMaxSpeedMetersPerSecond);
-    m_frontLeft.setDesiredState(desiredStates[0]);
-    m_frontRight.setDesiredState(desiredStates[1]);
-    m_rearLeft.setDesiredState(desiredStates[2]);
-    m_rearRight.setDesiredState(desiredStates[3]);
-  } // TODO: a duplicate of this code is found in the drive method; just put this
-    // there instead to avoid having multiple copies of the same code
-
-  /**
-   * Returns the heading of the robot.
-   *
-   * @return the robot's heading in degrees, from -180 to 180
-   */
-  public double getHeading() {
-    return Rotation2d.fromRadians(m_gyro.getYaw()).getDegrees();
-  }
-
-  // Returns the distance and angle of each module
-  private SwerveModulePosition[] getModulePositions() {
-    SwerveModulePosition[] positions = new SwerveModulePosition[4];
-    positions[0] = m_frontLeft.getPosition();
-    positions[1] = m_frontRight.getPosition();
-    positions[2] = m_rearLeft.getPosition();
-    positions[3] = m_rearRight.getPosition();
-    return positions;
-  }
-
   public ChassisSpeeds getRobotRelativeSpeeds() {
     return DriveConstants.kDriveKinematics.toChassisSpeeds(m_frontLeft.getState(), m_frontRight.getState(),
         m_rearLeft.getState(), m_rearRight.getState());
   }
 
   public void setRobotRelativeSpeeds(ChassisSpeeds speeds) {
+    speeds = ChassisSpeeds.discretize(speeds, .02);
     var swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(speeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(
         swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
