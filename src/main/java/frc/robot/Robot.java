@@ -142,7 +142,7 @@ public class Robot extends TimedRobot {
     // this line or comment it out.
     Optional<Alliance> ally = DriverStation.getAlliance();
     m_robotContainer.m_Led.turnTeleop();
-    m_robotContainer.m_robotDrive.assignAprilTags(ally);
+    m_robotContainer.m_robotDrive.setAprilTagIDsAndLocations(ally);
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
