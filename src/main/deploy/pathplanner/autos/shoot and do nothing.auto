@@ -12,14 +12,20 @@
     "data": {
       "commands": [
         {
-          "type": "named",
+          "type": "wait",
           "data": {
-            "name": "AutoShoot"
+            "waitTime": 5.0
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "2 to B"
           }
         }
       ]
     }
   },
-  "folder": null,
+  "folder": "1 piece autons",
   "choreoAuto": false
 }
