@@ -68,7 +68,7 @@ import frc.robot.subsystems.shooter.SimShooter;
  */
 public class RobotContainer {
         // The robot's subsystems
-        public DriveSubsystem m_robotDrive;
+        public DriveSubsystem robotDrive;
         private static GyroIO m_gyro;
 
         public boolean fieldOrientedDrive = true;
@@ -136,7 +136,7 @@ public class RobotContainer {
                         m_rearLeftIO = new SwerveModuleIO_Sim("rear left");
                         m_rearRightIO = new SwerveModuleIO_Sim("rear right");
 
-                        m_robotDrive = new DriveSubsystem(
+                        robotDrive = new DriveSubsystem(
                                         new SwerveModule(m_frontLeftIO),
                                         new SwerveModule(m_frontRightIO),
                                         new SwerveModule(m_rearLeftIO),
@@ -169,7 +169,7 @@ public class RobotContainer {
                         m_gyro = new GyroIOPigeon2();
                         visionIO = new VisionIO_Hardware();
 
-                        m_robotDrive = new DriveSubsystem(
+                        robotDrive = new DriveSubsystem(
                                         new SwerveModule(m_frontLeftIO),
                                         new SwerveModule(m_frontRightIO),
                                         new SwerveModule(m_rearLeftIO),
@@ -243,7 +243,7 @@ public class RobotContainer {
                 // actually driving robot
                 // The left stick controls translation of the robot.
                 // Turning is controlled by the X axis of the right stick.
-                m_robotDrive.setDefaultCommand(m_robotDrive.driveCommand(
+                robotDrive.setDefaultCommand(robotDrive.driveCommand(
                                 -Math.pow(MathUtil.applyDeadband(
                                                 m_driverController.getLeftY(),
                                                 OIConstants.kDriveDeadband), 3),
@@ -262,8 +262,8 @@ public class RobotContainer {
                                 .onTrue(new InstantCommand(
                                                 () -> m_arm.setEncoderPosition(m_arm.getAbsoluteEncoderPosition())));
                 m_driverController.x().whileTrue((new RunCommand(
-                                () -> m_robotDrive.setX(),
-                                m_robotDrive).withName("setx")));
+                                () -> robotDrive.setX(),
+                                robotDrive).withName("setx")));
 
                 // driver left bumper: manual shoot
                 // gets arm height to assign to speed. lower arm, means cloesr to speaekr, so
@@ -288,7 +288,7 @@ public class RobotContainer {
                 // driver b: reset gyro
                 m_driverController.b().onTrue(new InstantCommand(() -> m_gyro.setYaw(0.0)));
                 // driver a: align to speaker mode
-                m_driverController.a().whileTrue(m_robotDrive.driveCommand(
+                m_driverController.a().whileTrue(robotDrive.driveCommand(
                                 -Math.pow(MathUtil.applyDeadband(m_driverController.getLeftY(),
                                                 OIConstants.kDriveDeadband), 3),
                                 -Math.pow(MathUtil.applyDeadband(m_driverController.getLeftX(),
@@ -377,7 +377,8 @@ public class RobotContainer {
         }
 
         private Command makeSetPositionCommandVision(Arm arm) {
-                DoubleSupplier target = () -> (m_robotDrive.getDesiredArmAngle());
+                DoubleSupplier target = () -> (arm.getDesiredArmAngle(robotDrive.robotPose,
+                                robotDrive.speakerPose));
                 return new SequentialCommandGroup(
                                 new ConditionalCommand(new InstantCommand(() -> {
                                 }), new InstantCommand(() -> arm.enable(), arm), () -> arm.isEnabled()),
