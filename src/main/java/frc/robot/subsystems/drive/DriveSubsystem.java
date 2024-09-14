@@ -46,31 +46,18 @@ import frc.robot.subsystems.gyro.GyroIO;
 public class DriveSubsystem extends SubsystemBase {
 
   // vision
-  private VisionIO visionIO;
+  public VisionIO visionIO;
   private double MAX_VISION_UPDATE_SPEED_MPS = 1.0;
   private double velocityXMPS;
   private double velocityYMPS;
   private double velocityMPS;
   private Pose3d visionEstimatedPose;
-  private Pose2d robotPose;
-  private Pose2d speakerPose;
+  public Pose2d robotPose;
+  public Pose2d speakerPose;
   private Pose2d poseDifference;
-  final static double EIGHTYSLOPE = VisionConstants.EIGHTYMODELSLOPE;
-  final static double EIGHTYINTERCEPT = VisionConstants.EIGHTYMODELINTERCEPT;
-  final static double HUNDREDSLOPE = VisionConstants.HUNDREDMODELSLOPE;
-  final static double HUNDREDINTERCEPT = VisionConstants.HUNDREDMODELINTERCEPT;
-  final static double BOUNDARY = VisionConstants.EIGHTYMODELRANGE;
-  final static double STAYDOWNBOUNDARY = VisionConstants.STAYDOWNBOUNDARY;
-  final static double DISTANCE_TO_CENTER_FROM_FRAME_INCHES = 15.75;
 
   // apriltags
-  public int facingSourceLeftID;
-  public int facingSourceRightID;
   public int speakerID;
-  public int speakerOffsetID;
-  public int stageBackID;
-  public int facingAwayFromSpeakerStageLeftID;
-  public int facingAwayFromSpeakerStageRightID;
   public int ampID;
   public boolean isAligned = false;
 
@@ -109,6 +96,7 @@ public class DriveSubsystem extends SubsystemBase {
   private GyroIO gyroIO;
 
   private final Field2d field2d = new Field2d();
+  private final Field2d visionField = new Field2d();
   private FieldObject2d frontLeftField2dModule = field2d.getObject("front left module");
   private FieldObject2d rearLeftField2dModule = field2d.getObject("rear left module");
   private FieldObject2d frontRightField2dModule = field2d.getObject("front right module");
@@ -203,6 +191,7 @@ public class DriveSubsystem extends SubsystemBase {
       if (possiblePose.isPresent()) {
         visionEstimatedPose = possiblePose.get().estimatedPose;
         poseEstimator.addVisionMeasurement(visionEstimatedPose.toPose2d(), Timer.getFPGATimestamp());
+        visionField.setRobotPose(visionEstimatedPose.toPose2d());
       }
     }
 
@@ -372,22 +361,10 @@ public class DriveSubsystem extends SubsystemBase {
   // assigns aprilTags based on alliance
   public void setAprilTagIDsAndLocations(Optional<Alliance> ally) {
     if (ally.get() == Alliance.Red) {
-      facingSourceLeftID = 10;
-      facingSourceRightID = 9;
       speakerID = 4;
-      speakerOffsetID = 3;
-      stageBackID = 13;
-      facingAwayFromSpeakerStageLeftID = 11;
-      facingAwayFromSpeakerStageRightID = 12;
       ampID = 5;
     } else {
-      facingSourceLeftID = 1;
-      facingSourceRightID = 2;
       speakerID = 7;
-      speakerOffsetID = 8;
-      stageBackID = 14;
-      facingAwayFromSpeakerStageLeftID = 15;
-      facingAwayFromSpeakerStageRightID = 16;
       ampID = 6;
     }
     speakerPose = VisionConstants.KFIELDLAYOUT.getTagPose(speakerID).get().toPose2d();
@@ -408,21 +385,5 @@ public class DriveSubsystem extends SubsystemBase {
       desiredAngle = currentAngle;
     }
     return newRotRate;
-  }
-
-  public double getDesiredArmAngle() {
-    double distToSpeaker;
-    double desiredArmAngleRadians;
-    poseDifference = robotPose.relativeTo(speakerPose);
-    distToSpeaker = Units.metersToInches(Math.hypot(poseDifference.getX(), poseDifference.getY()));
-    distToSpeaker -= DISTANCE_TO_CENTER_FROM_FRAME_INCHES;
-    if (distToSpeaker <= STAYDOWNBOUNDARY) {
-      desiredArmAngleRadians = 0.31;
-    } else if (distToSpeaker <= BOUNDARY) {
-      desiredArmAngleRadians = EIGHTYSLOPE * (distToSpeaker) + EIGHTYINTERCEPT;
-    } else {
-      desiredArmAngleRadians = HUNDREDSLOPE * (distToSpeaker) + HUNDREDINTERCEPT;
-    }
-    return desiredArmAngleRadians;
   }
 }
