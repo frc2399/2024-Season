@@ -39,15 +39,14 @@ public class SwerveModuleIO_Real implements SwerveModuleIO {
       m_turningSparkMax = MotorUtil.createSparkMAX(turningCANId, MotorType.kBrushless,
             Constants.NEO550_CURRENT_LIMIT, true, 0);
 
-      m_drivingSparkMax.enableVoltageCompensation(12);
-      m_turningSparkMax.enableVoltageCompensation(12);
+      errors += check(m_drivingSparkMax.enableVoltageCompensation(12));
+      errors += check(m_turningSparkMax.enableVoltageCompensation(12));
 
       // Setup encoders and PID controllers for the driving and turning SPARKS MAX.
       m_drivingEncoder = m_drivingSparkMax.getEncoder();
       m_turningEncoder = m_turningSparkMax.getAbsoluteEncoder(Type.kDutyCycle);
       m_drivingPIDController = m_drivingSparkMax.getPIDController();
       m_turningPIDController = m_turningSparkMax.getPIDController();
-      // m_turningPIDController.setFeedbackDevice(m_turningEncoder);
 
       errors += check(m_drivingPIDController.setFeedbackDevice(m_drivingEncoder));
       errors += check(m_turningPIDController.setFeedbackDevice(m_turningEncoder));
@@ -56,16 +55,16 @@ public class SwerveModuleIO_Real implements SwerveModuleIO {
       // native units for position and velocity are rotations and RPM, respectively,
       // but we want meters and meters per second to use with WPILib's swerve APIs.
 
-      m_drivingEncoder.setPositionConversionFactor(SwerveModuleConstants.kDrivingEncoderPositionFactor / (260.0 / 254));
-      m_drivingEncoder
-            .setVelocityConversionFactor((SwerveModuleConstants.kDrivingEncoderPositionFactor / (260.0 / 254)) / 60);
+      errors += check(
+            m_drivingEncoder
+                  .setPositionConversionFactor(SwerveModuleConstants.kDrivingEncoderPositionFactor / (260.0 / 254)));
+      errors += check(
+            m_drivingEncoder.setVelocityConversionFactor(
+                  (SwerveModuleConstants.kDrivingEncoderPositionFactor / (260.0 / 254)) / 60));
 
       // Apply position and velocity conversion factors for the turning encoder. We
       // want these in radians and radians per second to use with WPILib's swerve
       // APIs.
-      m_turningEncoder.setPositionConversionFactor(SwerveModuleConstants.kTurningEncoderPositionFactor);
-      m_turningEncoder.setVelocityConversionFactor(SwerveModuleConstants.kTurningEncoderVelocityFactor);
-
       errors += check(
             m_turningEncoder.setPositionConversionFactor(SwerveModuleConstants.kTurningEncoderPositionFactor));
       errors += check(
@@ -74,18 +73,14 @@ public class SwerveModuleIO_Real implements SwerveModuleIO {
       // Invert the turning encoder, since the output shaft rotates in the opposite
       // direction of
       // the steering motor in the MAXSwerve Module.
-      m_turningEncoder.setInverted(SwerveModuleConstants.kTurningEncoderInverted);
-      m_drivingSparkMax.setInverted(SwerveModuleConstants.kDrivingEncoderInverted);
 
       errors += check(m_turningEncoder.setInverted(SwerveModuleConstants.kTurningEncoderInverted));
+      m_drivingSparkMax.setInverted(SwerveModuleConstants.kDrivingEncoderInverted);
 
       // Enable PID wrap around for the turning motor. This will allow the PID
       // controller to go through 0 to get to the setpoint i.e. going from 350 degrees
       // to 10 degrees will go through 0 rather than the other direction which is a
       // longer route.
-      m_turningPIDController.setPositionPIDWrappingEnabled(true);
-      m_turningPIDController.setPositionPIDWrappingMinInput(SwerveModuleConstants.kTurningEncoderPositionPIDMinInput);
-      m_turningPIDController.setPositionPIDWrappingMaxInput(SwerveModuleConstants.kTurningEncoderPositionPIDMaxInput);
 
       errors += check(m_turningPIDController.setPositionPIDWrappingEnabled(true));
       errors += check(m_turningPIDController
@@ -94,35 +89,26 @@ public class SwerveModuleIO_Real implements SwerveModuleIO {
             .setPositionPIDWrappingMaxInput(SwerveModuleConstants.kTurningEncoderPositionPIDMaxInput));
 
       // Set the PID gains for the driving motor
-      m_drivingPIDController.setP(SwerveModuleConstants.kDrivingP);
-      m_drivingPIDController.setI(SwerveModuleConstants.kDrivingI);
-      m_drivingPIDController.setD(SwerveModuleConstants.kDrivingD);
-      m_drivingPIDController.setFF(SwerveModuleConstants.kDrivingFF);
-      m_drivingPIDController.setOutputRange(SwerveModuleConstants.kDrivingMinOutput,
-            SwerveModuleConstants.kDrivingMaxOutput);
-
       errors += check(m_drivingPIDController.setP(SwerveModuleConstants.kDrivingP));
+      errors += check(m_drivingPIDController.setI(SwerveModuleConstants.kDrivingI));
+      errors += check(m_drivingPIDController.setD(SwerveModuleConstants.kDrivingD));
       errors += check(m_drivingPIDController.setFF(SwerveModuleConstants.kDrivingFF));
       errors += check(m_drivingPIDController.setOutputRange(SwerveModuleConstants.kDrivingMinOutput,
             SwerveModuleConstants.kDrivingMaxOutput));
 
       // Set the PID gains for the turning motor
-      m_turningPIDController.setP(SwerveModuleConstants.kTurningP);
-      m_turningPIDController.setI(SwerveModuleConstants.kTurningI);
-      m_turningPIDController.setD(SwerveModuleConstants.kTurningD);
-      m_turningPIDController.setFF(SwerveModuleConstants.kTurningFF);
-      m_turningPIDController.setOutputRange(SwerveModuleConstants.kTurningMinOutput,
-            SwerveModuleConstants.kTurningMaxOutput);
-
       errors += check(m_turningPIDController.setP(SwerveModuleConstants.kTurningP));
+      errors += check(m_turningPIDController.setI(SwerveModuleConstants.kTurningI));
+      errors += check(m_turningPIDController.setD(SwerveModuleConstants.kTurningD));
       errors += check(m_turningPIDController.setFF(SwerveModuleConstants.kTurningFF));
       errors += check(m_turningPIDController.setOutputRange(SwerveModuleConstants.kTurningMinOutput,
             SwerveModuleConstants.kTurningMaxOutput));
 
       this.chassisAngularOffset = chassisAngularOffset;
-      m_drivingEncoder.setPosition(0);
 
       errors += check(m_drivingEncoder.setPosition(0));
+
+      System.out.println("turning P: " + m_turningPIDController.getP());
 
       if (errors > 0) {
          System.out.println("Swerve Module Errors! Name: " + name + ", Amount: " + errors);
