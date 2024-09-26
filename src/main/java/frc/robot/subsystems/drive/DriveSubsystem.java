@@ -257,10 +257,10 @@ public class DriveSubsystem extends SubsystemBase {
     var swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(relativeRobotSpeeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(
         swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
-    m_frontLeft.setDesiredState(swerveModuleStates[0]);
-    m_frontRight.setDesiredState(swerveModuleStates[1]);
-    m_rearLeft.setDesiredState(swerveModuleStates[2]);
-    m_rearRight.setDesiredState(swerveModuleStates[3]);
+    swerveModuleStates[0] = m_frontLeft.setDesiredStateAndGetDesiredState(swerveModuleStates[0]);
+    swerveModuleStates[1] = m_frontRight.setDesiredStateAndGetDesiredState(swerveModuleStates[1]);
+    swerveModuleStates[2] = m_rearLeft.setDesiredStateAndGetDesiredState(swerveModuleStates[2]);
+    swerveModuleStates[3] = m_rearRight.setDesiredStateAndGetDesiredState(swerveModuleStates[3]);
 
     swerveModuleDesiredStatePublisher.set(swerveModuleStates);
 
@@ -270,10 +270,10 @@ public class DriveSubsystem extends SubsystemBase {
    * Sets the wheels into an X formation to prevent movement.
    */
   public void setX() {
-    m_frontLeft.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
-    m_frontRight.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(-45)));
-    m_rearLeft.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(-45)));
-    m_rearRight.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
+    m_frontLeft.setDesiredStateAndGetDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
+    m_frontRight.setDesiredStateAndGetDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(-45)));
+    m_rearLeft.setDesiredStateAndGetDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(-45)));
+    m_rearRight.setDesiredStateAndGetDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
   }
 
   public ChassisSpeeds getRobotRelativeSpeeds() {
@@ -286,10 +286,10 @@ public class DriveSubsystem extends SubsystemBase {
     var swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(speeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(
         swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
-    m_frontLeft.setDesiredState(swerveModuleStates[0]);
-    m_frontRight.setDesiredState(swerveModuleStates[1]);
-    m_rearLeft.setDesiredState(swerveModuleStates[2]);
-    m_rearRight.setDesiredState(swerveModuleStates[3]);
+    m_frontLeft.setDesiredStateAndGetDesiredState(swerveModuleStates[0]);
+    m_frontRight.setDesiredStateAndGetDesiredState(swerveModuleStates[1]);
+    m_rearLeft.setDesiredStateAndGetDesiredState(swerveModuleStates[2]);
+    m_rearRight.setDesiredStateAndGetDesiredState(swerveModuleStates[3]);
 
     swerveModuleDesiredStatePublisher.set(swerveModuleStates);
 

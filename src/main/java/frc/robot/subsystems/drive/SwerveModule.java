@@ -15,7 +15,7 @@ public class SwerveModule {
 
     private final SwerveModuleIOInputs inputs = new SwerveModuleIOInputs();
 
-    //name is used for smart dashboard values to distinguish between modules
+    // name is used for smart dashboard values to distinguish between modules
     private String name;
 
     public SwerveModule(SwerveModuleIO io) {
@@ -93,7 +93,7 @@ public class SwerveModule {
      *
      * @param desiredState Desired state with speed and angle.
      */
-    public void setDesiredState(SwerveModuleState desiredState) {
+    public SwerveModuleState setDesiredStateAndGetDesiredState(SwerveModuleState desiredState) {
         // Apply chassis angular offset to the desired state.
         SwerveModuleState correctedDesiredState = new SwerveModuleState();
         correctedDesiredState.speedMetersPerSecond = desiredState.speedMetersPerSecond;
@@ -101,12 +101,12 @@ public class SwerveModule {
 
         // Optimize the reference state to avoid spinning further than 90 degrees.
 
-        SwerveModuleState optimizedDesiredState =
-        SwerveModuleState.optimize(correctedDesiredState,
-        new Rotation2d(getTurnEncoderPosition()));
+        SwerveModuleState optimizedDesiredState = SwerveModuleState.optimize(correctedDesiredState,
+                new Rotation2d(getTurnEncoderPosition()));
         io.setDesiredDriveSpeedMPS(optimizedDesiredState.speedMetersPerSecond);
         io.setDesiredTurnAngle(optimizedDesiredState.angle.getRadians());
         m_desiredState = desiredState;
+        return desiredState;
     }
 
 }
