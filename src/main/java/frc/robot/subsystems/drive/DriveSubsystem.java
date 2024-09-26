@@ -217,9 +217,11 @@ public class DriveSubsystem extends SubsystemBase {
   public void drive(double xSpeed, double ySpeed, double rotRate, boolean fieldRelative) {
 
     double newRotRate = 0;
-    double xSpeedCommanded;
-    double ySpeedCommanded;
     double currentAngle = (m_gyro.getYaw());
+    double r = Math.pow(Math.sqrt(Math.pow(xSpeed, 2) + Math.pow(ySpeed, 2)), 3);
+    double polarAngle = Math.atan2(ySpeed, xSpeed);
+    double polarXSpeed = r * Math.cos(polarAngle);
+    double polarYSpeed = r * Math.sin(polarAngle);
 
     // //Account for edge case when gyro resets
     if (currentAngle == 0) {
@@ -229,21 +231,18 @@ public class DriveSubsystem extends SubsystemBase {
     // Debouncer ensures that there is no back-correction immediately after turning
     // Deadband for small movements - they are so slight they do not need correction
     // and correction causes robot to spasm
-    if (rotationDebouncer.calculate(rotRate == 0) && (Math.abs(xSpeed) >= 0.075 || Math.abs(ySpeed) != 0.075)) {
+    if (rotationDebouncer.calculate(rotRate == 0)
+        && (Math.abs(polarXSpeed) >= 0.075 || Math.abs(polarYSpeed) != 0.075)) {
       newRotRate = newRotRate + drivePIDController.calculate(currentAngle, desiredAngle);
     } else {
       newRotRate = rotRate;
       desiredAngle = currentAngle;
     }
 
-    xSpeedCommanded = xSpeed;
-    ySpeedCommanded = ySpeed;
-    m_currentRotationRate = newRotRate;
-
     // Convert the commanded speeds into the correct units for the drivetrain
-    double xSpeedDelivered = xSpeedCommanded * DriveConstants.kMaxSpeedMetersPerSecond;
-    double ySpeedDelivered = ySpeedCommanded * DriveConstants.kMaxSpeedMetersPerSecond;
-    double rotRateDelivered = m_currentRotationRate * DriveConstants.kMaxAngularSpeed;
+    double xSpeedDelivered = polarXSpeed * DriveConstants.kMaxSpeedMetersPerSecond;
+    double ySpeedDelivered = polarYSpeed * DriveConstants.kMaxSpeedMetersPerSecond;
+    double rotRateDelivered = newRotRate * DriveConstants.kMaxAngularSpeed;
 
     if (fieldRelative) {
       relativeRobotSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotRateDelivered,
@@ -252,7 +251,9 @@ public class DriveSubsystem extends SubsystemBase {
       relativeRobotSpeeds = new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotRateDelivered);
     }
 
-    SmartDashboard.putNumber("Swerve/ velocity", relativeRobotSpeeds.vxMetersPerSecond);
+    SmartDashboard.putNumber("Swerve/velocity",
+        Math.sqrt(
+            Math.pow(relativeRobotSpeeds.vxMetersPerSecond, 2) + Math.pow(relativeRobotSpeeds.vyMetersPerSecond, 2)));
 
     var swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(relativeRobotSpeeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(
