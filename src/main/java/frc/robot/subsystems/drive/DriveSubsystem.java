@@ -251,7 +251,9 @@ public class DriveSubsystem extends SubsystemBase {
       relativeRobotSpeeds = new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotRateDelivered);
     }
 
-    SmartDashboard.putNumber("Swerve/ velocity", relativeRobotSpeeds.vxMetersPerSecond);
+    SmartDashboard.putNumber("Swerve/velocity",
+        Math.sqrt(
+            Math.pow(relativeRobotSpeeds.vxMetersPerSecond, 2) + Math.pow(relativeRobotSpeeds.vyMetersPerSecond, 2)));
 
     var swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(relativeRobotSpeeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(
