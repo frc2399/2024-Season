@@ -18,30 +18,31 @@ public class RealArm implements ArmIO {
     public static double speedFromArmHeight;
 
     public RealArm() {
-        //make the motor controllers
+        // make the motor controllers
         armMotorControllerRight = MotorUtil.createSparkMAX(ArmConstants.ARM_MOTOR_ID_RIGHT, MotorType.kBrushless,
                 Constants.NEO_CURRENT_LIMIT,
                 true, true, 0);
         armMotorControllerLeft = MotorUtil.createSparkMAX(ArmConstants.ARM_MOTOR_ID_LEFT, MotorType.kBrushless,
-            Constants.NEO_CURRENT_LIMIT,
-            false, true, 0);
+                Constants.NEO_CURRENT_LIMIT,
+                false, true, 0);
 
-        //make the encoders
-        //.044
+        // make the encoders
+        // .044
         armAbsoluteEncoderRight = armMotorControllerRight.getAbsoluteEncoder(Type.kDutyCycle);
         armEncoderRight = armMotorControllerRight.getEncoder();
 
-        //setting position/velocity conversion factors, offsets
+        // setting position/velocity conversion factors, offsets
         armAbsoluteEncoderRight.setPositionConversionFactor(ArmConstants.ABSOLUTE_RADIANS_PER_REVOLUTION);
         armAbsoluteEncoderRight.setVelocityConversionFactor(ArmConstants.ABSOLUTE_RADIANS_PER_REVOLUTION / 60);
         armAbsoluteEncoderRight.setInverted(true);
-        //armAbsoluteEncoderRight.setZeroOffset(0);
+        // armAbsoluteEncoderRight.setZeroOffset(0);
         armAbsoluteEncoderRight.setZeroOffset(ArmConstants.ARM_ABSOLUTE_MEASURED - ArmConstants.ARM_ABSOLUTE_CAD);
         armEncoderRight.setPositionConversionFactor(ArmConstants.RADIANS_PER_REVOLUTION);
         armEncoderRight.setVelocityConversionFactor(ArmConstants.RADIANS_PER_REVOLUTION / 60);
         armEncoderRight.setPosition(armAbsoluteEncoderRight.getPosition());
 
-        //set the left motor to follow the right one, but inverted since left isn't reversed and right is
+        // set the left motor to follow the right one, but inverted since left isn't
+        // reversed and right is
         armMotorControllerLeft.follow(armMotorControllerRight, true);
     }
 
@@ -51,8 +52,9 @@ public class RealArm implements ArmIO {
 
     @Override
     public void periodicUpdate() {
-        SmartDashboard.putNumber("arm/arm position", getEncoderPosition());
-        SmartDashboard.putNumber("arm/arm absolute position", getAbsoluteEncoderPosition());
+        SmartDashboard.putNumber("arm/actual position (deg)", Math.toDegrees(getEncoderPosition()));
+        SmartDashboard.putNumber("arm/absolute position (deg)", Math.toDegrees(getAbsoluteEncoderPosition()));
+        SmartDashboard.putNumber("arm/actual velocity (deg per s)", Math.toDegrees(getEncoderSpeed()));
     }
 
     @Override
@@ -77,6 +79,6 @@ public class RealArm implements ArmIO {
 
     @Override
     public void setEncoderPosition(double angle) {
-       armEncoderRight.setPosition(angle);
+        armEncoderRight.setPosition(angle);
     }
 }
