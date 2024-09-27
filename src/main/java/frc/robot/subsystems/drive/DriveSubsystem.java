@@ -49,6 +49,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   // Odometry
   private SwerveDrivePoseEstimator poseEstimator;
+  private SwerveModuleState[] swerveModuleStates;
 
   // swerve modules
   private SwerveModule frontLeft;
@@ -165,7 +166,7 @@ public class DriveSubsystem extends SubsystemBase {
         Constants.DriveConstants.REAR_RIGHT_OFFSET,
         new Rotation2d(rearRight.getTurnEncoderPosition()))));
 
-    SwerveModuleState[] swerveModuleStates = new SwerveModuleState[] {
+    swerveModuleStates = new SwerveModuleState[] {
         frontLeft.getState(),
         frontRight.getState(),
         rearLeft.getState(),
@@ -255,26 +256,27 @@ public class DriveSubsystem extends SubsystemBase {
         Math.sqrt(
             Math.pow(relativeRobotSpeeds.vxMetersPerSecond, 2) + Math.pow(relativeRobotSpeeds.vyMetersPerSecond, 2)));
 
-    var swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(relativeRobotSpeeds);
+    swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(relativeRobotSpeeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(
         swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
     swerveModuleStates[0] = frontLeft.setDesiredStateAndGetDesiredState(swerveModuleStates[0]);
     swerveModuleStates[1] = frontRight.setDesiredStateAndGetDesiredState(swerveModuleStates[1]);
     swerveModuleStates[2] = rearLeft.setDesiredStateAndGetDesiredState(swerveModuleStates[2]);
     swerveModuleStates[3] = rearRight.setDesiredStateAndGetDesiredState(swerveModuleStates[3]);
-
-    swerveModuleDesiredStatePublisher.set(swerveModuleStates);
-
   }
 
   /**
    * Sets the wheels into an X formation to prevent movement.
    */
   public void setX() {
-    frontLeft.setDesiredStateAndGetDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
-    frontRight.setDesiredStateAndGetDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(-45)));
-    rearLeft.setDesiredStateAndGetDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(-45)));
-    rearRight.setDesiredStateAndGetDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
+    swerveModuleStates[0] = frontLeft
+        .setDesiredStateAndGetDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
+    swerveModuleStates[1] = frontRight
+        .setDesiredStateAndGetDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(-45)));
+    swerveModuleStates[2] = rearLeft
+        .setDesiredStateAndGetDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(-45)));
+    swerveModuleStates[3] = rearRight
+        .setDesiredStateAndGetDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
   }
 
   public ChassisSpeeds getRobotRelativeSpeeds() {
@@ -284,16 +286,13 @@ public class DriveSubsystem extends SubsystemBase {
 
   public void setRobotRelativeSpeeds(ChassisSpeeds speeds) {
     speeds = ChassisSpeeds.discretize(speeds, .02);
-    var swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(speeds);
+    swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(speeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(
         swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
     frontLeft.setDesiredStateAndGetDesiredState(swerveModuleStates[0]);
     frontRight.setDesiredStateAndGetDesiredState(swerveModuleStates[1]);
     rearLeft.setDesiredStateAndGetDesiredState(swerveModuleStates[2]);
     rearRight.setDesiredStateAndGetDesiredState(swerveModuleStates[3]);
-
-    swerveModuleDesiredStatePublisher.set(swerveModuleStates);
-
   }
 
   private void configurePathPlannerLogging() {
