@@ -33,10 +33,10 @@ public class Indexer extends SubsystemBase {
     indexerIO.setMotor(indexerSpeed);
   }
 
-
   public void setIsOverride() {
     indexerIO.setIsOverride();
   }
+
   // returns speed of the indexer
   public double getEncoderSpeed() {
     return indexerIO.getEncoderSpeed();
@@ -53,6 +53,5 @@ public class Indexer extends SubsystemBase {
   @Override
   public void periodic() {
     indexerIO.periodicUpdate();
-    SmartDashboard.putBoolean("indexer/ isIntooked", isIntooked);
   }
 }

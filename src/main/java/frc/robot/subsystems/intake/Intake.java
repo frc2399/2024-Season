@@ -13,15 +13,15 @@ public class Intake extends SubsystemBase {
   public static boolean isIntooked = false;
 
   /** Creates a new Intake. */
-  public Intake(IntakeIO io) {   
-    intakeIO = io;        
+  public Intake(IntakeIO io) {
+    intakeIO = io;
   }
 
   public void setMotor(double intakeSpeed) {
     intakeIO.setMotor(intakeSpeed);
   }
 
-  //returns speed of the intake
+  // returns speed of the intake
   public double getLeftEncoderSpeed() {
     return intakeIO.getLeftEncoderSpeed();
   }
@@ -41,7 +41,7 @@ public class Intake extends SubsystemBase {
   @Override
   public void periodic() {
     intakeIO.periodicUpdate();
-    SmartDashboard.putNumber("intake/ intake speed", getLeftEncoderSpeed());
-
+    SmartDashboard.putNumber("intake/left velocity", getLeftEncoderSpeed());
+    SmartDashboard.putNumber("intake/right velocity", getRightEncoderSpeed());
   }
 }
