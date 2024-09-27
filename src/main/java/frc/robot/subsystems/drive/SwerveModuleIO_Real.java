@@ -108,8 +108,6 @@ public class SwerveModuleIO_Real implements SwerveModuleIO {
 
       errors += check(m_drivingEncoder.setPosition(0));
 
-      System.out.println("turning P: " + m_turningPIDController.getP());
-
       if (errors > 0) {
          System.out.println("Swerve Module Errors! Name: " + name + ", Amount: " + errors);
       }
