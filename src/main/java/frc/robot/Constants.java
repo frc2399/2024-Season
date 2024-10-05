@@ -105,11 +105,9 @@ public final class Constants {
      *
      * Here's the math:
      *
-     * D_reported = distance reported by `getPosition()`, units matching D_reported
+     * D_reported = distance reported by `getPosition()`, any length unit
      * D_actual = distance measured from the start of the move to the end, units
      * matching D_reported
-     * D_test = distance measured from the stat of the move to the end during the
-     * calibration run, unitsmatching D_reported
      * F_ideal = ideal position factor, computed from gear ratios and wheel
      * diameters
      * C = correction constant.
