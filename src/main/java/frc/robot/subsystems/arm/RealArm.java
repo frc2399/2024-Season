@@ -17,12 +17,15 @@ public class RealArm implements ArmIO {
     public static RelativeEncoder armEncoderRight;
     public static double speedFromArmHeight;
 
+    public static final int ARM_MOTOR_ID_LEFT = 9;
+    public static final int ARM_MOTOR_ID_RIGHT = 10;
+
     public RealArm() {
         // make the motor controllers
-        armMotorControllerRight = MotorUtil.createSparkMAX(ArmConstants.ARM_MOTOR_ID_RIGHT, MotorType.kBrushless,
+        armMotorControllerRight = MotorUtil.createSparkMAX(ARM_MOTOR_ID_RIGHT, MotorType.kBrushless,
                 Constants.NEO_CURRENT_LIMIT,
                 true, true, 0);
-        armMotorControllerLeft = MotorUtil.createSparkMAX(ArmConstants.ARM_MOTOR_ID_LEFT, MotorType.kBrushless,
+        armMotorControllerLeft = MotorUtil.createSparkMAX(ARM_MOTOR_ID_LEFT, MotorType.kBrushless,
                 Constants.NEO_CURRENT_LIMIT,
                 false, true, 0);
 

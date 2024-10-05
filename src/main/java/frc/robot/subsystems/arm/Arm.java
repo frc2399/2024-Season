@@ -7,6 +7,7 @@ package frc.robot.subsystems.arm;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDSubsystem;
 import frc.robot.Constants;
@@ -14,52 +15,51 @@ import frc.robot.Constants.ArmConstants;
 import frc.utils.PIDUtil;
 
 public class Arm extends ProfiledPIDSubsystem {
-  /** Creates a new Arm. */
-  private ArmIO armIO;
+  private ArmIO ArmIO;
 
   public static double speedFromArmHeight;
 
-  // Trapezoidal profile constants and variables
   // TODO tune max_vel and max_accel
-  private static final double max_vel = 4; // rad/s (NEO specs / gear ratio, converted into rad/s ~ 4.1, give it a
+  private static final double MAX_VEL = 4; // rad/s (NEO specs / gear ratio, converted into rad/s ~ 4.1, give it a
                                            // slightly lower one to make it acheivable)
-  private static final double max_accel = 6; // rad/s/s
-  private static final Constraints constraints = new Constraints(max_vel, max_accel);
-  private static double gravityCompensation = 0.025;
-  private static double feedForward = 1 / max_vel;
-  private static double kpPos = 3.0;
-  private static double kd = 0.01;
+  private static final double MAX_ACCEL = 6; // rad/s/s
+  private static final Constraints constraints = new Constraints(MAX_VEL, MAX_ACCEL);
+  private static double GRAVITY_COMPENSATION = 0.025;
+  private static double FEED_FORWARD = 1 / MAX_VEL;
+  private static double ARM_P = 3.0;
+  private static double ARM_D = 0.01;
+  private static final double ANGLE_TOLERANCE_AUTON = Units.degreesToRadians(2);
 
   public Arm(ArmIO io) {
-    super(new ProfiledPIDController(kpPos, 0, kd, constraints));
-    armIO = io;
+    super(new ProfiledPIDController(ARM_P, 0, ARM_D, constraints));
+    ArmIO = io;
   }
 
   @Override
   public void periodic() {
     // Call periodic method in profile pid subsystem to prevent overriding
     super.periodic();
-    armIO.periodicUpdate();
+    ArmIO.periodicUpdate();
   }
 
   public double getEncoderPosition() {
-    return armIO.getEncoderPosition();
+    return ArmIO.getEncoderPosition();
   }
 
   public double getEncoderSpeed() {
-    return armIO.getEncoderSpeed();
+    return ArmIO.getEncoderSpeed();
   }
 
   public void setSpeed(double speed) {
-    armIO.setSpeed(speed);
+    ArmIO.setSpeed(speed);
   }
 
   public void setSpeedGravityCompensation(double speed) {
-    setSpeed(speed + gravityCompensation * Math.cos(getEncoderPosition()));
+    setSpeed(speed + GRAVITY_COMPENSATION * Math.cos(getEncoderPosition()));
   }
 
   public double getArmCurrent() {
-    return armIO.getArmCurrent();
+    return ArmIO.getArmCurrent();
   }
 
   @Override
@@ -68,9 +68,9 @@ public class Arm extends ProfiledPIDSubsystem {
     SmartDashboard.putNumber("arm/desired velocity (deg per s)", Math.toDegrees(setpoint.velocity));
 
     // Calculate the feedforward from the setpoint
-    double speed = feedForward * setpoint.velocity;
+    double speed = FEED_FORWARD * setpoint.velocity;
     // accounts for gravity in speed
-    speed += gravityCompensation * Math.cos(getEncoderPosition());
+    speed += GRAVITY_COMPENSATION * Math.cos(getEncoderPosition());
     // Add PID output to speed to account for error in arm
     speed += output;
     // calls set speed function in the file that does armIO.setSpeed
@@ -79,7 +79,7 @@ public class Arm extends ProfiledPIDSubsystem {
 
   @Override
   protected double getMeasurement() {
-    return armIO.getEncoderPosition();
+    return ArmIO.getEncoderPosition();
   }
 
   public double getGoal() {
@@ -88,15 +88,15 @@ public class Arm extends ProfiledPIDSubsystem {
 
   // Checks to see if arm is within range of the setpoints
   public boolean atGoal() {
-    return (PIDUtil.checkWithinRange(getGoal(), getMeasurement(), ArmConstants.ANGLE_TOLERANCE_AUTON));
+    return (PIDUtil.checkWithinRange(getGoal(), getMeasurement(), ANGLE_TOLERANCE_AUTON));
   }
 
   public double getAbsoluteEncoderPosition() {
-    return armIO.getAbsoluteEncoderPosition();
+    return ArmIO.getAbsoluteEncoderPosition();
   }
 
   public void setEncoderPosition(double angle) {
-    armIO.setEncoderPosition(angle);
+    ArmIO.setEncoderPosition(angle);
   }
 
   // TODO there's a duplicate of this in RealArm. Also, do we want this in
