@@ -83,6 +83,7 @@ public final class Constants {
     public static final double kDrivingMotorFreeSpeedRps = NeoMotorConstants.kFreeSpeedRpm / 60;
     public static final double kWheelDiameterMeters = (3.0 * 0.0254);
     public static final double kWheelCircumferenceMeters = kWheelDiameterMeters * Math.PI;
+
     // 45 teeth on the wheel's bevel gear, 22 teeth on the first-stage spur gear, 15
     // teeth on the bevel pinion
     // This is also the gear ratio (14T)
@@ -91,8 +92,69 @@ public final class Constants {
     public static final double kDriveWheelFreeSpeedRps = (kDrivingMotorFreeSpeedRps * kWheelCircumferenceMeters)
         / kDrivingMotorReduction;
 
-    public static final double kDrivingEncoderPositionFactor = (kWheelDiameterMeters * Math.PI)
-        / kDrivingMotorReduction / (260.0 / 254); // meters
+    public static final double kIdealDrivingEncoderPositionFactor = (kWheelDiameterMeters * Math.PI)
+        / kDrivingMotorReduction; // meters
+
+    /**
+     * With perfectly round wheels of the specified diameter, the "Ideal" position
+     * factor tracks our motion exactly. In practice, wheels wear or were never the
+     * theoretical diameter to begin with. We can correct for this discrepancy by
+     * driving the wheels until the robot reports it has moved the specified
+     * distance, measuring the actual distance moved, and multiplying the ideal
+     * factor by the ratio between the distances.
+     *
+     * Here's the math:
+     *
+     * D_reported = distance reported by `getPosition()`, units matching D_reported
+     * D_actual = distance measured from the start of the move to the end, units
+     * matching D_reported
+     * D_test = distance measured from the stat of the move to the end during the
+     * calibration run, unitsmatching D_reported
+     * F_ideal = ideal position factor, computed from gear ratios and wheel
+     * diameters
+     * C = correction constant.
+     *
+     * REVLib tells us that D_reported by `getPosition()` is computed as:
+     * D_reported = F_ideal * Motor revolutions
+     *
+     * However, since we don't live in the perfect world supposed by our theoretical
+     * calculations, our D_actual likely does not match D_reported exactly. We will
+     * assume that the factors causing this discrepancy are constant per unit of
+     * motion - for example wheel diameter or a gearing error. Given these
+     * assumptions, we can represent D_actual with the following equation:
+     *
+     * D_actual = C * F_ideal * Motor revolutions.
+     *
+     * If we were to set our PositionFactor to C*F_ideal, the Spark would report a
+     * getPosition() that matched reality modulo non-constant factors.
+     *
+     * Solving the prior equation for C gives
+     *
+     * C = D_actual / (F_ideal * Motor revolutions)
+     *
+     * Substituting our solution for D_reported gives us:
+     *
+     * C = D_actual / D_reported
+     *
+     * To validate this, let us consider the case where we request a 260cm move, but
+     * only measure 250cm. This gives us:
+     * D_reported = 260
+     * D_actual = 250
+     * C = 250/260 ~= 0.96
+     *
+     * This tracks with our expectations - a smaller "position moved per motor
+     * revolution" would result in the robot spinning the wheels more to move 260cm.
+     *
+     * We expect that vision-based odometry will correct these errors since it
+     * produces an absolute Pose rather than computing one based on the robot's
+     * motion since the last computation, but applying this technique is useful in
+     * situations where we need more precise driving odometry.
+     *
+     */
+    public static final double WHEEL_CIRCUMFRENCE_CORRECTION_RATIO = 254.0 / 260.0;
+
+    public static final double kDrivingEncoderPositionFactor = WHEEL_CIRCUMFRENCE_CORRECTION_RATIO
+        * kIdealDrivingEncoderPositionFactor; // meters
     public static final double kDrivingEncoderVelocityFactor = kDrivingEncoderPositionFactor / 60; // meters per second
 
     public static final double kTurningEncoderPositionFactor = (2 * Math.PI); // radians
