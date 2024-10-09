@@ -5,6 +5,7 @@
 package frc.robot.subsystems.Indexer;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Indexer extends SubsystemBase {
@@ -33,10 +34,10 @@ public class Indexer extends SubsystemBase {
     indexerIO.setMotor(indexerSpeed);
   }
 
-
   public void setIsOverride() {
     indexerIO.setIsOverride();
   }
+
   // returns speed of the indexer
   public double getEncoderSpeed() {
     return indexerIO.getEncoderSpeed();
@@ -54,5 +55,9 @@ public class Indexer extends SubsystemBase {
   public void periodic() {
     indexerIO.periodicUpdate();
     SmartDashboard.putBoolean("indexer/ isIntooked", isIntooked);
+  }
+
+  public Command runIndexer(double speed) {
+    return this.run(() -> indexerIO.setMotor(speed));
   }
 }
