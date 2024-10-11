@@ -14,6 +14,7 @@ import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import com.pathplanner.lib.util.ReplanningConfig;
 
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.Debouncer;
@@ -46,14 +47,14 @@ import frc.robot.subsystems.gyro.GyroIO;
 public class DriveSubsystem extends SubsystemBase {
 
   // vision
-  public VisionIO visionIO;
+  private VisionIO visionIO;
   private double MAX_VISION_UPDATE_SPEED_MPS = 1.0;
   private double velocityXMPS;
   private double velocityYMPS;
   private double velocityMPS;
-  private Pose3d visionEstimatedPose;
+  private Pose2d visionEstimatedPose;
   public Pose2d robotPose;
-  public Pose2d speakerPose;
+  private Pose2d speakerPose;
   private Pose2d poseDifference;
 
   // apriltags
@@ -184,15 +185,28 @@ public class DriveSubsystem extends SubsystemBase {
 
     robotPose = poseEstimator.getEstimatedPosition();
 
+    SmartDashboard.putNumber("/vision/pre-vision x", robotPose.getX());
+    SmartDashboard.putNumber("/vision/pre-vision y", robotPose.getY());
+
     if (velocityMPS <= MAX_VISION_UPDATE_SPEED_MPS) {
       possiblePose = visionIO.getVisionPose();
       // makes sure that there is a new pose and that there are targets before getting
       // a robot pose
       if (possiblePose.isPresent()) {
-        visionEstimatedPose = possiblePose.get().estimatedPose;
-        poseEstimator.addVisionMeasurement(visionEstimatedPose.toPose2d(), Timer.getFPGATimestamp());
-        visionField.setRobotPose(visionEstimatedPose.toPose2d());
+        visionEstimatedPose = possiblePose.get().estimatedPose.toPose2d();
+        SmartDashboard.putNumber("/vision/vision x", visionEstimatedPose.getX());
+        SmartDashboard.putNumber("/vision/vision y", visionEstimatedPose.getY());
+        double distanceToTag = Math.hypot(visionEstimatedPose.getX(), visionEstimatedPose.getY());
+        poseEstimator.addVisionMeasurement(visionEstimatedPose, Timer.getFPGATimestamp(),
+            VecBuilder.fill(distanceToTag / 2, distanceToTag / 2, 100));
+        SmartDashboard.putString("/vision/updating with vision ", "updating w pose!!!");
+        SmartDashboard.putNumber("/vision/post-vision x", poseEstimator.getEstimatedPosition().getX());
+        SmartDashboard.putNumber("/vision/post-vision y", poseEstimator.getEstimatedPosition().getY());
+      } else {
+        SmartDashboard.putString("/vision/updating with vision ", "no pose present");
       }
+    } else {
+      SmartDashboard.putString("/vision/updating with vision ", "too fast");
     }
 
     SmartDashboard.putNumber("robot pose theta", pose.getRotation().getDegrees());
@@ -252,6 +266,7 @@ public class DriveSubsystem extends SubsystemBase {
             rearRight.getPosition()
         },
         pose);
+    // frontLeft.setDriveEncoderPosition(poseEstimator.getEstimatedPosition().);
   }
 
   /**
@@ -353,10 +368,12 @@ public class DriveSubsystem extends SubsystemBase {
     });
   }
 
-  public Command driveCommand(double xSpeed, double ySpeed, double rotRate, boolean fieldRelative,
-      boolean alignToSpeakerWithVision) {
-    return this.run(() -> drive(xSpeed, ySpeed, rotRate, fieldRelative, alignToSpeakerWithVision));
-  }
+  // public Command driveCommand(double xSpeed, double ySpeed, double rotRate,
+  // boolean fieldRelative,
+  // boolean alignToSpeakerWithVision) {
+  // return this.run(() -> drive(xSpeed, ySpeed, rotRate, fieldRelative,
+  // alignToSpeakerWithVision));
+  // }
 
   // assigns aprilTags based on alliance
   public void setAprilTagIDsAndLocations(Optional<Alliance> ally) {
@@ -368,6 +385,10 @@ public class DriveSubsystem extends SubsystemBase {
       ampID = 6;
     }
     speakerPose = VisionConstants.KFIELDLAYOUT.getTagPose(speakerID).get().toPose2d();
+  }
+
+  public Pose2d getSpeakerPose() {
+    return speakerPose;
   }
 
   private double getAlignToSpeakerRotRate(double currentAngle) {

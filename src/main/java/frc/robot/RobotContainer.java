@@ -243,17 +243,22 @@ public class RobotContainer {
                 // actually driving robot
                 // The left stick controls translation of the robot.
                 // Turning is controlled by the X axis of the right stick.
-                robotDrive.setDefaultCommand(robotDrive.driveCommand(
-                                -Math.pow(MathUtil.applyDeadband(
-                                                m_driverController.getLeftY(),
-                                                OIConstants.kDriveDeadband), 3),
-                                -Math.pow(MathUtil.applyDeadband(
-                                                m_driverController.getLeftX(),
-                                                OIConstants.kDriveDeadband), 3),
-                                -Math.pow(MathUtil.applyDeadband(
-                                                m_driverController.getRightX(),
-                                                OIConstants.kDriveDeadband), 3),
-                                fieldOrientedDrive, false).withName("drive default"));
+                robotDrive.setDefaultCommand(
+                                // The left stick controls translation of the robot.
+                                // Turning is controlled by the X axis of the right stick.
+                                new RunCommand(
+                                                () -> robotDrive.drive(
+                                                                -(MathUtil.applyDeadband(
+                                                                                m_driverController.getLeftY(),
+                                                                                OIConstants.kDriveDeadband)),
+                                                                -(MathUtil.applyDeadband(
+                                                                                m_driverController.getLeftX(),
+                                                                                OIConstants.kDriveDeadband)),
+                                                                -(MathUtil.applyDeadband(
+                                                                                m_driverController.getRightX(),
+                                                                                OIConstants.kDriveDeadband)),
+                                                                fieldOrientedDrive, false),
+                                                robotDrive).withName("drive default"));
         }
 
         private void configureButtonBindingsDriver() {
@@ -288,15 +293,22 @@ public class RobotContainer {
                 // driver b: reset gyro
                 m_driverController.b().onTrue(new InstantCommand(() -> m_gyro.setYaw(0.0)));
                 // driver a: align to speaker mode
-                m_driverController.a().whileTrue(robotDrive.driveCommand(
-                                -Math.pow(MathUtil.applyDeadband(m_driverController.getLeftY(),
-                                                OIConstants.kDriveDeadband), 3),
-                                -Math.pow(MathUtil.applyDeadband(m_driverController.getLeftX(),
-                                                OIConstants.kDriveDeadband), 3),
-                                -Math.pow(MathUtil.applyDeadband(
-                                                m_driverController.getRightX(),
-                                                OIConstants.kDriveDeadband), 3),
-                                fieldOrientedDrive, true));
+                m_driverController.a().whileTrue(
+                                // The left stick controls translation of the robot.
+                                // Turning is controlled by the X axis of the right stick.
+                                new RunCommand(
+                                                () -> robotDrive.drive(
+                                                                -(MathUtil.applyDeadband(
+                                                                                m_driverController.getLeftY(),
+                                                                                OIConstants.kDriveDeadband)),
+                                                                -(MathUtil.applyDeadband(
+                                                                                m_driverController.getLeftX(),
+                                                                                OIConstants.kDriveDeadband)),
+                                                                -(MathUtil.applyDeadband(
+                                                                                m_driverController.getRightX(),
+                                                                                OIConstants.kDriveDeadband)),
+                                                                fieldOrientedDrive, true),
+                                                robotDrive).withName("drive default"));
 
         }
 
@@ -378,7 +390,7 @@ public class RobotContainer {
 
         private Command makeSetPositionCommandVision(Arm arm) {
                 DoubleSupplier target = () -> (arm.getDesiredArmAngle(robotDrive.robotPose,
-                                robotDrive.speakerPose));
+                                robotDrive.getSpeakerPose()));
                 return new SequentialCommandGroup(
                                 new ConditionalCommand(new InstantCommand(() -> {
                                 }), new InstantCommand(() -> arm.enable(), arm), () -> arm.isEnabled()),
