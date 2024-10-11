@@ -154,37 +154,6 @@ public final class Constants {
     public static final double INDEXER_OUTTAKING_SPEED = -0.6;
   }
 
-  public static final class ArmConstants {
-
-    // arm angles for intaking and shooting in different positions, in radians
-    // intake angle same as initial offset
-    public static final double INTAKE_ANGLE = Units.degreesToRadians(14);
-    public static final double SPEAKER_SUBWOOFER_ANGLE = Units.degreesToRadians(14);;
-    public static final double SPEAKER_PODIUM_ANGLE = -0.06;
-    public static final double AMP_ANGLE = Units.degreesToRadians(90);
-
-    // 1 4-1 gearbox, 2 3-1 gearboxes, then a 4-1 reduction from the sprocket/chain;
-    // 4^2 * 3^2 = 144
-    public static final double RADIANS_PER_REVOLUTION = 2 * Math.PI / 144;
-    // absolute encoder only needs the sprocket/chain reduction, since it comes
-    // after the gearboxes
-
-    public static final double ARM_ABSOLUTE_MEASURED = 1.03;
-    public static final double ARM_ABSOLUTE_CAD = 0.274;
-    public static final double INITIAL_OFFSET = 0.274;
-
-    // sim constants
-    // arm min and max angles in radians
-    public static final double MAX_ARM_ANGLE = Math.PI / 4 * 3;
-    // initial offset -5 degrees
-    public static final double MIN_ARM_ANGLE = 0;
-    // arm mass in kg
-    public static final double ARM_MASS = 2.72155;
-    // arm length in meters
-    public static final double ARM_LENGTH = 0.65;
-
-  }
-
   public static final class ClimberConstants {
 
     public static final int LEFT_CLIMBER_MOTOR_ID = 13;

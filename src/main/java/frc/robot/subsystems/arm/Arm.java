@@ -9,9 +9,9 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDSubsystem;
 import frc.robot.Constants;
-import frc.robot.Constants.ArmConstants;
 import frc.utils.PIDUtil;
 
 public class Arm extends ProfiledPIDSubsystem {
@@ -50,12 +50,12 @@ public class Arm extends ProfiledPIDSubsystem {
     return ArmIO.getEncoderSpeed();
   }
 
-  public void setSpeed(double speed) {
-    ArmIO.setSpeed(speed);
+  public Command setSpeed(double speed) {
+    return this.run(() -> ArmIO.setSpeed(speed));
   }
 
-  public void setSpeedGravityCompensation(double speed) {
-    setSpeed(speed + GRAVITY_COMPENSATION * Math.cos(getEncoderPosition()));
+  public Command setSpeedGravityCompensation(double speed) {
+    return this.run(() -> setSpeed(speed + GRAVITY_COMPENSATION * Math.cos(getEncoderPosition())));
   }
 
   public double getArmCurrent() {
@@ -67,13 +67,10 @@ public class Arm extends ProfiledPIDSubsystem {
     SmartDashboard.putNumber("arm/desired position (deg)", Math.toDegrees(setpoint.position));
     SmartDashboard.putNumber("arm/desired velocity (deg per s)", Math.toDegrees(setpoint.velocity));
 
-    // Calculate the feedforward from the setpoint
     double speed = FEED_FORWARD * setpoint.velocity;
     // accounts for gravity in speed
     speed += GRAVITY_COMPENSATION * Math.cos(getEncoderPosition());
-    // Add PID output to speed to account for error in arm
     speed += output;
-    // calls set speed function in the file that does armIO.setSpeed
     setSpeed(speed);
   }
 
@@ -95,12 +92,10 @@ public class Arm extends ProfiledPIDSubsystem {
     return ArmIO.getAbsoluteEncoderPosition();
   }
 
-  public void setEncoderPosition(double angle) {
-    ArmIO.setEncoderPosition(angle);
+  public Command setEncoderPosition(double angle) {
+    return this.run(() -> ArmIO.setEncoderPosition(angle));
   }
 
-  // TODO there's a duplicate of this in RealArm. Also, do we want this in
-  // Robotçontainer instead?
   public double getSpeedFromArmHeight() {
     if (getEncoderPosition() <= 0.37) {
       speedFromArmHeight = Constants.ShooterConstants.SUBWOOFER_SPEED;
@@ -113,13 +108,4 @@ public class Arm extends ProfiledPIDSubsystem {
     }
     return speedFromArmHeight;
   }
-
-  // public void setArmAngle(DoubleSupplier desiredAngleSupplier) {
-  // setGoal(desiredAngleSupplier.get());
-  // }
-
-  // 5.33E-03*x + 0.206
-  // https://docs.google.com/spreadsheets/d/1TCEiHto6ypUku9VXPN79PGwONyrlhI2SbMsfn337yTw/edit#gid=0
-  // inverse tan of function above to get angle
-
 }
