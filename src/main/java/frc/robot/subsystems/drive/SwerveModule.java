@@ -7,7 +7,7 @@ import frc.robot.subsystems.drive.SwerveModuleIO.SwerveModuleIOInputs;
 
 public class SwerveModule {
 
-    private SwerveModuleState m_desiredState = new SwerveModuleState(0.0, new Rotation2d());
+    private SwerveModuleState desiredState = new SwerveModuleState(0.0, new Rotation2d());
 
     double chassisAngularOffset;
 
@@ -15,7 +15,7 @@ public class SwerveModule {
 
     private final SwerveModuleIOInputs inputs = new SwerveModuleIOInputs();
 
-    //name is used for smart dashboard values to distinguish between modules
+    // name is used for smart dashboard values to distinguish between modules
     private String name;
 
     public SwerveModule(SwerveModuleIO io) {
@@ -23,7 +23,7 @@ public class SwerveModule {
         this.io = io;
         this.name = io.getName();
         io.setDriveEncoderPosition(0);
-        m_desiredState.angle = new Rotation2d(getTurnEncoderPosition());
+        desiredState.angle = new Rotation2d(getTurnEncoderPosition());
 
     }
 
@@ -101,12 +101,11 @@ public class SwerveModule {
 
         // Optimize the reference state to avoid spinning further than 90 degrees.
 
-        SwerveModuleState optimizedDesiredState =
-        SwerveModuleState.optimize(correctedDesiredState,
-        new Rotation2d(getTurnEncoderPosition()));
+        SwerveModuleState optimizedDesiredState = SwerveModuleState.optimize(correctedDesiredState,
+                new Rotation2d(getTurnEncoderPosition()));
         io.setDesiredDriveSpeedMPS(optimizedDesiredState.speedMetersPerSecond);
         io.setDesiredTurnAngle(optimizedDesiredState.angle.getRadians());
-        m_desiredState = desiredState;
+        this.desiredState = desiredState;
     }
 
 }

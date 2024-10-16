@@ -9,6 +9,7 @@ import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import com.pathplanner.lib.util.ReplanningConfig;
+import com.revrobotics.CANSparkMax;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -16,14 +17,15 @@ import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
@@ -32,6 +34,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.NeoMotorConstants;
 import frc.robot.Robot;
 import frc.robot.subsystems.gyro.GyroIO;
 
@@ -48,20 +51,87 @@ public class DriveSubsystem extends SubsystemBase {
   private Debouncer rotationDebouncer = new Debouncer(ROTATION_DEBOUNCE_TIME);
 
   // Odometry
-  private SwerveDrivePoseEstimator m_poseEstimator;
+  private SwerveDrivePoseEstimator poseEstimator;
 
   // swerve modules
-  private SwerveModule m_frontLeft;
-  private SwerveModule m_frontRight;
-  private SwerveModule m_rearLeft;
-  private SwerveModule m_rearRight;
-
-  // Slew rate filter variables for controlling lateral acceleration
-  private double m_currentRotationRate = 0.0;
+  private SwerveModule frontLeft;
+  private SwerveModule frontRight;
+  private SwerveModule rearLeft;
+  private SwerveModule rearRight;
 
   private double desiredAngle = 0;
 
   private GyroIO m_gyro;
+
+  // Angular offsets of the modules relative to the chassis in radians
+  public static final double frontLeftChassisAngularOffset = -Math.PI / 2;
+  public static final double frontRightChassisAngularOffset = 0;
+  public static final double rearLeftChassisAngularOffset = Math.PI;
+  public static final double rearRightChassisAngularOffset = Math.PI / 2;
+
+  // THIS IS 13 ON COMP BOT
+  public static final int drivingMotorPinionTeeth = 14;
+
+  // Invert the turning encoder, since the output shaft rotates in the opposite
+  // direction of the steering motor in the MAXSwerve Module.
+  public static final boolean turningEncoderInverted = true;
+  public static final boolean drivingEncoderInverted = false;
+
+  // Calculations required for driving motor conversion factors and feed forward
+  public static final double drivingMotorFreeSpeedRps = NeoMotorConstants.kFreeSpeedRpm / 60;
+  public static final double wheelDiameterMeters = (3.0 * 0.0254);
+  public static final double wheelCircumferenceMeters = wheelDiameterMeters * Math.PI;
+  // 45 teeth on the wheel's bevel gear, 22 teeth on the first-stage spur gear, 15
+  // teeth on the bevel pinion
+  // This is also the gear ratio (14T)
+  public static final double drivingMotorReduction = (45.0 * 22) / (drivingMotorPinionTeeth * 15);
+  public static final double turningMotorReduction = 9424d / 203;
+  public static final double driveWheelFreeSpeedRps = (drivingMotorFreeSpeedRps * wheelCircumferenceMeters)
+      / drivingMotorReduction;
+
+  public static final double drivingEncoderPositionFactor = (wheelDiameterMeters * Math.PI)
+      / drivingMotorReduction / (260.0 / 254); // meters
+  public static final double drivingEncoderVelocityFactor = drivingEncoderPositionFactor / 60; // meters per second
+
+  public static final double turningEncoderPositionFactor = (2 * Math.PI); // radians
+  public static final double turningEncoderVelocityFactor = (2 * Math.PI) / 60.0; // radians per second
+
+  public static final double turningEncoderPositionPIDMinInput = 0; // radians
+  public static final double turningEncoderPositionPIDMaxInput = turningEncoderPositionFactor; // radians
+
+  public static final double drivingP = 0.2;
+  public static final double drivingI = 0;
+  public static final double drivingD = 0;
+  public static final double drivingFF = 1 / driveWheelFreeSpeedRps;
+  public static final double drivingMinOutput = -1;
+  public static final double drivingMaxOutput = 1;
+
+  public static final double turningP = 1.0;
+  public static final double turningI = 0;
+  public static final double turningD = 0.001;
+  public static final double turningFF = 0;
+  public static final double turningMinOutput = -1;
+  public static final double turningMaxOutput = 1;
+
+  public static final CANSparkMax.IdleMode drivingMotorIdleMode = CANSparkMax.IdleMode.kBrake;
+  public static final CANSparkMax.IdleMode turningMotorIdleMode = CANSparkMax.IdleMode.kBrake;
+
+  public static final int drivingMotorCurrentLimit = 50; // amps
+  public static final int turningMotorCurrentLimit = 20; // amps
+
+  // Driving Parameters
+  public static final double maxSpeedMetersPerSecond = 4.8;
+  public static final double MAX_ANGULAR_SPEED = 2 * Math.PI; // radians per second
+
+  // Chassis configuration
+  // Distance between centers of right and left wheels on robot
+  public static final double TRACK_WIDTH = Units.inchesToMeters(26 - 2 * 1.75);
+  // Distance between front and back wheels on robot
+  public static final double WHEEL_BASE = Units.inchesToMeters(26 - 2 * 1.75);
+  public static final Translation2d FRONT_LEFT_OFFSET = new Translation2d(WHEEL_BASE / 2, TRACK_WIDTH / 2);
+  public static final Translation2d REAR_LEFT_OFFSET = new Translation2d(-WHEEL_BASE / 2, TRACK_WIDTH / 2);
+  public static final Translation2d FRONT_RIGHT_OFFSET = new Translation2d(WHEEL_BASE / 2, -TRACK_WIDTH / 2);
+  public static final Translation2d REAR_RIGHT_OFFSET = new Translation2d(-WHEEL_BASE / 2, -TRACK_WIDTH / 2);
 
   private final Field2d field2d = new Field2d();
   private FieldObject2d frontLeftField2dModule = field2d.getObject("front left module");
@@ -80,24 +150,24 @@ public class DriveSubsystem extends SubsystemBase {
       .getStructArrayTopic("/SmartDashboard/Swerve/Desired Modules States", SwerveModuleState.struct).publish();
 
   /** Creates a new DriveSubsystem. */
-  public DriveSubsystem(SwerveModule m_frontLeft, SwerveModule m_frontRight, SwerveModule m_rearLeft,
-      SwerveModule m_rearRight, GyroIO m_gyro) {
-    this.m_gyro = m_gyro;
-    this.m_frontLeft = m_frontLeft;
-    this.m_frontRight = m_frontRight;
-    this.m_rearLeft = m_rearLeft;
-    this.m_rearRight = m_rearRight;
+  public DriveSubsystem(SwerveModule frontLeft, SwerveModule frontRight, SwerveModule rearLeft,
+      SwerveModule rearRight, GyroIO gyro) {
+    this.m_gyro = gyro;
+    this.frontLeft = frontLeft;
+    this.frontRight = frontRight;
+    this.rearLeft = rearLeft;
+    this.rearRight = rearRight;
 
     SmartDashboard.putData(field2d);
 
-    m_poseEstimator = new SwerveDrivePoseEstimator(
+    poseEstimator = new SwerveDrivePoseEstimator(
         DriveConstants.kDriveKinematics,
-        Rotation2d.fromDegrees(m_gyro.getYaw()),
+        Rotation2d.fromDegrees(gyro.getYaw()),
         new SwerveModulePosition[] {
-            m_frontLeft.getPosition(),
-            m_frontRight.getPosition(),
-            m_rearLeft.getPosition(),
-            m_rearRight.getPosition() },
+            frontLeft.getPosition(),
+            frontRight.getPosition(),
+            rearLeft.getPosition(),
+            rearRight.getPosition() },
         new Pose2d(0, 0, new Rotation2d(0, 0))); // TODO: make these constants in the constants file rather than
                                                  // free-floating numbers
 
@@ -135,14 +205,14 @@ public class DriveSubsystem extends SubsystemBase {
     // This will get the simulated sensor readings that we set
     // in the previous article while in simulation, but will use
     // real values on the robot itself.
-    SmartDashboard.putNumber("left front distance (meters)", m_frontLeft.getDriveEncoderPosition());
+    SmartDashboard.putNumber("left front distance (meters)", frontLeft.getDriveEncoderPosition());
     SmartDashboard.putNumber("drive/gyro angle(degrees)", Math.toDegrees(m_gyro.getYaw()));
-    m_poseEstimator.updateWithTime(Timer.getFPGATimestamp(), Rotation2d.fromRadians(m_gyro.getYaw()),
+    poseEstimator.updateWithTime(Timer.getFPGATimestamp(), Rotation2d.fromRadians(m_gyro.getYaw()),
         new SwerveModulePosition[] {
-            m_frontLeft.getPosition(),
-            m_frontRight.getPosition(),
-            m_rearLeft.getPosition(),
-            m_rearRight.getPosition()
+            frontLeft.getPosition(),
+            frontRight.getPosition(),
+            rearLeft.getPosition(),
+            rearRight.getPosition()
         }); // TODO: look at updating without time
 
     var pose = getPose();
@@ -151,25 +221,25 @@ public class DriveSubsystem extends SubsystemBase {
 
     frontLeftField2dModule.setPose(pose.transformBy(new Transform2d(
         Constants.DriveConstants.FRONT_LEFT_OFFSET,
-        new Rotation2d(m_frontLeft.getTurnEncoderPosition()))));
+        new Rotation2d(frontLeft.getTurnEncoderPosition()))));
 
     rearLeftField2dModule.setPose(pose.transformBy(new Transform2d(
         Constants.DriveConstants.REAR_LEFT_OFFSET,
-        new Rotation2d(m_rearLeft.getTurnEncoderPosition()))));
+        new Rotation2d(rearLeft.getTurnEncoderPosition()))));
 
     frontRightField2dModule.setPose(pose.transformBy(new Transform2d(
         Constants.DriveConstants.FRONT_RIGHT_OFFSET,
-        new Rotation2d(m_frontRight.getTurnEncoderPosition()))));
+        new Rotation2d(frontRight.getTurnEncoderPosition()))));
 
     rearRightField2dModule.setPose(pose.transformBy(new Transform2d(
         Constants.DriveConstants.REAR_RIGHT_OFFSET,
-        new Rotation2d(m_rearRight.getTurnEncoderPosition()))));
+        new Rotation2d(rearRight.getTurnEncoderPosition()))));
 
     SwerveModuleState[] swerveModuleStates = new SwerveModuleState[] {
-        m_frontLeft.getState(),
-        m_frontRight.getState(),
-        m_rearLeft.getState(),
-        m_rearRight.getState(),
+        frontLeft.getState(),
+        frontRight.getState(),
+        rearLeft.getState(),
+        rearRight.getState(),
     };
     swerveModuleStatePublisher.set(swerveModuleStates);
 
@@ -183,7 +253,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   /** Returns the currently-estimated pose of the robot. */
   public Pose2d getPose() {
-    return m_poseEstimator.getEstimatedPosition();
+    return poseEstimator.getEstimatedPosition();
   }
 
   /** Returns the current odometry rotation. */
@@ -194,13 +264,13 @@ public class DriveSubsystem extends SubsystemBase {
 
   /** Resets the odometry to the specified pose. */
   public void resetOdometry(Pose2d pose) {
-    m_poseEstimator.resetPosition(
+    poseEstimator.resetPosition(
         Rotation2d.fromRadians(m_gyro.getYaw()),
         new SwerveModulePosition[] {
-            m_frontLeft.getPosition(),
-            m_frontRight.getPosition(),
-            m_rearLeft.getPosition(),
-            m_rearRight.getPosition()
+            frontLeft.getPosition(),
+            frontRight.getPosition(),
+            rearLeft.getPosition(),
+            rearRight.getPosition()
         },
         pose);
   }
@@ -258,10 +328,10 @@ public class DriveSubsystem extends SubsystemBase {
     var swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(relativeRobotSpeeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(
         swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
-    m_frontLeft.setDesiredState(swerveModuleStates[0]);
-    m_frontRight.setDesiredState(swerveModuleStates[1]);
-    m_rearLeft.setDesiredState(swerveModuleStates[2]);
-    m_rearRight.setDesiredState(swerveModuleStates[3]);
+    frontLeft.setDesiredState(swerveModuleStates[0]);
+    frontRight.setDesiredState(swerveModuleStates[1]);
+    rearLeft.setDesiredState(swerveModuleStates[2]);
+    rearRight.setDesiredState(swerveModuleStates[3]);
 
     swerveModuleDesiredStatePublisher.set(swerveModuleStates);
 
@@ -271,15 +341,15 @@ public class DriveSubsystem extends SubsystemBase {
    * Sets the wheels into an X formation to prevent movement.
    */
   public void setX() {
-    m_frontLeft.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
-    m_frontRight.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(-45)));
-    m_rearLeft.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(-45)));
-    m_rearRight.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
+    frontLeft.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
+    frontRight.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(-45)));
+    rearLeft.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(-45)));
+    rearRight.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
   }
 
   public ChassisSpeeds getRobotRelativeSpeeds() {
-    return DriveConstants.kDriveKinematics.toChassisSpeeds(m_frontLeft.getState(), m_frontRight.getState(),
-        m_rearLeft.getState(), m_rearRight.getState());
+    return DriveConstants.kDriveKinematics.toChassisSpeeds(frontLeft.getState(), frontRight.getState(),
+        rearLeft.getState(), rearRight.getState());
   }
 
   public void setRobotRelativeSpeeds(ChassisSpeeds speeds) {
@@ -287,10 +357,10 @@ public class DriveSubsystem extends SubsystemBase {
     var swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(speeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(
         swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
-    m_frontLeft.setDesiredState(swerveModuleStates[0]);
-    m_frontRight.setDesiredState(swerveModuleStates[1]);
-    m_rearLeft.setDesiredState(swerveModuleStates[2]);
-    m_rearRight.setDesiredState(swerveModuleStates[3]);
+    frontLeft.setDesiredState(swerveModuleStates[0]);
+    frontRight.setDesiredState(swerveModuleStates[1]);
+    rearLeft.setDesiredState(swerveModuleStates[2]);
+    rearRight.setDesiredState(swerveModuleStates[3]);
 
     swerveModuleDesiredStatePublisher.set(swerveModuleStates);
 
