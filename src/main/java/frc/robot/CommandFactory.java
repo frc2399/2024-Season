@@ -24,14 +24,12 @@ public class CommandFactory {
 
     public Command shootWhenUpToSpeed() {
         return Commands.sequence(
-                Commands.sequence(
-                        shooter.setShootSpeed(arm.getSpeedFromArmHeight())),
+                shooter.setShootSpeed(arm.getSpeedFromArmHeight()),
                 Commands.waitUntil(() -> shooter.isUpToSpeed(arm.getSpeedFromArmHeight())),
                 indexer.runIndexer(IndexerConstants.INDEXER_IN_SPEED),
-                Commands.sequence(
-                        shooter.setShootSpeed(0),
-                        intake.setMotor(0),
-                        indexer.setIsIntooked(false)));
+                shooter.setShootSpeed(0),
+                intake.setMotor(0),
+                indexer.setIsIntooked(false));
 
     }
 }

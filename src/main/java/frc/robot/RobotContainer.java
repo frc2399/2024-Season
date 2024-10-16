@@ -60,6 +60,7 @@ import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionReal;
 import frc.robot.subsystems.vision.VisionSim;
+import frc.robot.CommandFactory;
 
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -106,7 +107,7 @@ public class RobotContainer {
         CommandXboxController m_driverController = new CommandXboxController(OIConstants.kDriverControllerPort);
         CommandXboxController m_operatorController = new CommandXboxController(OIConstants.kOperatorControllerPort);
 
-        private final CommandFactory commandFactory = new CommandFactory(m_shooter, m_indexer, m_intake);
+        private final CommandFactory commandFactory = new CommandFactory(m_shooter, m_indexer, m_intake, m_arm);
 
         /**
          * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -215,7 +216,7 @@ public class RobotContainer {
                 // default command for the shooter: do nothing
                 m_shooter.setDefaultCommand(
                                 new RunCommand(
-                                                () -> m_shooter.setMotor(0),
+                                                () -> m_shooter.setShootSpeed(0),
                                                 m_shooter).withName("drive default"));
 
                 // default command for intake: do nothing
@@ -278,11 +279,11 @@ public class RobotContainer {
                 // gets arm height to assign to speed. lower arm, means cloesr to speaekr, so
                 // shoots less forecfully
                 m_driverController.leftBumper().whileTrue(new ParallelCommandGroup(
-                                new RunCommand(() -> m_shooter.setMotor(m_arm.getSpeedFromArmHeight()), m_shooter),
+                                new RunCommand(() -> m_shooter.setShootSpeed(m_arm.getSpeedFromArmHeight()), m_shooter),
                                 new RunCommand(() -> m_indexer.setIsIntooked(false))));
 
                 // driver right bumper: auto-shoot
-                m_driverController.rightBumper().whileTrue(shootWhenUpToSpeed());
+                m_driverController.rightBumper().whileTrue(CommandFactory.shootWhenUpToSpeed()); // this isn't working.
 
                 // driver right trigger: manual intake with arm height restriction
                 // only intakes if arm is lowered
@@ -437,27 +438,6 @@ public class RobotContainer {
                                 new RunCommand(() -> indexer.setMotor(speed), m_indexer)).withTimeout(0.4);
         }
 
-        // waiting 0.5 seconds to get shooter up to speed
-        private Command shootWhenUpToSpeed() {
-                return new SequentialCommandGroup(
-                                new ParallelCommandGroup(
-                                                new SequentialCommandGroup(
-                                                                new WaitUntilCommand(() -> m_shooter
-                                                                                .getEncoderSpeed() >= (m_arm
-                                                                                                .getSpeedFromArmHeight()
-                                                                                                * Constants.ShooterConstants.SHOOT_MAX_SPEED_RPS)),
-                                                                new RunCommand(() -> m_indexer.setMotor(
-                                                                                Constants.IndexerConstants.INDEXER_IN_SPEED),
-                                                                                m_indexer)),
-                                                new RunCommand(() -> m_shooter.setMotor(m_arm.getSpeedFromArmHeight()),
-                                                                m_shooter))
-                                                .withTimeout(1), // 0.75
-                                new InstantCommand(() -> m_shooter.setMotor(0), m_shooter),
-                                new InstantCommand(() -> m_indexer.setMotor(0), m_indexer),
-                                new InstantCommand(() -> m_indexer.setIsIntooked(false)));
-
-        }
-
         private Command outtakeAndShootAfterDelay() {
                 return new SequentialCommandGroup(
                                 new ParallelCommandGroup(
@@ -467,10 +447,11 @@ public class RobotContainer {
                                                                                 Constants.IndexerConstants.INDEXER_IN_SPEED),
                                                                                 m_indexer),
                                                                 new RunCommand(() -> m_indexer.setIsIntooked(false))),
-                                                new RunCommand(() -> m_shooter.setMotor(m_arm.getSpeedFromArmHeight()),
+                                                new RunCommand(() -> m_shooter
+                                                                .setShootSpeed(m_arm.getSpeedFromArmHeight()),
                                                                 m_shooter))
                                                 .withTimeout(0.5),
-                                new InstantCommand(() -> m_shooter.setMotor(0), m_shooter),
+                                new InstantCommand(() -> m_shooter.setShootSpeed(0), m_shooter),
                                 new InstantCommand(() -> m_indexer.setMotor(0), m_indexer),
                                 new InstantCommand(() -> m_indexer.setIsIntooked(false)));
         }

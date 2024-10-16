@@ -26,10 +26,6 @@ public class Shooter extends SubsystemBase {
     shooterIO = io;
   }
 
-  public Command setMotor(double shooterSpeed) {
-    return this.run(() -> shooterIO.setMotor(shooterSpeed));
-  }
-
   public double getCurrent() {
     return shooterIO.getCurrent();
   }
