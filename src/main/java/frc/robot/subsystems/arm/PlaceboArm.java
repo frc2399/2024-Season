@@ -5,7 +5,7 @@ public class PlaceboArm implements ArmIO {
         return 0;
     }
 
-    public double getEncoderSpeed() {
+    public double getEncoderVelocity() {
         return 0;
     }
 

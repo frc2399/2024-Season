@@ -22,8 +22,8 @@ public class Arm extends ProfiledPIDSubsystem {
   // TODO tune max_vel and max_accel
   private static final double MAX_VEL = 4; // rad/s (NEO specs / gear ratio, converted into rad/s ~ 4.1, give it a
                                            // slightly lower one to make it acheivable)
-  private static final double MAX_ACCEL = 6; // rad/s/s
-  private static final Constraints constraints = new Constraints(MAX_VEL, MAX_ACCEL);
+  private static final double MAX_ACCEL = 6; // rad/s/s TODO: figure out where this number came from!
+  private static final Constraints velAndAccelConstraints = new Constraints(MAX_VEL, MAX_ACCEL);
   private static double GRAVITY_COMPENSATION = 0.025;
   private static double FEED_FORWARD = 1 / MAX_VEL;
   private static double ARM_P = 3.0;
@@ -31,7 +31,7 @@ public class Arm extends ProfiledPIDSubsystem {
   private static final double ANGLE_TOLERANCE_AUTON = Units.degreesToRadians(2);
 
   public Arm(ArmIO io) {
-    super(new ProfiledPIDController(ARM_P, 0, ARM_D, constraints));
+    super(new ProfiledPIDController(ARM_P, 0, ARM_D, velAndAccelConstraints));
     ArmIO = io;
   }
 
@@ -46,14 +46,15 @@ public class Arm extends ProfiledPIDSubsystem {
     return ArmIO.getEncoderPosition();
   }
 
-  public double getEncoderSpeed() {
-    return ArmIO.getEncoderSpeed();
+  public double getEncoderVelocity() {
+    return ArmIO.getEncoderVelocity();
   }
 
   public Command setSpeed(double speed) {
     return this.run(() -> ArmIO.setSpeed(speed));
   }
 
+  // TODO: add comments
   public Command setSpeedGravityCompensation(double speed) {
     return this.run(() -> setSpeed(speed + GRAVITY_COMPENSATION * Math.cos(getEncoderPosition())));
   }
@@ -92,10 +93,12 @@ public class Arm extends ProfiledPIDSubsystem {
     return ArmIO.getAbsoluteEncoderPosition();
   }
 
+  // why does this return a command? it's just a setter
   public Command setEncoderPosition(double angle) {
     return this.run(() -> ArmIO.setEncoderPosition(angle));
   }
 
+  // move to command factory
   public double getSpeedFromArmHeight() {
     if (getEncoderPosition() <= 0.37) {
       speedFromArmHeight = Constants.ShooterConstants.SUBWOOFER_SPEED;

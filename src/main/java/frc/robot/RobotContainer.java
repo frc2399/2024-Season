@@ -75,6 +75,7 @@ public class RobotContainer {
         public boolean fieldOrientedDrive = true;
         public static boolean isInClimberMode = false;
 
+        private final
         // swerve module IOs
         private SwerveModuleIO frontLeftIO;
         private SwerveModuleIO frontRightIO;
@@ -94,7 +95,6 @@ public class RobotContainer {
         ShooterIO shooterIO;
         IntakeIO intakeIO;
         IndexerIO indexerIO;
-        ArmIO armIO;
         ClimberIO climberIO;
         VisionIO visionIO;
 
@@ -130,7 +130,6 @@ public class RobotContainer {
                         shooterIO = new SimShooter();
                         intakeIO = new SimIntake();
                         climberIO = new ClimberSim();
-                        armIO = new SimArm();
                         gyro = new GyroIOSim();
                         frontLeftIO = new SwerveModuleIO_Sim("front left");
                         frontRightIO = new SwerveModuleIO_Sim("front right");
@@ -167,7 +166,6 @@ public class RobotContainer {
                         shooterIO = new RealShooter();
                         intakeIO = new RealIntake();
                         climberIO = new ClimberReal();
-                        armIO = new RealArm();
                         gyro = new GyroIOPigeon2();
                         visionIO = new VisionReal();
 

@@ -55,7 +55,7 @@ public class RealArm implements ArmIO {
     }
 
     @Override
-    public double getEncoderSpeed() {
+    public double getEncoderVelocity() {
         return armEncoderRight.getVelocity();
     }
 
@@ -63,7 +63,7 @@ public class RealArm implements ArmIO {
     public void periodicUpdate() {
         SmartDashboard.putNumber("arm/actual position (deg)", Math.toDegrees(getEncoderPosition()));
         SmartDashboard.putNumber("arm/absolute position (deg)", Math.toDegrees(getAbsoluteEncoderPosition()));
-        SmartDashboard.putNumber("arm/actual velocity (deg per s)", Math.toDegrees(getEncoderSpeed()));
+        SmartDashboard.putNumber("arm/actual velocity (deg per s)", Math.toDegrees(getEncoderVelocity()));
     }
 
     @Override

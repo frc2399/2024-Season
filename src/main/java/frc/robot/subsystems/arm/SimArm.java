@@ -38,7 +38,7 @@ public class SimArm implements ArmIO {
     }
 
     @Override
-    public double getEncoderSpeed() {
+    public double getEncoderVelocity() {
         return armEncoderSim.getSpeed();
     }
 
