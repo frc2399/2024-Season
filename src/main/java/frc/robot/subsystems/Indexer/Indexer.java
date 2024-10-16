@@ -18,8 +18,8 @@ public class Indexer extends SubsystemBase {
     indexerIO = io;
   }
 
-  public void setIsIntooked(boolean intooked) {
-    isIntooked = intooked;
+  public Command setIsIntooked(boolean intooked) {
+    return this.run(() -> isIntooked = intooked);
   }
 
   public boolean getIsIntooked() {

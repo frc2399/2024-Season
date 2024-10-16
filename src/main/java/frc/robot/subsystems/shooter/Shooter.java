@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Constants;
 import frc.robot.Constants.IndexerConstants;
+import frc.robot.Constants.ShooterConstants;
 
 public class Shooter extends SubsystemBase {
 
@@ -25,8 +26,8 @@ public class Shooter extends SubsystemBase {
     shooterIO = io;
   }
 
-  public void setMotor(double shooterSpeed) {
-    shooterIO.setMotor(shooterSpeed);
+  public Command setMotor(double shooterSpeed) {
+    return this.run(() -> shooterIO.setMotor(shooterSpeed));
   }
 
   public double getCurrent() {
@@ -45,5 +46,13 @@ public class Shooter extends SubsystemBase {
   @Override
   public void periodic() {
     shooterIO.periodicUpdate();
+  }
+
+  public Command setShootSpeed(double speed) {
+    return this.run(() -> shooterIO.setMotor(speed));
+  }
+
+  public boolean isUpToSpeed(double speed) {
+    return shooterIO.getEncoderSpeed() >= (speed); // Does not have a shooter max rps
   }
 }
