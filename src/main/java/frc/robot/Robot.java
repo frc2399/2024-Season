@@ -102,7 +102,7 @@ public class Robot extends TimedRobot {
     // enabling
     // Also disables gravity compensation b/c no command with gravity compensation
     // running after disable
-    RobotContainer.m_arm.disable();
+    RobotContainer.arm.disable();
   }
 
   @Override
@@ -117,10 +117,10 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     // Optional<Alliance> ally = DriverStation.getAlliance();
     // m_robotContainer.m_vision.assignAprilTags(ally);
-    RobotContainer.m_arm.setEncoderPosition(RobotContainer.m_arm.getAbsoluteEncoderPosition());
+    RobotContainer.arm.setEncoderPosition(RobotContainer.arm.getAbsoluteEncoderPosition());
 
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
-    RobotContainer.makeSetPositionCommand(RobotContainer.m_arm, 0.335);
+    RobotContainer.makeSetPositionCommand(RobotContainer.arm, 0.335);
 
     // schedule the autonomous command
     if (m_autonomousCommand != null) {
@@ -141,8 +141,8 @@ public class Robot extends TimedRobot {
     // continue until interrupted by another command, remove
     // this line or comment it out.
     Optional<Alliance> ally = DriverStation.getAlliance();
-    m_robotContainer.m_Led.turnTeleop();
-    m_robotContainer.m_vision.assignAprilTags(ally);
+    m_robotContainer.Led.turnTeleop();
+    m_robotContainer.vision.assignAprilTags(ally);
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }

@@ -63,9 +63,9 @@ public class RealShooter implements ShooterIO {
         SmartDashboard.putNumber("Shooter/shooter goal speed", shootSpeed * ShooterConstants.SHOOT_MAX_SPEED_RPS);
     }
 
-    // rewritten from above
-    public Command getCurrent() {
-        return this.run(() -> RealShooter.getOutputCurrent());
+    @Override
+    public double getCurrent() {
+        return RealShooter.getOutputCurrent();
     }
 
     @Override

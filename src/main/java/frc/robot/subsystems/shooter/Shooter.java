@@ -35,11 +35,6 @@ public class Shooter extends SubsystemBase {
     shooterIO.setCurrentLimit(current);
   }
 
-  // rewritten from above
-  public Command setCurrentLimit(int current) {
-    return this.run(() -> shooterIO.setCurrent(current));
-  }
-
   @Override
   public void periodic() {
     shooterIO.periodicUpdate();
