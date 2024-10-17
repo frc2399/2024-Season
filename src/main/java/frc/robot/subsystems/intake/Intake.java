@@ -17,17 +17,17 @@ public class Intake extends SubsystemBase {
     intakeIO = io;        
   }
 
-  public void setMotor(double intakeSpeed) {
-    intakeIO.setMotor(intakeSpeed);
+  public void setMotor(double percentOutput) {
+    intakeIO.setMotor(percentOutput);
   }
 
   //returns speed of the intake
-  public double getLeftEncoderSpeed() {
-    return intakeIO.getLeftEncoderSpeed();
+  public double getLeftVelocity() {
+    return intakeIO.getLeftVelocity();
   }
 
-  public double getRightEncoderSpeed() {
-    return intakeIO.getRightEncoderSpeed();
+  public double getRightVelocity() {
+    return intakeIO.getRightVelocity();
   }
 
   public void setLeftCurrentLimit(int current) {
@@ -41,7 +41,8 @@ public class Intake extends SubsystemBase {
   @Override
   public void periodic() {
     intakeIO.periodicUpdate();
-    SmartDashboard.putNumber("intake/ intake speed", getLeftEncoderSpeed());
+    SmartDashboard.putNumber("intake/left velocity", getLeftVelocity());
+    SmartDashboard.putNumber("intake/right velocity", getRightVelocity());
 
   }
 }

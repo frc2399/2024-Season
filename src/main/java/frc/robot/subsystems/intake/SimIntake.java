@@ -17,7 +17,7 @@ public class SimIntake implements IntakeIO {
         rightIntakeEncoderSim = new SimEncoder("right intake");
         leftIntakeMotorSim = new DCMotorSim(DCMotor.getNeo550(1), 1, 1);
         rightIntakeMotorSim = new DCMotorSim(DCMotor.getNeo550(1), 1, 1);
-        SmartDashboard.putNumber("intakecurrent sim", 0);
+        SmartDashboard.putNumber("intake current sim", 0);
         SmartDashboard.putNumber("intake sim velocity", 0);
 
     }
@@ -35,11 +35,11 @@ public class SimIntake implements IntakeIO {
         return rightIntakeMotorSim.getCurrentDrawAmps();
     }
     
-    public double getLeftEncoderSpeed() {
+    public double getLeftVelocity() {
         return leftIntakeEncoderSim.getSpeed();
     }
 
-    public double getRightEncoderSpeed() {
+    public double getRightVelocity() {
         return rightIntakeEncoderSim.getSpeed();
     }
    

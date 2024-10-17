@@ -25,7 +25,7 @@ public class SimIndexer implements IndexerIO {
         return indexerMotorSim.getCurrentDrawAmps();
     }
 
-    public double getEncoderSpeed() {
+    public double getVelocity() {
         return indexerEncoderSim.getSpeed();
     }
 

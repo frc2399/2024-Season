@@ -1,11 +1,11 @@
 package frc.robot.subsystems.intake;
 
 public interface IntakeIO {
-    public void setMotor(double speed);
+    public void setMotor(double intakeVelocity);
 
-    public double getLeftEncoderSpeed();
+    public double getLeftVelocity();
 
-    public double getRightEncoderSpeed();
+    public double getRightVelocity();
 
     public double getLeftEncoderPosition();
 

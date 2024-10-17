@@ -12,7 +12,6 @@ public class Indexer extends SubsystemBase {
   private IndexerIO indexerIO;
   public boolean isIntooked = false;
 
-  /** Creates a new Indexer. */
   public Indexer(IndexerIO io) {
     indexerIO = io;
   }
@@ -29,17 +28,12 @@ public class Indexer extends SubsystemBase {
     return indexerIO.getCurrent();
   }
 
-  public void setMotor(double indexerSpeed) {
-    indexerIO.setMotor(indexerSpeed);
+  public void setMotor(double indexerVelocity) {
+    indexerIO.setMotor(indexerVelocity);
   }
 
-
-  public void setIsOverride() {
-    indexerIO.setIsOverride();
-  }
-  // returns speed of the indexer
-  public double getEncoderSpeed() {
-    return indexerIO.getEncoderSpeed();
+  public double getVelocity() {
+    return indexerIO.getVelocity();
   }
 
   public void setCurrentLimit(int current) {
@@ -53,6 +47,7 @@ public class Indexer extends SubsystemBase {
   @Override
   public void periodic() {
     indexerIO.periodicUpdate();
-    SmartDashboard.putBoolean("indexer/ isIntooked", isIntooked);
+    SmartDashboard.putBoolean("indexer/isIntooked", isIntooked);
+    SmartDashboard.putNumber("indexer/velocity", getVelocity());
   }
 }

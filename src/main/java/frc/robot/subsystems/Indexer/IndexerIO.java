@@ -1,11 +1,11 @@
 package frc.robot.subsystems.Indexer;
 
 public interface IndexerIO {
-    public void setMotor(double speed);
+    public void setMotor(double indexerVelocity);
 
     public double getCurrent();
 
-    public double getEncoderSpeed();
+    public double getVelocity();
 
     public double getEncoderPosition();
 

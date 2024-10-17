@@ -10,7 +10,6 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.Constants.IndexerConstants; 
-import frc.utils.MotorUtil;
 
 public class RealIndexer implements IndexerIO {
 
@@ -20,16 +19,22 @@ public class RealIndexer implements IndexerIO {
     private double slewRate = 0;
     public boolean isIntooked = false;
     public boolean isSensorOverriden = false;
-    private static DigitalInput indexerSensorTop;
+   // private static DigitalInput indexerSensorTop;  TODO: Do we need this? Never used. 
     private static DigitalInput indexerSensorBottom;
+    boolean isIdleBreak;
 
     public RealIndexer() {
-        indexerMotorController = MotorUtil.createSparkMAX(IndexerConstants.INDEXER_MOTOR_ID, MotorType.kBrushless,
-                Constants.NEO550_CURRENT_LIMIT, false, true, slewRate);
+        indexerMotorController = new CANSparkMax(IndexerConstants.INDEXER_MOTOR_ID, MotorType.kBrushless);
+        indexerMotorController.restoreFactoryDefaults();
+        indexerMotorController.setSmartCurrentLimit(Constants.NEO550_CURRENT_LIMIT);
+        indexerMotorController.setIdleMode(CANSparkMax.IdleMode.kBrake);
+
+        // built in slew rate for spark max
+       indexerMotorController.setOpenLoopRampRate(slewRate);
 
         // initialize motor encoder
         indexerEncoder = indexerMotorController.getEncoder();
-        indexerSensorTop = new DigitalInput(IndexerConstants.INDEXER_SENSOR_CHANNEL_TOP);
+       // indexerSensorTop = new DigitalInput(IndexerConstants.INDEXER_SENSOR_CHANNEL_TOP);
         indexerSensorBottom = new DigitalInput(IndexerConstants.INDEXER_SENSOR_CHANNEL_BOTTOM);
         indexerMotorController.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus2, 32767);
         indexerMotorController.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus3, 32767);
@@ -40,8 +45,8 @@ public class RealIndexer implements IndexerIO {
 
 
     @Override
-    public void setMotor(double indexerSpeed) {
-        indexerMotorController.set(indexerSpeed);
+    public void setMotor(double indexerVelocity) {
+        indexerMotorController.set(indexerVelocity);
     }
 
     public double getCurrent() {
@@ -49,7 +54,7 @@ public class RealIndexer implements IndexerIO {
     }
 
     @Override
-    public double getEncoderSpeed() {
+    public double getVelocity() {
         return indexerEncoder.getVelocity();
     }
 

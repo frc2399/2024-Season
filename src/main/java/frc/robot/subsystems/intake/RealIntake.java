@@ -8,7 +8,6 @@ import com.revrobotics.SparkPIDController;
 
 import frc.robot.Constants;
 import frc.robot.Constants.IntakeConstants;
-import frc.utils.MotorUtil;
 
 public class RealIntake implements IntakeIO {
 
@@ -25,14 +24,24 @@ public class RealIntake implements IntakeIO {
 
     public RealIntake()
     {
-        leftCenteringIntakeMotorController = MotorUtil.createSparkMAX(IntakeConstants.LEFT_CENTERING_MOTOR_ID, MotorType.kBrushless, 
-            Constants.NEO550_CURRENT_LIMIT, true, true, slewRate);
-        
-        rightCenteringIntakeMotorController = MotorUtil.createSparkMAX(IntakeConstants.RIGHT_CENTERING_MOTOR_ID, MotorType.kBrushless, 
-            Constants.NEO550_CURRENT_LIMIT, false, true, slewRate);
+        leftCenteringIntakeMotorController = new CANSparkMax(IntakeConstants.LEFT_CENTERING_MOTOR_ID,MotorType.kBrushless);
+        leftCenteringIntakeMotorController.restoreFactoryDefaults();
+        leftCenteringIntakeMotorController.setSmartCurrentLimit(Constants.NEO550_CURRENT_LIMIT);
+        leftCenteringIntakeMotorController.setIdleMode(CANSparkMax.IdleMode.kBrake);
+        // built in slew rate for spark max
+        leftCenteringIntakeMotorController.setOpenLoopRampRate(slewRate);
 
-        intakeMotorController = MotorUtil.createSparkMAX(IntakeConstants.INTAKE_CENTERING_ID, MotorType.kBrushless,
-        Constants.NEO550_CURRENT_LIMIT, false, true, slewRate);
+        rightCenteringIntakeMotorController = new CANSparkMax(IntakeConstants.RIGHT_CENTERING_MOTOR_ID, MotorType.kBrushless);
+        rightCenteringIntakeMotorController.restoreFactoryDefaults();
+        rightCenteringIntakeMotorController.setSmartCurrentLimit(Constants.NEO550_CURRENT_LIMIT);
+        rightCenteringIntakeMotorController.setIdleMode(CANSparkMax.IdleMode.kBrake);
+        rightCenteringIntakeMotorController.setOpenLoopRampRate(slewRate);
+
+        intakeMotorController = new CANSparkMax(IntakeConstants.INTAKE_CENTERING_ID, MotorType.kBrushless);
+        intakeMotorController.restoreFactoryDefaults();
+        intakeMotorController.setSmartCurrentLimit(Constants.NEO550_CURRENT_LIMIT);
+        intakeMotorController.setIdleMode(CANSparkMax.IdleMode.kBrake);
+        intakeMotorController.setOpenLoopRampRate(slewRate);
 
         // initialize motor encoder
         leftCenteringIntakeEncoder = leftCenteringIntakeMotorController.getEncoder();
@@ -47,49 +56,42 @@ public class RealIntake implements IntakeIO {
         intakePIDController.setFF(FEEDFORWARD);
         intakePIDController.setP(PVALUE);
 
+        // to reduce CANBus utilization
         leftCenteringIntakeMotorController.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus2, 32767);
         leftCenteringIntakeMotorController.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus3, 32767);
         leftCenteringIntakeMotorController.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus4, 32767);
         leftCenteringIntakeMotorController.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus5, 32767);
         leftCenteringIntakeMotorController.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus6, 32767);
-        leftCenteringIntakeMotorController.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus2, 32767);
-
-        
-
-
-
-
-
     }
 
     @Override
-    public void setMotor(double intakeSpeed) {
-        leftCenteringIntakeMotorController.set(intakeSpeed);
-        rightCenteringIntakeMotorController.set(intakeSpeed);
-        intakeMotorController.set(intakeSpeed);
+    public void setMotor(double percentOutput) {
+        leftCenteringIntakeMotorController.set(percentOutput);
+        rightCenteringIntakeMotorController.set(percentOutput);
+        intakeMotorController.set(percentOutput);
     }
 
     public double getLeftCurrent()
     {
-        return rightCenteringIntakeMotorController.getOutputCurrent();
+        return leftCenteringIntakeMotorController.getOutputCurrent();
     }
 
     public double getRightCurrent()
     {
-        return leftCenteringIntakeMotorController.getOutputCurrent();
+        return rightCenteringIntakeMotorController.getOutputCurrent();
     }
 
     @Override
-    public double getLeftEncoderSpeed() {
+    public double getLeftVelocity() {
         return leftCenteringIntakeEncoder.getVelocity();
     }
 
     @Override
-    public double getRightEncoderSpeed() {
+    public double getRightVelocity() {
         return rightCenteringIntakeEncoder.getVelocity();
     }
 
-    public double getIntakeEncoderSpeed() {
+    public double getIntakeVelocity() {
         return intakeEncoder.getVelocity();
     }
 
