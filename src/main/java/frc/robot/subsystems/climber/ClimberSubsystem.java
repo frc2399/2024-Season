@@ -1,13 +1,9 @@
 package frc.robot.subsystems.climber;
 
-import com.revrobotics.CANSparkLowLevel.MotorType;
-import com.revrobotics.CANSparkMax;
-
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.Constants.ClimberConstants;
 
 public class ClimberSubsystem extends SubsystemBase {
 
@@ -37,7 +33,4 @@ public class ClimberSubsystem extends SubsystemBase {
                 .calculate(Math.abs(climberIO.getRightCurrent()) > Constants.ClimberConstants.CURRENT_THRESHOLD);
     }
 
-    public boolean isRightRetracted() {
-        return (rightEncoder.getPosition() < ClimberConstants.MIN_HEIGHT + .01);
-    }
 }

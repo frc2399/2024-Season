@@ -4,10 +4,10 @@
 
 package frc.robot;
 
+import java.util.function.DoubleSupplier;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-
-import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.shuffleboard.ComplexWidget;
@@ -37,9 +37,8 @@ import frc.robot.subsystems.arm.ArmIO;
 import frc.robot.subsystems.arm.RealArm;
 import frc.robot.subsystems.arm.SimArm;
 import frc.robot.subsystems.climber.Climber;
+import frc.robot.subsystems.climber.ClimberHardware;
 import frc.robot.subsystems.climber.ClimberIO;
-import frc.robot.subsystems.climber.ClimberReal;
-import frc.robot.subsystems.climber.ClimberSim;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.drive.SwerveModule;
 import frc.robot.subsystems.drive.SwerveModuleIO;
@@ -166,7 +165,7 @@ public class RobotContainer {
                         indexerIO = new RealIndexer();
                         shooterIO = new RealShooter();
                         intakeIO = new RealIntake();
-                        climberIO = new ClimberReal();
+                        climberIO = new ClimberHardware();
                         armIO = new RealArm();
                         m_gyro = new GyroIOPigeon2();
                         visionIO = new VisionReal();

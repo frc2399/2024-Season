@@ -1,14 +1,10 @@
-package frc.robot.subsystems.Climber;
+package frc.robot.subsystems.climber;
 
+import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 
-import edu.wpi.first.math.filter.Debouncer;
-
-import com.revrobotics.CANSparkLowLevel.MotorType;
-
 import frc.robot.Constants;
-//add height control. push button that goes to certain height. button bindings
 
 public class ClimberHardware implements ClimberIO {
 
@@ -32,14 +28,6 @@ public class ClimberHardware implements ClimberIO {
 
     public void setRightSpeed(double speed) {
         rightMotor.set(speed);
-    }
-
-    public void setLeftHeight(double height) {
-
-    }
-
-    public void setRightHeight(double height) {
-
     }
 
     public double getLeftMotorPosition() {
@@ -67,16 +55,10 @@ public class ClimberHardware implements ClimberIO {
         throw new UnsupportedOperationException("Unimplemented method 'getRightCurrent'");
     }
 
-    public double getLeftEncoderPosition() {
-        // gets position in inches
-        double distance = (double) leftEncoder.getPosition();
-        return distance;
-    }
-
-    public double getRightEncoderPosition() {
-        // gets position in inches
-        double distance = (double) rightEncoder.getPosition();
-        return distance;
+    @Override
+    public void periodicUpdate() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'periodicUpdate'");
     }
 
 }

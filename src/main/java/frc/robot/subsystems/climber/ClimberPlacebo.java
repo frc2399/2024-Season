@@ -1,5 +1,5 @@
 
-package frc.robot.subsystems.Climber;
+package frc.robot.subsystems.climber;
 
 import frc.robot.Constants;
 import frc.robot.Constants.ClimberConstants;
@@ -7,15 +7,6 @@ import frc.robot.Constants.ClimberConstants;
 public class ClimberPlacebo implements ClimberIO {
 
     public void setLeftSpeed(double speed) {
-
-    }
-
-    @Override
-    public void setLeftHeight(double height) {
-    }
-
-    @Override
-    public void setRightHeight(double height) {
 
     }
 
@@ -34,20 +25,8 @@ public class ClimberPlacebo implements ClimberIO {
         return ClimberIO.getOutputCurrent;
     }
 
-    public boolean isLeftExtended(){
-        return
-    }
-
-    public boolean isRightExtended() {
+    public void periodicUpdate() {
 
     }
 
-    public boolean isRightSideStalling() {
-        return rightDebouncer
-                .calculate(Math.abs(climberIO.getRightCurrent()) > Constants.ClimberConstants.CURRENT_THRESHOLD);
-    }
-
-    public boolean isRightRetracted() {
-        return (rightEncoder.getPosition() < ClimberConstants.MIN_HEIGHT + .01);
-    }
 }
