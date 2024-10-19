@@ -129,7 +129,7 @@ public class RobotContainer {
                         indexerIO = new SimIndexer();
                         shooterIO = new SimShooter();
                         intakeIO = new SimIntake();
-                        climberIO = new ClimberSim();
+
                         armIO = new SimArm();
                         m_gyro = new GyroIOSim();
                         m_frontLeftIO = new SwerveModuleIO_Sim("front left");
