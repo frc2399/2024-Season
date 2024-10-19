@@ -28,12 +28,11 @@ public class RealArm implements ArmIO {
     private static final double ARM_ABSOLUTE_CAD = 0.274;
 
     public RealArm() {
-        armMotorControllerRight = MotorUtil.createSparkMAX(ARM_MOTOR_ID_RIGHT, MotorType.kBrushless,
-                Constants.NEO_CURRENT_LIMIT,
-                true, true, 0);
-        armMotorControllerLeft = MotorUtil.createSparkMAX(ARM_MOTOR_ID_LEFT, MotorType.kBrushless,
-                Constants.NEO_CURRENT_LIMIT,
-                false, true, 0);
+        armMotorControllerRight = new CANSparkMax(ARM_MOTOR_ID_RIGHT, MotorType.kBrushless);
+        armMotorControllerLeft = new CANSparkMax(ARM_MOTOR_ID_LEFT, MotorType.kBrushless);
+
+        armMotorControllerRight.setSmartCurrentLimit(Constants.NEO_CURRENT_LIMIT);
+        armMotorControllerLeft.setSmartCurrentLimit(Constants.NEO_CURRENT_LIMIT);
 
         armAbsoluteEncoderRight = armMotorControllerRight.getAbsoluteEncoder(Type.kDutyCycle);
         armAbsoluteEncoderRight.setPositionConversionFactor(ABSOLUTE_RADIANS_PER_REVOLUTION);

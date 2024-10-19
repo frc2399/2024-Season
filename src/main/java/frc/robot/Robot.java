@@ -120,7 +120,7 @@ public class Robot extends TimedRobot {
     RobotContainer.arm.setEncoderPosition(RobotContainer.arm.getAbsoluteEncoderPosition());
 
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
-    RobotContainer.makeSetPositionCommand(RobotContainer.arm, 0.335);
+    RobotContainer.arm.makeSetPositionCommand(0.335);
 
     // schedule the autonomous command
     if (m_autonomousCommand != null) {

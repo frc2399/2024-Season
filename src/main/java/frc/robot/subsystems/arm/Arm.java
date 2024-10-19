@@ -10,7 +10,12 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDSubsystem;
+import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
 import frc.utils.PIDUtil;
 
@@ -98,7 +103,7 @@ public class Arm extends ProfiledPIDSubsystem {
     return this.run(() -> ArmIO.setEncoderPosition(angle));
   }
 
-  // move to command factory
+  // TODO: move to command factory
   public double getSpeedFromArmHeight() {
     if (getEncoderPosition() <= 0.37) {
       speedFromArmHeight = Constants.ShooterConstants.SUBWOOFER_SPEED;
@@ -111,4 +116,26 @@ public class Arm extends ProfiledPIDSubsystem {
     }
     return speedFromArmHeight;
   }
+
+  public Command makeSetPositionCommand(double target) {
+    return new SequentialCommandGroup(
+        new ConditionalCommand(new InstantCommand(() -> {
+        }), new InstantCommand(() -> enable()), () -> isEnabled()),
+        new RunCommand(() -> setGoal(target)));
+  }
+
+  public Command makeSetPositionCommandAuton(double target) {
+    return new SequentialCommandGroup(
+        new ConditionalCommand(new InstantCommand(() -> {
+        }), new InstantCommand(() -> enable()), () -> isEnabled()),
+        new InstantCommand(() -> setGoal(target)),
+        new WaitCommand(0.5));
+  }
+
+  public Command makeSetSpeedGravityCompensationCommand(double speed) {
+    return new SequentialCommandGroup(
+        new InstantCommand(() -> disable()),
+        new RunCommand(() -> setSpeedGravityCompensation(speed)));
+  }
+
 }

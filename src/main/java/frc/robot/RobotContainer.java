@@ -10,6 +10,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.shuffleboard.ComplexWidget;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -33,9 +34,6 @@ import frc.robot.subsystems.Indexer.IndexerIO;
 import frc.robot.subsystems.Indexer.RealIndexer;
 import frc.robot.subsystems.Indexer.SimIndexer;
 import frc.robot.subsystems.arm.Arm;
-import frc.robot.subsystems.arm.ArmIO;
-import frc.robot.subsystems.arm.RealArm;
-import frc.robot.subsystems.arm.SimArm;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.climber.ClimberIO;
 import frc.robot.subsystems.climber.ClimberReal;
@@ -71,11 +69,11 @@ public class RobotContainer {
         // The robot's subsystems
         private DriveSubsystem robotDrive;
         private static GyroIO gyro;
+        private SubsystemFactory subsystemFactory;
 
         public boolean fieldOrientedDrive = true;
         public static boolean isInClimberMode = false;
 
-        private final
         // swerve module IOs
         private SwerveModuleIO frontLeftIO;
         private SwerveModuleIO frontRightIO;
@@ -124,6 +122,9 @@ public class RobotContainer {
         }
 
         private void setUpSubsystems() {
+
+                subsystemFactory = new SubsystemFactory(RobotBase.isSimulation());
+                arm = subsystemFactory.buildArm();
 
                 if (Robot.robotType == RobotType.SIMULATION) {
                         indexerIO = new SimIndexer();
@@ -178,7 +179,6 @@ public class RobotContainer {
                 }
 
                 climber = new Climber(climberIO);
-                arm = new Arm(armIO);
                 shooter = new Shooter(shooterIO);
                 indexer = new Indexer(indexerIO);
                 intake = new Intake(intakeIO);
@@ -194,9 +194,9 @@ public class RobotContainer {
                 NamedCommands.registerCommand("intake for time", intakeForTime(intake, indexer));
                 NamedCommands.registerCommand("SHORT intake for time", shortIntakeForTime(intake, indexer));
                 NamedCommands.registerCommand("AimToTarget", Commands.print("aimed to target!"));
-                NamedCommands.registerCommand("SetArmPosition", makeSetPositionCommandAuton(arm, 0.74));
-                NamedCommands.registerCommand("Set Arm Wingleft", makeSetPositionCommandAuton(arm, 0.785));
-                NamedCommands.registerCommand("SetArmDown", makeSetPositionCommandAuton(arm, 0.335));
+                NamedCommands.registerCommand("SetArmPosition", arm.makeSetPositionCommandAuton(0.74));
+                NamedCommands.registerCommand("Set Arm Wingleft", arm.makeSetPositionCommandAuton(0.785));
+                NamedCommands.registerCommand("SetArmDown", arm.makeSetPositionCommandAuton(0.335));
                 NamedCommands.registerCommand("AutoShoot", outtakeAndShootAfterDelay());
                 NamedCommands.registerCommand("intake and outtake", intakeAndOuttake());
                 NamedCommands.registerCommand("outtake", outtake());
@@ -337,23 +337,19 @@ public class RobotContainer {
 
         private void configureButtonBindingsOperatorNotClimber() {
 
-                m_operatorController.leftTrigger().and(() -> !isInClimberMode).whileTrue(
-                                makeSetPositionCommandVision(arm))
-                                .onFalse(new InstantCommand(() -> vision.makeArmAlignedFalse()));
-
                 m_operatorController.rightTrigger().and(() -> !isInClimberMode).whileTrue(
                                 new ParallelCommandGroup(
                                                 new RunCommand(() -> intake.setMotor(1), intake),
                                                 new RunCommand(() -> indexer.setMotor(1), indexer)));
 
                 // operater a: arm to intake/subwoofer angle
-                m_operatorController.a().and(() -> !isInClimberMode).onTrue(makeSetPositionCommand(arm, 0.31));
+                m_operatorController.a().and(() -> !isInClimberMode).onTrue(arm.makeSetPositionCommand(0.31));
 
                 // operator b: arm to podium shot angle
-                m_operatorController.b().and(() -> !isInClimberMode).onTrue(makeSetPositionCommand(arm, 0.66));
+                m_operatorController.b().and(() -> !isInClimberMode).onTrue(arm.makeSetPositionCommand(0.66));
 
                 // operator y: arm to amp angle
-                m_operatorController.y().and(() -> !isInClimberMode).onTrue(makeSetPositionCommand(arm, 1.58));
+                m_operatorController.y().and(() -> !isInClimberMode).onTrue(arm.makeSetPositionCommand(1.58));
 
                 // operator right bumper: intake
                 m_operatorController.rightBumper().and(() -> !isInClimberMode)
@@ -369,40 +365,9 @@ public class RobotContainer {
 
                 // TODO test this!
                 m_operatorController.axisGreaterThan(5, 0.1)
-                                .whileTrue(makeSetSpeedGravityCompensationCommand(arm, 0.1));
+                                .whileTrue(arm.makeSetSpeedGravityCompensationCommand(0.1));
                 m_operatorController.axisLessThan(5, -0.1)
-                                .whileTrue(makeSetSpeedGravityCompensationCommand(arm, -0.1));
-        }
-
-        public static Command makeSetPositionCommand(Arm arm,
-                        double target) {
-                return new SequentialCommandGroup(
-                                new ConditionalCommand(new InstantCommand(() -> {
-                                }), new InstantCommand(() -> arm.enable(), arm), () -> arm.isEnabled()),
-                                new RunCommand(() -> arm.setGoal(target), arm));
-        }
-
-        private Command makeSetPositionCommandVision(Arm arm) {
-                DoubleSupplier target = () -> (vision.keepArmAtAngle((arm.getAbsoluteEncoderPosition())));
-                return new SequentialCommandGroup(
-                                new ConditionalCommand(new InstantCommand(() -> {
-                                }), new InstantCommand(() -> arm.enable(), arm), () -> arm.isEnabled()),
-                                new RunCommand(() -> arm.setGoal(target.getAsDouble()), arm));
-        }
-
-        public static Command makeSetPositionCommandAuton(Arm arm,
-                        double target) {
-                return new SequentialCommandGroup(
-                                new ConditionalCommand(new InstantCommand(() -> {
-                                }), new InstantCommand(() -> arm.enable(), arm), () -> arm.isEnabled()),
-                                new InstantCommand(() -> arm.setGoal(target), arm),
-                                new WaitCommand(0.5));
-        }
-
-        private Command makeSetSpeedGravityCompensationCommand(Arm a, double speed) {
-                return new SequentialCommandGroup(
-                                new InstantCommand(() -> a.disable(), a),
-                                new RunCommand(() -> a.setSpeedGravityCompensation(speed), a));
+                                .whileTrue(arm.makeSetSpeedGravityCompensationCommand(-0.1));
         }
 
         private Command intakeForTime(Intake intake, Indexer indexer) {
