@@ -111,6 +111,9 @@ public class DriveSubsystem extends SubsystemBase {
   StructArrayPublisher<SwerveModuleState> swerveModuleStatePublisher = NetworkTableInstance.getDefault()
       .getStructArrayTopic("/SmartDashboard/Swerve/Current Modules States", SwerveModuleState.struct).publish();
 
+  StructArrayPublisher<SwerveModuleState> swerveModuleDesiredStatePublisher = NetworkTableInstance.getDefault()
+      .getStructArrayTopic("/SmartDashboard/Swerve/Desired Modules States", SwerveModuleState.struct).publish();
+
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem(SwerveModule frontLeft, SwerveModule frontRight, SwerveModule rearLeft,
       SwerveModule rearRight, GyroIO gyro, VisionIO vision) {
@@ -140,8 +143,8 @@ public class DriveSubsystem extends SubsystemBase {
         this::getRobotRelativeSpeeds,
         this::setRobotRelativeSpeeds,
         new HolonomicPathFollowerConfig(
-            new PIDConstants(5, 0, 0.03), // Translation
-            new PIDConstants(5, 0, 0.1), // Rotation
+            new PIDConstants(5, 0, 0), // Translation
+            new PIDConstants(5, 0, 0), // Rotation
             AutoConstants.kMaxSpeedMetersPerSecond,
             0.385, /* Distance from furthest module to robot center in meters */
             new ReplanningConfig()),
@@ -272,34 +275,32 @@ public class DriveSubsystem extends SubsystemBase {
       boolean alignToSpeakerWithVision) {
 
     double newRotRate = 0;
-    double xSpeedCommanded;
-    double ySpeedCommanded;
     double currentAngle = (gyroIO.getYaw());
+    double r = Math.pow(Math.sqrt(Math.pow(xSpeed, 2) + Math.pow(ySpeed, 2)), 3);
+    double polarAngle = Math.atan2(ySpeed, xSpeed);
+    double polarXSpeed = r * Math.cos(polarAngle);
+    double polarYSpeed = r * Math.sin(polarAngle);
 
     // //Account for edge case when gyro resets
     if (currentAngle == 0) {
       desiredAngle = 0;
     }
 
-    // Debouncer for turning and driving at the same time - otherwise it turns
-    // backwards and undoes the driver's work
+    // Debouncer ensures that there is no back-correction immediately after turning
     // Deadband for small movements - they are so slight they do not need correction
     // and correction causes robot to spasm
 
     if (alignToSpeakerWithVision) {
       newRotRate = getAlignToSpeakerRotRate(currentAngle);
+
     } else {
-      newRotRate = getHeadingCorrectionRotRate(currentAngle, rotRate, xSpeed, ySpeed);
+      newRotRate = getHeadingCorrectionRotRate(currentAngle, rotRate, polarXSpeed, polarYSpeed);
     }
 
-    xSpeedCommanded = xSpeed;
-    ySpeedCommanded = ySpeed;
-    currentRotationRate = newRotRate;
-
     // Convert the commanded speeds into the correct units for the drivetrain
-    double xSpeedDelivered = xSpeedCommanded * DriveConstants.MAX_SPEED_METERS_PER_SECOND;
-    double ySpeedDelivered = ySpeedCommanded * DriveConstants.MAX_SPEED_METERS_PER_SECOND;
-    double rotRateDelivered = currentRotationRate * DriveConstants.MAX_ANGULAR_SPEED;
+    double xSpeedDelivered = polarXSpeed * DriveConstants.MAX_SPEED_METERS_PER_SECOND;
+    double ySpeedDelivered = polarYSpeed * DriveConstants.MAX_SPEED_METERS_PER_SECOND;
+    double rotRateDelivered = newRotRate * DriveConstants.MAX_ANGULAR_SPEED;
 
     if (fieldRelative) {
       relativeRobotSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotRateDelivered,
@@ -308,7 +309,9 @@ public class DriveSubsystem extends SubsystemBase {
       relativeRobotSpeeds = new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotRateDelivered);
     }
 
-    SmartDashboard.putNumber("Swerve/ velocity", relativeRobotSpeeds.vxMetersPerSecond);
+    SmartDashboard.putNumber("Swerve/velocity",
+        Math.sqrt(
+            Math.pow(relativeRobotSpeeds.vxMetersPerSecond, 2) + Math.pow(relativeRobotSpeeds.vyMetersPerSecond, 2)));
 
     var swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(relativeRobotSpeeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(
@@ -317,6 +320,9 @@ public class DriveSubsystem extends SubsystemBase {
     frontRight.setDesiredState(swerveModuleStates[1]);
     rearLeft.setDesiredState(swerveModuleStates[2]);
     rearRight.setDesiredState(swerveModuleStates[3]);
+
+    swerveModuleDesiredStatePublisher.set(swerveModuleStates);
+
   }
 
   /**
@@ -335,6 +341,7 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void setRobotRelativeSpeeds(ChassisSpeeds speeds) {
+    speeds = ChassisSpeeds.discretize(speeds, .02);
     var swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(speeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(
         swerveModuleStates, DriveConstants.MAX_SPEED_METERS_PER_SECOND);
@@ -342,6 +349,8 @@ public class DriveSubsystem extends SubsystemBase {
     frontRight.setDesiredState(swerveModuleStates[1]);
     rearLeft.setDesiredState(swerveModuleStates[2]);
     rearRight.setDesiredState(swerveModuleStates[3]);
+    swerveModuleDesiredStatePublisher.set(swerveModuleStates);
+
   }
 
   private void configurePathPlannerLogging() {
@@ -388,9 +397,11 @@ public class DriveSubsystem extends SubsystemBase {
     return keepPointedController.calculate(angleToSpeaker, 0);
   }
 
-  private double getHeadingCorrectionRotRate(double currentAngle, double rotRate, double xSpeed, double ySpeed) {
+  private double getHeadingCorrectionRotRate(double currentAngle, double rotRate, double polarXSpeed,
+      double polarYSpeed) {
     double newRotRate = 0;
-    if (rotationDebouncer.calculate(rotRate == 0) && (Math.abs(xSpeed) >= 0.075 || Math.abs(ySpeed) != 0.075)) {
+    if (rotationDebouncer.calculate(rotRate == 0)
+        && (Math.abs(polarXSpeed) >= 0.075 || Math.abs(polarYSpeed) != 0.075)) {
       newRotRate = newRotRate + drivePIDController.calculate(currentAngle, desiredAngle);
     } else {
       newRotRate = rotRate;
