@@ -292,7 +292,6 @@ public class DriveSubsystem extends SubsystemBase {
 
     if (alignToSpeakerWithVision) {
       newRotRate = getAlignToSpeakerRotRate(currentAngle);
-
     } else {
       newRotRate = getHeadingCorrectionRotRate(currentAngle, rotRate, polarXSpeed, polarYSpeed);
     }
