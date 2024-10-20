@@ -48,11 +48,12 @@ public class DriveSubsystem extends SubsystemBase {
 
   // vision
   private VisionIO visionIO;
-  private double MAX_VISION_UPDATE_SPEED_MPS = 1.0;
+  private double MAX_VISION_UPDATE_SPEED_MPS = 0.5 * DriveConstants.MAX_SPEED_METERS_PER_SECOND;
   private double velocityXMPS;
   private double velocityYMPS;
   private double velocityMPS;
   private Pose2d visionEstimatedPose;
+  private Pose3d visionEstimatedPose3d; // TODO: delete after testing :)
   public Pose2d robotPose;
   private Pose2d speakerPose;
   private Pose2d poseDifference;
@@ -175,7 +176,7 @@ public class DriveSubsystem extends SubsystemBase {
             frontRight.getPosition(),
             rearLeft.getPosition(),
             rearRight.getPosition()
-        }); // TODO: look at updating without time
+        });
 
     Pose2d pose = getPose();
 
@@ -185,28 +186,17 @@ public class DriveSubsystem extends SubsystemBase {
 
     robotPose = poseEstimator.getEstimatedPosition();
 
-    SmartDashboard.putNumber("/vision/pre-vision x", robotPose.getX());
-    SmartDashboard.putNumber("/vision/pre-vision y", robotPose.getY());
-
     if (velocityMPS <= MAX_VISION_UPDATE_SPEED_MPS) {
       possiblePose = visionIO.getVisionPose();
       // makes sure that there is a new pose and that there are targets before getting
       // a robot pose
       if (possiblePose.isPresent()) {
-        visionEstimatedPose = possiblePose.get().estimatedPose.toPose2d();
-        SmartDashboard.putNumber("/vision/vision x", visionEstimatedPose.getX());
-        SmartDashboard.putNumber("/vision/vision y", visionEstimatedPose.getY());
+        visionEstimatedPose3d = possiblePose.get().estimatedPose;
+        visionEstimatedPose = visionEstimatedPose3d.toPose2d();
         double distanceToTag = Math.hypot(visionEstimatedPose.getX(), visionEstimatedPose.getY());
         poseEstimator.addVisionMeasurement(visionEstimatedPose, Timer.getFPGATimestamp(),
             VecBuilder.fill(distanceToTag / 2, distanceToTag / 2, 100));
-        SmartDashboard.putString("/vision/updating with vision ", "updating w pose!!!");
-        SmartDashboard.putNumber("/vision/post-vision x", poseEstimator.getEstimatedPosition().getX());
-        SmartDashboard.putNumber("/vision/post-vision y", poseEstimator.getEstimatedPosition().getY());
-      } else {
-        SmartDashboard.putString("/vision/updating with vision ", "no pose present");
       }
-    } else {
-      SmartDashboard.putString("/vision/updating with vision ", "too fast");
     }
 
     SmartDashboard.putNumber("robot pose theta", pose.getRotation().getDegrees());
@@ -307,9 +297,9 @@ public class DriveSubsystem extends SubsystemBase {
     currentRotationRate = newRotRate;
 
     // Convert the commanded speeds into the correct units for the drivetrain
-    double xSpeedDelivered = xSpeedCommanded * DriveConstants.kMaxSpeedMetersPerSecond;
-    double ySpeedDelivered = ySpeedCommanded * DriveConstants.kMaxSpeedMetersPerSecond;
-    double rotRateDelivered = currentRotationRate * DriveConstants.kMaxAngularSpeed;
+    double xSpeedDelivered = xSpeedCommanded * DriveConstants.MAX_SPEED_METERS_PER_SECOND;
+    double ySpeedDelivered = ySpeedCommanded * DriveConstants.MAX_SPEED_METERS_PER_SECOND;
+    double rotRateDelivered = currentRotationRate * DriveConstants.MAX_ANGULAR_SPEED;
 
     if (fieldRelative) {
       relativeRobotSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotRateDelivered,
@@ -322,7 +312,7 @@ public class DriveSubsystem extends SubsystemBase {
 
     var swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(relativeRobotSpeeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(
-        swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
+        swerveModuleStates, DriveConstants.MAX_SPEED_METERS_PER_SECOND);
     frontLeft.setDesiredState(swerveModuleStates[0]);
     frontRight.setDesiredState(swerveModuleStates[1]);
     rearLeft.setDesiredState(swerveModuleStates[2]);
@@ -347,7 +337,7 @@ public class DriveSubsystem extends SubsystemBase {
   public void setRobotRelativeSpeeds(ChassisSpeeds speeds) {
     var swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(speeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(
-        swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
+        swerveModuleStates, DriveConstants.MAX_SPEED_METERS_PER_SECOND);
     frontLeft.setDesiredState(swerveModuleStates[0]);
     frontRight.setDesiredState(swerveModuleStates[1]);
     rearLeft.setDesiredState(swerveModuleStates[2]);
@@ -394,6 +384,7 @@ public class DriveSubsystem extends SubsystemBase {
   private double getAlignToSpeakerRotRate(double currentAngle) {
     poseDifference = robotPose.relativeTo(speakerPose);
     double angleToSpeaker = poseDifference.getRotation().getRadians();
+    desiredAngle = currentAngle;
     return keepPointedController.calculate(angleToSpeaker, 0);
   }
 

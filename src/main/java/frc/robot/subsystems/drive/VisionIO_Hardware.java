@@ -19,7 +19,7 @@ public class VisionIO_Hardware implements VisionIO {
   public VisionIO_Hardware() {
     camera = new PhotonCamera("backup_camera"); // swap if swapping cameras
     camEstimator = new PhotonPoseEstimator(VisionConstants.KFIELDLAYOUT,
-        PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camera, VisionConstants.CAM_TO_ROBOT);
+        PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camera, VisionConstants.ROBOT_TO_CAM);
   }
 
   public Optional<EstimatedRobotPose> getVisionPose() {

@@ -32,8 +32,8 @@ public final class Constants {
   public static final class DriveConstants {
     public static final int kGyroCanId = 3;
     // Driving Parameters
-    public static final double kMaxSpeedMetersPerSecond = 4.8;
-    public static final double kMaxAngularSpeed = 2 * Math.PI; // radians per second
+    public static final double MAX_SPEED_METERS_PER_SECOND = 4.8;
+    public static final double MAX_ANGULAR_SPEED = 2 * Math.PI; // radians per second
 
     // Chassis configuration
     // Distance between centers of right and left wheels on robot
@@ -251,11 +251,11 @@ public final class Constants {
 
   public static final class VisionConstants {
     public static final AprilTagFieldLayout KFIELDLAYOUT = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
-    public static final double X_OFFSET_TO_ROBOT = -0.374;
-    public static final double Y_OFFSET_TO_ROBOT = -0.189;
-    public static final double Z_OFFSET_TO_ROBOT = 0.31;
-    public static final double CAMERA_PITCH_RADIANS = Units.degreesToRadians(21.10);
-    public static final Transform3d CAM_TO_ROBOT = new Transform3d(
+    public static final double X_OFFSET_TO_ROBOT = Units.inchesToMeters(-11.94);
+    public static final double Y_OFFSET_TO_ROBOT = Units.inchesToMeters(-7.54);
+    public static final double Z_OFFSET_TO_ROBOT = 0;
+    public static final double CAMERA_PITCH_RADIANS = Units.degreesToRadians(24.62);
+    public static final Transform3d ROBOT_TO_CAM = new Transform3d(
         new Translation3d(
             X_OFFSET_TO_ROBOT,
             Y_OFFSET_TO_ROBOT,
