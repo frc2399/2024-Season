@@ -32,8 +32,8 @@ public final class Constants {
   public static final class DriveConstants {
     public static final int kGyroCanId = 3;
     // Driving Parameters
-    public static final double kMaxSpeedMetersPerSecond = 4.8;
-    public static final double kMaxAngularSpeed = 2 * Math.PI; // radians per second
+    public static final double MAX_SPEED_METERS_PER_SECOND = 4.8;
+    public static final double MAX_ANGULAR_SPEED = 2 * Math.PI; // radians per second
 
     // Chassis configuration
     // Distance between centers of right and left wheels on robot
@@ -250,19 +250,16 @@ public final class Constants {
 
   public static final class VisionConstants {
     public static final AprilTagFieldLayout KFIELDLAYOUT = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
-    public static final double XOFFSETTOROBOT = Units.inchesToMeters(-7.494);
-    public static final double YOFFSETTOROBOT = Units.inchesToMeters(13.674);
-    public static final double ZOFFSETTOROBOT = Units.inchesToMeters(5.944);
-    public static final Transform3d CAMTOROBOT = new Transform3d(
+    public static final double X_OFFSET_TO_ROBOT = Units.inchesToMeters(-11.94);
+    public static final double Y_OFFSET_TO_ROBOT = Units.inchesToMeters(-7.54);
+    public static final double Z_OFFSET_TO_ROBOT = 0;
+    public static final double CAMERA_PITCH_RADIANS = Units.degreesToRadians(24.62);
+    public static final Transform3d ROBOT_TO_CAM = new Transform3d(
         new Translation3d(
-            Units.inchesToMeters(XOFFSETTOROBOT),
-            Units.inchesToMeters(YOFFSETTOROBOT),
-            Units.inchesToMeters(ZOFFSETTOROBOT)),
-        new Rotation3d(0.0, Units.degreesToRadians(15.0), 0.0));
-    public static final Transform2d CAMTOROBOT2D = new Transform2d(
-        Units.inchesToMeters(XOFFSETTOROBOT),
-        Units.inchesToMeters(YOFFSETTOROBOT),
-        new Rotation2d(0));
+            X_OFFSET_TO_ROBOT,
+            Y_OFFSET_TO_ROBOT,
+            Z_OFFSET_TO_ROBOT),
+        new Rotation3d(0.0, CAMERA_PITCH_RADIANS, Math.PI));
 
     // 5.33E-03*x + 0.206 -
     // https://docs.google.com/spreadsheets/d/1TCEiHto6ypUku9VXPN79PGwONyrlhI2SbMsfn337yTw/edit#gid=0
