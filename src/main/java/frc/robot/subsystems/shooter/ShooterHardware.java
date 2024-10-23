@@ -12,7 +12,7 @@ import frc.robot.Constants;
 import frc.robot.Constants.ShooterConstants;
 import frc.utils.MotorUtil;
 
-public class RealShooter implements ShooterIO {
+public class ShooterHardware implements ShooterIO {
 
     public static CANSparkMax shooterMotorControllerLow;
     public static CANSparkMax shooterMotorControllerHigh;
@@ -25,13 +25,23 @@ public class RealShooter implements ShooterIO {
     public double pvalue = 0.01;
     private double slewRate = 0;
 
-    public RealShooter() {
+    public ShooterHardware() {
         shooterMotorControllerLow = MotorUtil.createSparkMAX(ShooterConstants.SHOOT_LOW_MOTOR_ID, MotorType.kBrushless,
                 Constants.NEO_CURRENT_LIMIT, true, true, slewRate);
+        shooterMotorControllerLow = new CANSparkMax(ShooterConstants.SHOOT_LOW_MOTOR_ID, MotorType.kBrushless);
+        shooterMotorControllerLow.restoreFactoryDefaults();
+        shooterMotorControllerLow.setSmartCurrentLimit(Constants.NEO_CURRENT_LIMIT);
+        shooterMotorControllerLow.setIdleMode(CANSparkMax.IdleMode.kBrake);
+        shooterMotorControllerLow.setOpenLoopRampRate(slewRate);
 
         shooterMotorControllerHigh = MotorUtil.createSparkMAX(ShooterConstants.SHOOT_HIGH_MOTOR_ID,
                 MotorType.kBrushless,
                 Constants.NEO_CURRENT_LIMIT, true, true, slewRate);
+        shooterMotorControllerHigh = new CANSparkMax(ShooterConstants.SHOOT_HIGH_MOTOR_ID, MotorType.kBrushless);
+        shooterMotorControllerHigh.restoreFactoryDefaults();
+        shooterMotorControllerHigh.setSmartCurrentLimit(Constants.NEO_CURRENT_LIMIT);
+        shooterMotorControllerHigh.setIdleMode(CANSparkMax.IdleMode.kBrake);
+        shooterMotorControllerHigh.setOpenLoopRampRate(slewRate);
 
         // initialize motor encoder
         shooterLowEncoder = shooterMotorControllerLow.getEncoder();
@@ -65,7 +75,7 @@ public class RealShooter implements ShooterIO {
 
     @Override
     public double getCurrent() {
-        return RealShooter.getOutputCurrent();
+        return shooterIO.getCurrent();
     }
 
     @Override

@@ -52,8 +52,8 @@ import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.RealIntake;
 import frc.robot.subsystems.intake.SimIntake;
-import frc.robot.subsystems.shooter.RealShooter;
-import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.shooter.ShooterHardware;
+import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.shooter.ShooterIO;
 import frc.robot.subsystems.shooter.SimShooter;
 import frc.robot.subsystems.vision.Vision;
@@ -82,7 +82,7 @@ public class RobotContainer {
         private SwerveModuleIO rearRightIO;
 
         // subsystems
-        public static Shooter shooter;
+        public static ShooterSubsystem shooter;
         public static Intake intake;
         public static Indexer indexer;
         public static Climber climber;
@@ -164,7 +164,7 @@ public class RobotContainer {
                                         "rear right");
 
                         indexerIO = new RealIndexer();
-                        shooterIO = new RealShooter();
+                        shooterIO = new ShooterHardware();
                         intakeIO = new RealIntake();
                         climberIO = new ClimberReal();
                         armIO = new RealArm();
@@ -181,7 +181,7 @@ public class RobotContainer {
 
                 climber = new Climber(climberIO);
                 arm = new Arm(armIO);
-                shooter = new Shooter(shooterIO);
+                shooter = new ShooterSubsystem(shooterIO);
                 indexer = new Indexer(indexerIO);
                 intake = new Intake(intakeIO);
                 vision = new Vision(visionIO);

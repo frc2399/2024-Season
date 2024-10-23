@@ -7,13 +7,13 @@ package frc.robot.subsystems.shooter;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class Shooter extends SubsystemBase {
+public class ShooterSubsystem extends SubsystemBase {
 
   private ShooterIO shooterIO;
   public static boolean isIntooked = false;
 
   /** Creates a new Intake. */
-  public Shooter(ShooterIO io) {
+  public ShooterSubsystem(ShooterIO io) {
     shooterIO = io;
   }
 
