@@ -27,7 +27,7 @@ public class Arm extends ProfiledPIDSubsystem {
   // TODO tune max_vel and max_accel
   private static final double MAX_VEL = 4; // rad/s (NEO specs / gear ratio, converted into rad/s ~ 4.1, give it a
                                            // slightly lower one to make it acheivable)
-  private static final double MAX_ACCEL = 6; // rad/s/s TODO: figure out where this number came from!
+  private static final double MAX_ACCEL = 6; // rad/s/s pretty sure this number is just an estimate
   private static final Constraints velAndAccelConstraints = new Constraints(MAX_VEL, MAX_ACCEL);
   private static double GRAVITY_COMPENSATION = 0.025;
   private static double FEED_FORWARD = 1 / MAX_VEL;
@@ -59,7 +59,10 @@ public class Arm extends ProfiledPIDSubsystem {
     return this.run(() -> ArmIO.setSpeed(speed));
   }
 
-  // TODO: add comments
+  // gravity compensation is a factor multiplied by vertical component of the
+  // encoder position to
+  // add scaled speed to the arm the in order to overcome the acceleration due to
+  // gravity
   public Command setSpeedGravityCompensation(double speed) {
     return this.run(() -> setSpeed(speed + GRAVITY_COMPENSATION * Math.cos(getEncoderPosition())));
   }
@@ -101,20 +104,6 @@ public class Arm extends ProfiledPIDSubsystem {
   // why does this return a command? it's just a setter
   public Command setEncoderPosition(double angle) {
     return this.run(() -> ArmIO.setEncoderPosition(angle));
-  }
-
-  // TODO: move to command factory
-  public double getSpeedFromArmHeight() {
-    if (getEncoderPosition() <= 0.37) {
-      speedFromArmHeight = Constants.ShooterConstants.SUBWOOFER_SPEED;
-    } else if (getEncoderPosition() > 0.37 & getEncoderPosition() <= 0.76) {
-      speedFromArmHeight = Constants.ShooterConstants.SPEAKER_SPEED;
-    } else if (getEncoderPosition() > 0.76 & getEncoderPosition() <= 1) {
-      speedFromArmHeight = Constants.ShooterConstants.FAR_AWAY_SPEED;
-    } else if (getEncoderPosition() > 1) {
-      speedFromArmHeight = Constants.ShooterConstants.AMP_SPEED;
-    }
-    return speedFromArmHeight;
   }
 
   public Command makeSetPositionCommand(double target) {

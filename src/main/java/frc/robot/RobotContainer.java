@@ -7,8 +7,6 @@ package frc.robot;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
-import java.util.function.DoubleSupplier;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.shuffleboard.ComplexWidget;
@@ -70,6 +68,7 @@ public class RobotContainer {
         private DriveSubsystem robotDrive;
         private static GyroIO gyro;
         private SubsystemFactory subsystemFactory;
+        private CommandFactory commandFactory;
 
         public boolean fieldOrientedDrive = true;
         public static boolean isInClimberMode = false;
@@ -274,7 +273,7 @@ public class RobotContainer {
                 // gets arm height to assign to speed. lower arm, means cloesr to speaekr, so
                 // shoots less forecfully
                 m_driverController.leftBumper().whileTrue(new ParallelCommandGroup(
-                                new RunCommand(() -> shooter.setMotor(arm.getSpeedFromArmHeight()), shooter),
+                                new RunCommand(() -> shooter.setMotor(commandFactory.getSpeedFromArmHeight()), shooter),
                                 new RunCommand(() -> indexer.setIsIntooked(false))));
 
                 // driver right bumper: auto-shoot
@@ -404,13 +403,14 @@ public class RobotContainer {
                                 new ParallelCommandGroup(
                                                 new SequentialCommandGroup(
                                                                 new WaitUntilCommand(() -> shooter
-                                                                                .getEncoderSpeed() >= (arm
+                                                                                .getEncoderSpeed() >= (commandFactory
                                                                                                 .getSpeedFromArmHeight()
                                                                                                 * Constants.ShooterConstants.SHOOT_MAX_SPEED_RPS)),
                                                                 new RunCommand(() -> indexer.setMotor(
                                                                                 Constants.IndexerConstants.INDEXER_IN_SPEED),
                                                                                 indexer)),
-                                                new RunCommand(() -> shooter.setMotor(arm.getSpeedFromArmHeight()),
+                                                new RunCommand(() -> shooter
+                                                                .setMotor(commandFactory.getSpeedFromArmHeight()),
                                                                 shooter))
                                                 .withTimeout(1), // 0.75
                                 new InstantCommand(() -> shooter.setMotor(0), shooter),
@@ -428,7 +428,8 @@ public class RobotContainer {
                                                                                 Constants.IndexerConstants.INDEXER_IN_SPEED),
                                                                                 indexer),
                                                                 new RunCommand(() -> indexer.setIsIntooked(false))),
-                                                new RunCommand(() -> shooter.setMotor(arm.getSpeedFromArmHeight()),
+                                                new RunCommand(() -> shooter
+                                                                .setMotor(commandFactory.getSpeedFromArmHeight()),
                                                                 shooter))
                                                 .withTimeout(0.5),
                                 new InstantCommand(() -> shooter.setMotor(0), shooter),

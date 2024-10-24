@@ -7,7 +7,6 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.SparkAbsoluteEncoder.Type;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
-import frc.utils.MotorUtil;
 
 public class RealArm implements ArmIO {
     private static CANSparkMax armMotorControllerLeft;
