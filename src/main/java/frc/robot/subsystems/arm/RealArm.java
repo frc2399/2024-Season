@@ -1,5 +1,7 @@
 package frc.robot.subsystems.arm;
 
+import org.photonvision.PhotonUtils;
+
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
@@ -95,9 +97,7 @@ public class RealArm implements ArmIO {
     public double getDesiredArmAngle(Pose2d robotPose, Pose2d speakerPose) {
         double distToSpeaker;
         double desiredArmAngleRadians;
-        Pose2d poseDifference = robotPose.relativeTo(speakerPose);
-        distToSpeaker = Units.metersToInches(Math.hypot(poseDifference.getX(), poseDifference.getY()));
-        distToSpeaker -= DISTANCE_TO_CENTER_FROM_FRAME_INCHES;
+        distToSpeaker = PhotonUtils.getDistanceToPose(robotPose, speakerPose);
         if (distToSpeaker <= STAYDOWNBOUNDARY) {
             desiredArmAngleRadians = 0.31;
         } else if (distToSpeaker <= BOUNDARY) {
