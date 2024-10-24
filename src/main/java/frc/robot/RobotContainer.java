@@ -4,10 +4,10 @@
 
 package frc.robot;
 
+import java.util.function.DoubleSupplier;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-
-import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.shuffleboard.ComplexWidget;
@@ -107,7 +107,8 @@ public class RobotContainer {
         CommandXboxController m_driverController = new CommandXboxController(OIConstants.kDriverControllerPort);
         CommandXboxController m_operatorController = new CommandXboxController(OIConstants.kOperatorControllerPort);
 
-        private final CommandFactory commandFactory = new CommandFactory(m_shooter, m_indexer, m_intake, m_arm);
+        private final CommandFactory commandFactory = new CommandFactory(m_shooter, m_indexer, m_intake, m_arm,
+                        m_climber);
 
         /**
          * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -283,7 +284,7 @@ public class RobotContainer {
                                 new RunCommand(() -> m_indexer.setIsIntooked(false))));
 
                 // driver right bumper: auto-shoot
-                m_driverController.rightBumper().whileTrue(CommandFactory.shootWhenUpToSpeed()); // this isn't working.
+                m_driverController.rightBumper().whileTrue(commandFactory.shootWhenUpToSpeed());
 
                 // driver right trigger: manual intake with arm height restriction
                 // only intakes if arm is lowered

@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants.IndexerConstants;
 import frc.robot.subsystems.Indexer.Indexer;
 import frc.robot.subsystems.arm.Arm;
+import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.shooter.Shooter;
 
@@ -14,22 +15,23 @@ public class CommandFactory {
     private final Indexer indexer;
     private final Intake intake;
     private final Arm arm;
+    private final Climber climber;
 
-    public CommandFactory(Shooter shooter, Indexer indexer, Intake intake, Arm arm) {
+    public CommandFactory(Shooter shooter, Indexer indexer, Intake intake, Arm arm, Climber climber) {
         this.shooter = shooter;
         this.indexer = indexer;
         this.intake = intake;
         this.arm = arm;
+        this.climber = climber;
     }
 
     public Command shootWhenUpToSpeed() {
-        return Commands.sequence(
+        return Commands.parallel(
                 shooter.setShootSpeed(arm.getSpeedFromArmHeight()),
-                Commands.waitUntil(() -> shooter.isUpToSpeed(arm.getSpeedFromArmHeight())),
-                indexer.runIndexer(IndexerConstants.INDEXER_IN_SPEED),
-                shooter.setShootSpeed(0),
-                intake.setMotor(0),
-                indexer.setIsIntooked(false));
-
+                Commands.either(
+                        Commands.parallel(indexer.runIndexer(IndexerConstants.INDEXER_IN_SPEED),
+                                indexer.setIsIntooked(false)),
+                        indexer.runIndexer(0),
+                        shooter.isUpToSpeed(arm.getSpeedFromArmHeight())));
     }
 }

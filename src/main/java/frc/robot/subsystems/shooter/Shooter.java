@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems.shooter;
 
+import java.util.function.BooleanSupplier;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -48,7 +50,7 @@ public class Shooter extends SubsystemBase {
     return this.run(() -> shooterIO.setMotor(speed));
   }
 
-  public boolean isUpToSpeed(double speed) {
-    return shooterIO.getEncoderSpeed() >= (speed); // Does not have a shooter max rps
+  public BooleanSupplier isUpToSpeed(double speed) {
+    return () -> shooterIO.getEncoderSpeed() >= (speed); // Does not have a shooter max rps
   }
 }
