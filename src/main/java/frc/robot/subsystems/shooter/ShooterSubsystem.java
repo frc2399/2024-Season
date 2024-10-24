@@ -4,7 +4,6 @@
 
 package frc.robot.subsystems.shooter;
 
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class ShooterSubsystem extends SubsystemBase {
@@ -21,18 +20,8 @@ public class ShooterSubsystem extends SubsystemBase {
     shooterIO.setMotor(shooterSpeed);
   }
 
-  // rewritten from above
-  public Command setMotors(double shooterSpeed) {
-    return this.run(() -> shooterIO.setMotor(shooterSpeed));
-  }
-
-  // returns speed of the intake
   public double getEncoderSpeed() {
     return shooterIO.getEncoderSpeed();
-  }
-
-  public void setCurrentLimit(int current) {
-    shooterIO.setCurrentLimit(current);
   }
 
   @Override

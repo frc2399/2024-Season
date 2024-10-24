@@ -7,9 +7,8 @@ import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
-import frc.robot.Constants.ShooterConstants;
+import frc.robot.ShooterConstants;
 import frc.utils.MotorUtil;
 
 public class ShooterHardware implements ShooterIO {
@@ -26,22 +25,17 @@ public class ShooterHardware implements ShooterIO {
     private double slewRate = 0;
 
     public ShooterHardware() {
-        shooterMotorControllerLow = MotorUtil.createSparkMAX(ShooterConstants.SHOOT_LOW_MOTOR_ID, MotorType.kBrushless,
-                Constants.NEO_CURRENT_LIMIT, true, true, slewRate);
         shooterMotorControllerLow = new CANSparkMax(ShooterConstants.SHOOT_LOW_MOTOR_ID, MotorType.kBrushless);
         shooterMotorControllerLow.restoreFactoryDefaults();
         shooterMotorControllerLow.setSmartCurrentLimit(Constants.NEO_CURRENT_LIMIT);
+        shooterMotorControllerLow.setInverted(true);
         shooterMotorControllerLow.setIdleMode(CANSparkMax.IdleMode.kBrake);
-        shooterMotorControllerLow.setOpenLoopRampRate(slewRate);
 
-        shooterMotorControllerHigh = MotorUtil.createSparkMAX(ShooterConstants.SHOOT_HIGH_MOTOR_ID,
-                MotorType.kBrushless,
-                Constants.NEO_CURRENT_LIMIT, true, true, slewRate);
         shooterMotorControllerHigh = new CANSparkMax(ShooterConstants.SHOOT_HIGH_MOTOR_ID, MotorType.kBrushless);
         shooterMotorControllerHigh.restoreFactoryDefaults();
         shooterMotorControllerHigh.setSmartCurrentLimit(Constants.NEO_CURRENT_LIMIT);
+        shooterMotorControllerHigh.setInverted(true);
         shooterMotorControllerHigh.setIdleMode(CANSparkMax.IdleMode.kBrake);
-        shooterMotorControllerHigh.setOpenLoopRampRate(slewRate);
 
         // initialize motor encoder
         shooterLowEncoder = shooterMotorControllerLow.getEncoder();
@@ -74,18 +68,8 @@ public class ShooterHardware implements ShooterIO {
     }
 
     @Override
-    public double getCurrent() {
-        return shooterIO.getCurrent();
-    }
-
-    @Override
     public double getEncoderSpeed() {
         return shooterHighEncoder.getVelocity();
-    }
-
-    @Override
-    public void setCurrentLimit(int current) {
-        shooterMotorControllerHigh.setSmartCurrentLimit(current);
     }
 
     @Override

@@ -443,7 +443,7 @@ public class RobotContainer {
                                                                 new WaitUntilCommand(() -> shooter
                                                                                 .getEncoderSpeed() >= (arm
                                                                                                 .getSpeedFromArmHeight()
-                                                                                                * Constants.ShooterConstants.SHOOT_MAX_SPEED_RPS)),
+                                                                                                * ShooterConstants.SHOOT_MAX_SPEED_RPS)),
                                                                 new RunCommand(() -> indexer.setMotor(
                                                                                 Constants.IndexerConstants.INDEXER_IN_SPEED),
                                                                                 indexer)),
