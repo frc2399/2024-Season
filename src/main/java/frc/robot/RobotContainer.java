@@ -107,8 +107,7 @@ public class RobotContainer {
         CommandXboxController m_driverController = new CommandXboxController(OIConstants.kDriverControllerPort);
         CommandXboxController m_operatorController = new CommandXboxController(OIConstants.kOperatorControllerPort);
 
-        private final CommandFactory commandFactory = new CommandFactory(m_shooter, m_indexer, m_intake, m_arm,
-                        m_climber);
+        private CommandFactory commandFactory;
 
         /**
          * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -190,6 +189,8 @@ public class RobotContainer {
                 m_intake = new Intake(intakeIO);
                 m_vision = new Vision(visionIO);
                 m_Led = new LED(m_vision, m_indexer);
+                commandFactory = new CommandFactory(m_shooter, m_indexer, m_intake, m_arm,
+                                m_climber);
 
         }
 
