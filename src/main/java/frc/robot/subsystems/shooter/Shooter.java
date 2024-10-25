@@ -51,6 +51,6 @@ public class Shooter extends SubsystemBase {
   }
 
   public BooleanSupplier isUpToSpeed(double speed) {
-    return () -> shooterIO.getEncoderSpeed() >= (speed); // Does not have a shooter max rps
+    return () -> shooterIO.getEncoderSpeed() >= speed * Constants.ShooterConstants.SHOOT_MAX_SPEED_RPS;
   }
 }

@@ -217,9 +217,7 @@ public class RobotContainer {
         private void configureDefaultCommands() {
                 // default command for the shooter: do nothing
                 m_shooter.setDefaultCommand(
-                                new RunCommand(
-                                                () -> m_shooter.setShootSpeed(0),
-                                                m_shooter).withName("drive default"));
+                                m_shooter.setShootSpeed(0).withName("drive default"));
 
                 // default command for intake: do nothing
                 m_intake.setDefaultCommand(
