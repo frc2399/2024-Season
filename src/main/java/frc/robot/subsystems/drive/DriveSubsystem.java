@@ -191,18 +191,21 @@ public class DriveSubsystem extends SubsystemBase {
 
     robotPose = poseEstimator.getEstimatedPosition();
 
-    if (velocityMPS <= MAX_VISION_UPDATE_SPEED_MPS) {
-      possiblePose = visionIO.getVisionPose();
-      // makes sure that there is a new pose and that there are targets before getting
-      // a robot pose
-      if (possiblePose.isPresent()) {
-        visionEstimatedPose3d = possiblePose.get().estimatedPose;
-        visionEstimatedPose = visionEstimatedPose3d.toPose2d();
-        double distanceToTag = Math.hypot(visionEstimatedPose.getX(), visionEstimatedPose.getY());
-        poseEstimator.addVisionMeasurement(visionEstimatedPose, Timer.getFPGATimestamp(),
-            VecBuilder.fill(distanceToTag / 2, distanceToTag / 2, 100));
-      }
-    }
+    // if (velocityMPS <= MAX_VISION_UPDATE_SPEED_MPS) {
+    // possiblePose = visionIO.getVisionPose();
+    // // makes sure that there is a new pose and that there are targets before
+    // getting
+    // // a robot pose
+    // if (possiblePose.isPresent()) {
+    // visionEstimatedPose3d = possiblePose.get().estimatedPose;
+    // visionEstimatedPose = visionEstimatedPose3d.toPose2d();
+    // double distanceToTag = Math.hypot(visionEstimatedPose.getX(),
+    // visionEstimatedPose.getY());
+    // poseEstimator.addVisionMeasurement(visionEstimatedPose,
+    // Timer.getFPGATimestamp(),
+    // VecBuilder.fill(distanceToTag / 2, distanceToTag / 2, 100));
+    // }
+    // }
 
     SmartDashboard.putNumber("robot pose theta", pose.getRotation().getDegrees());
     field2d.setRobotPose(pose);

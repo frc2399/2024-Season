@@ -37,9 +37,9 @@ public final class Constants {
 
     // Chassis configuration
     // Distance between centers of right and left wheels on robot
-    public static final double kTrackWidth = Units.inchesToMeters(26 - 2 * 1.75);
+    public static final double kTrackWidth = Units.inchesToMeters(19.5 - 2 * 1.75);
     // Distance between front and back wheels on robot
-    public static final double kWheelBase = Units.inchesToMeters(26 - 2 * 1.75);
+    public static final double kWheelBase = Units.inchesToMeters(19.5 - 2 * 1.75);
     public static final Translation2d FRONT_LEFT_OFFSET = new Translation2d(kWheelBase / 2, kTrackWidth / 2);
     public static final Translation2d REAR_LEFT_OFFSET = new Translation2d(-kWheelBase / 2, kTrackWidth / 2);
     public static final Translation2d FRONT_RIGHT_OFFSET = new Translation2d(kWheelBase / 2, -kTrackWidth / 2);
@@ -220,7 +220,7 @@ public final class Constants {
   public static final class OIConstants {
     public static final int kDriverControllerPort = 0;
     public static final int kOperatorControllerPort = 1;
-    public static final double kDriveDeadband = 0.05;
+    public static final double kDriveDeadband = 0.15;
   }
 
   public static final class AutoConstants {

@@ -4,5 +4,5 @@ import java.util.Optional;
 import org.photonvision.EstimatedRobotPose;
 
 public interface VisionIO {
-  public Optional<EstimatedRobotPose> getVisionPose();
+  // public Optional<EstimatedRobotPose> getVisionPose();
 }

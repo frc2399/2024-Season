@@ -13,16 +13,17 @@ import edu.wpi.first.math.util.Units;
 import frc.robot.Constants.VisionConstants;
 
 public class VisionIO_Hardware implements VisionIO {
-  public final PhotonCamera camera;
-  private final PhotonPoseEstimator camEstimator;
+  // public final PhotonCamera camera;
+  // private final PhotonPoseEstimator camEstimator;
 
   public VisionIO_Hardware() {
-    camera = new PhotonCamera("backup_camera"); // swap if swapping cameras
-    camEstimator = new PhotonPoseEstimator(VisionConstants.KFIELDLAYOUT,
-        PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camera, VisionConstants.ROBOT_TO_CAM);
+    // camera = new PhotonCamera("backup_camera"); // swap if swapping cameras
+    // camEstimator = new PhotonPoseEstimator(VisionConstants.KFIELDLAYOUT,
+    // PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camera,
+    // VisionConstants.ROBOT_TO_CAM);
   }
 
-  public Optional<EstimatedRobotPose> getVisionPose() {
-    return camEstimator.update();
-  }
+  // public Optional<EstimatedRobotPose> getVisionPose() {
+  // return camEstimator.update();
+  // }
 }

@@ -5,8 +5,8 @@ import org.photonvision.EstimatedRobotPose;
 
 public class VisionIO_Placebo implements VisionIO {
 
-  public Optional<EstimatedRobotPose> getVisionPose() {
-    Optional<EstimatedRobotPose> placeboPoseEstimate = Optional.empty();
-    return placeboPoseEstimate;
-  }
+  // public Optional<EstimatedRobotPose> getVisionPose() {
+  // Optional<EstimatedRobotPose> placeboPoseEstimate = Optional.empty();
+  // return placeboPoseEstimate;
+  // }
 }
