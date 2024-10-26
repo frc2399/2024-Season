@@ -57,7 +57,6 @@ public class DriveSubsystem extends SubsystemBase {
   private Pose3d visionEstimatedPose3d; // TODO: delete after testing :)
   public Pose2d robotPose;
   private Pose2d speakerPose;
-  private Transform2d poseDifference;
 
   // apriltags
   public int speakerID;
@@ -65,11 +64,11 @@ public class DriveSubsystem extends SubsystemBase {
   public boolean isAligned = false;
 
   // PID for the speaker-aiming method
-  final double ANGULAR_P = 0.2; // TODO: tune
-  final double ANGULAR_D = 0;
+  final double ANGULAR_P = 1.0;
+  final double ANGULAR_D = 0.05;
   PIDController keepPointedController = new PIDController(
       ANGULAR_P, 0, ANGULAR_D);
-  final static double ANGLE_TO_SPEAKER_TOLERANCE_DEGREES = 5;
+  final static double ANGLE_TO_SPEAKER_TOLERANCE_DEGREES = 3;
 
   Optional<EstimatedRobotPose> possiblePose;
 
@@ -392,19 +391,22 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   private double getAlignToSpeakerRotRate(double currentAngle) {
-    poseDifference = robotPose.minus(speakerPose);
-    double angleToSpeaker = (PhotonUtils.getYawToPose(robotPose,
-        speakerPose).getRadians());
-    if (angleToSpeaker <= Units.degreesToRadians(ANGLE_TO_SPEAKER_TOLERANCE_DEGREES)) {
-      angleToSpeaker = 0;
+    double angleToSpeaker = PhotonUtils.getYawToPose(robotPose,
+        speakerPose).getRadians() + Math.PI;
+    if (angleToSpeaker > Math.PI) {
+      angleToSpeaker -= (2 * Math.PI);
     }
-    SmartDashboard.putNumber("/vision/rotRate",
-        keepPointedController.calculate(angleToSpeaker, 0));
-    // SmartDashboard.putNumber("/vision/angle pose diff",
-    // poseDifference.getRotation().getRadians());
-    SmartDashboard.putNumber("/vision/angle to speaker", angleToSpeaker);
+    double rotRate = -keepPointedController.calculate((angleToSpeaker % (2 * Math.PI)), 0);
+    SmartDashboard.putNumber("/vision/desiredAngleDegrees speaker",
+        Units.radiansToDegrees(angleToSpeaker));
+    SmartDashboard.putNumber("/vision/rotRate SP pv",
+        rotRate);
     desiredAngle = currentAngle;
-    return keepPointedController.calculate(angleToSpeaker, 0);
+    if (Math.abs(rotRate) < 0.01) {
+      rotRate = 0;
+    }
+    return rotRate;
+    // return 0;
   }
 
   private double getHeadingCorrectionRotRate(double currentAngle, double rotRate, double polarXSpeed,

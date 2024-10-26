@@ -293,22 +293,22 @@ public class RobotContainer {
                 // driver b: reset gyro
                 m_driverController.b().onTrue(new InstantCommand(() -> m_gyro.setYaw(0.0)));
                 // driver a: align to speaker mode
-                // m_driverController.a().whileTrue(
-                // // The left stick controls translation of the robot.
-                // // Turning is controlled by the X axis of the right stick.
-                // new RunCommand(
-                // () -> robotDrive.drive(
-                // -(MathUtil.applyDeadband(
-                // m_driverController.getLeftY(),
-                // OIConstants.kDriveDeadband)),
-                // -(MathUtil.applyDeadband(
-                // m_driverController.getLeftX(),
-                // OIConstants.kDriveDeadband)),
-                // -(MathUtil.applyDeadband(
-                // m_driverController.getRightX(),
-                // OIConstants.kDriveDeadband)),
-                // fieldOrientedDrive, true),
-                // robotDrive).withName("drive default"));
+                m_driverController.a().whileTrue(
+                                // The left stick controls translation of the robot.
+                                // Turning is controlled by the X axis of the right stick.
+                                new RunCommand(
+                                                () -> robotDrive.drive(
+                                                                -(MathUtil.applyDeadband(
+                                                                                m_driverController.getLeftY(),
+                                                                                OIConstants.kDriveDeadband)),
+                                                                -(MathUtil.applyDeadband(
+                                                                                m_driverController.getLeftX(),
+                                                                                OIConstants.kDriveDeadband)),
+                                                                -(MathUtil.applyDeadband(
+                                                                                m_driverController.getRightX(),
+                                                                                OIConstants.kDriveDeadband)),
+                                                                fieldOrientedDrive, true),
+                                                robotDrive).withName("drive default"));
 
         }
 
