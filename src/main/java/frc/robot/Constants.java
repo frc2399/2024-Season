@@ -250,29 +250,16 @@ public final class Constants {
 
   public static final class VisionConstants {
     public static final AprilTagFieldLayout KFIELDLAYOUT = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
-    public static final double X_OFFSET_TO_ROBOT = Units.inchesToMeters(-11.94);
-    public static final double Y_OFFSET_TO_ROBOT = Units.inchesToMeters(-7.54);
-    public static final double Z_OFFSET_TO_ROBOT = 0;
+    public static final double X_CAMERA_OFFSET_TO_ROBOT = Units.inchesToMeters(-11.94);
+    public static final double Y_CAMERA_OFFSET_TO_ROBOT = Units.inchesToMeters(-7.54);
+    public static final double Z_CAMERA_OFFSET_TO_ROBOT = 0;
     public static final double CAMERA_PITCH_RADIANS = Units.degreesToRadians(24.62);
     public static final Transform3d ROBOT_TO_CAM = new Transform3d(
         new Translation3d(
-            X_OFFSET_TO_ROBOT,
-            Y_OFFSET_TO_ROBOT,
-            Z_OFFSET_TO_ROBOT),
+            X_CAMERA_OFFSET_TO_ROBOT,
+            Y_CAMERA_OFFSET_TO_ROBOT,
+            Z_CAMERA_OFFSET_TO_ROBOT),
         new Rotation3d(0.0, CAMERA_PITCH_RADIANS, Math.PI));
-
-    // 5.33E-03*x + 0.206 -
-    // https://docs.google.com/spreadsheets/d/1TCEiHto6ypUku9VXPN79PGwONyrlhI2SbMsfn337yTw/edit#gid=0
-    // inverse tan of function above to get angle
-    // all in inches except for eightyModelRange
-    public static final double STAYDOWNBOUNDARY = (46.5);
-    public static final double EIGHTYMODELSLOPE = 0.00346;
-    public static final double EIGHTYMODELINTERCEPT = 0.298;
-    public static final double EIGHTYMODELRANGE = Units.feetToMeters(12);
-    public static final double HUNDREDMODELSLOPE = 0.00346;
-    public static final double HUNDREDMODELINTERCEPT = 0.298;
-    public static final double ARMALIGNTOLERANCE = 0.01;
-
   }
 
 }

@@ -4,10 +4,13 @@
 
 package frc.robot.subsystems.arm;
 
+import org.photonvision.PhotonUtils;
+
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDSubsystem;
 import frc.robot.Constants;
@@ -30,6 +33,15 @@ public class Arm extends ProfiledPIDSubsystem {
   private static double feedForward = 1 / max_vel;
   private static double kpPos = 3.0;
   private static double kd = 0.01;
+
+  private static final double SPEAKER_SUBWOOFER_ANGLE = Units.degreesToRadians(14);;
+
+  private static final double VISION_ARM_ALIGNMENT_STAY_SUBWOOF_POSITION_BOUNDARY_INCHES = (46.5);
+  private static final double VISION_ARM_ALIGNMENT_EIGHTY_PERCENT_SHOOTER_SPEED_MODEL_SLOPE = 0.00346;
+  private static final double VISION_ARM_ALIGNMENT_EIGHTY_PERCENT_SHOOTER_SPEED_MODEL_Y_INTERCEPT = 0.298;
+  private static final double VISION_ARM_ALIGNMENT_EIGHTY_PERCENT_SHOOTER_SPEED_MODEL_RANGE = Units.feetToMeters(12);
+  private static final double VISION_ARM_ALIGNMENT_HUNDRED_PERCENT_SHOOTER_SPEED_MODEL_SLOPE = 0.00346;
+  private static final double VISION_ARM_ALIGNMENT_HUNDRED_PERCENT_SHOOTER_SPEED_MODEL_Y_INTERCEPT = 0.298;
 
   public Arm(ArmIO io) {
     super(new ProfiledPIDController(kpPos, 0, kd, constraints));
@@ -100,10 +112,6 @@ public class Arm extends ProfiledPIDSubsystem {
     armIO.setEncoderPosition(angle);
   }
 
-  public double getDesiredArmAngle(Pose2d robotPose, Pose2d speakerPose) {
-    return armIO.getDesiredArmAngle(robotPose, speakerPose);
-  }
-
   // TODO there's a duplicate of this in RealArm. Also, do we want this in
   // Robotçontainer instead?
   public double getSpeedFromArmHeight() {
@@ -127,4 +135,25 @@ public class Arm extends ProfiledPIDSubsystem {
   // https://docs.google.com/spreadsheets/d/1TCEiHto6ypUku9VXPN79PGwONyrlhI2SbMsfn337yTw/edit#gid=0
   // inverse tan of function above to get angle
 
+  public double getDesiredArmAngle(Pose2d robotPose, Pose2d speakerPose) {
+    double distToSpeaker;
+    double desiredArmAngleRadians;
+    distToSpeaker = PhotonUtils.getDistanceToPose(robotPose, speakerPose);
+    if (distToSpeaker <= VISION_ARM_ALIGNMENT_STAY_SUBWOOF_POSITION_BOUNDARY_INCHES) {
+      desiredArmAngleRadians = SPEAKER_SUBWOOFER_ANGLE;
+    } else if (distToSpeaker <= VISION_ARM_ALIGNMENT_EIGHTY_PERCENT_SHOOTER_SPEED_MODEL_RANGE) {
+      desiredArmAngleRadians = VISION_ARM_ALIGNMENT_EIGHTY_PERCENT_SHOOTER_SPEED_MODEL_SLOPE
+          * (distToSpeaker)
+          + VISION_ARM_ALIGNMENT_EIGHTY_PERCENT_SHOOTER_SPEED_MODEL_Y_INTERCEPT;
+    } else {
+      desiredArmAngleRadians = VISION_ARM_ALIGNMENT_HUNDRED_PERCENT_SHOOTER_SPEED_MODEL_SLOPE
+          * (distToSpeaker)
+          + VISION_ARM_ALIGNMENT_HUNDRED_PERCENT_SHOOTER_SPEED_MODEL_Y_INTERCEPT;
+    }
+    if (atGoal()) {
+      desiredArmAngleRadians = getMeasurement(); // TODO: idk if this should be the auton value,,,but it seems like the
+                                                 // right method to call
+    }
+    return desiredArmAngleRadians;
+  }
 }

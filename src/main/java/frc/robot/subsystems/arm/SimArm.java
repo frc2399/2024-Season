@@ -73,8 +73,4 @@ public class SimArm implements ArmIO {
     public void setEncoderPosition(double angle) {
         // TODO Auto-generated method stub
     }
-
-    public double getDesiredArmAngle(Pose2d robotPose, Pose2d speakerPose) {
-        return 0.0;
-    }
 }
