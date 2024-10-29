@@ -60,10 +60,10 @@ public class SwerveModuleIO_Real implements SwerveModuleIO {
 
       errors += check(
             m_drivingEncoder
-                  .setPositionConversionFactor(SwerveModuleConstants.kDrivingEncoderPositionFactor / (260.0 / 254)));
+                  .setPositionConversionFactor(SwerveModuleConstants.kDrivingEncoderPositionFactor));
       errors += check(
             m_drivingEncoder.setVelocityConversionFactor(
-                  (SwerveModuleConstants.kDrivingEncoderPositionFactor / (260.0 / 254)) / 60));
+                  (SwerveModuleConstants.kDrivingEncoderVelocityFactor)));
 
       // Apply position and velocity conversion factors for the turning encoder. We
       // want these in radians and radians per second to use with WPILib's swerve
@@ -110,8 +110,6 @@ public class SwerveModuleIO_Real implements SwerveModuleIO {
       this.chassisAngularOffset = chassisAngularOffset;
 
       errors += check(m_drivingEncoder.setPosition(0));
-
-      // System.out.println("turning P: " + m_turningPIDController.getP());
 
       if (errors > 0) {
          System.out.println("Swerve Module Errors! Name: " + name + ", Amount: " + errors);

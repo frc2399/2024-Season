@@ -359,7 +359,7 @@ public class RobotContainer {
                 m_operatorController.b().and(() -> !isInClimberMode).onTrue(makeSetPositionCommand(m_arm, 0.66));
 
                 // operator y: arm to amp angle
-                m_operatorController.y().and(() -> !isInClimberMode).onTrue(makeSetPositionCommand(m_arm, 1.58));
+                m_operatorController.y().and(() -> !isInClimberMode).onTrue(makeSetPositionCommand(m_arm, 1.61));
 
                 // operator right bumper: intake
                 m_operatorController.rightBumper().and(() -> !isInClimberMode)
