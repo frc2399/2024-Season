@@ -65,10 +65,10 @@ public class DriveSubsystem extends SubsystemBase {
 
   // PID for the speaker-aiming method
   final double ANGULAR_P = 1.0;
-  final double ANGULAR_D = 0.05;
+  final double ANGULAR_D = 0.015;
   PIDController keepPointedController = new PIDController(
       ANGULAR_P, 0, ANGULAR_D);
-  final static double ANGLE_TO_SPEAKER_TOLERANCE_DEGREES = 3;
+  final static double ANGLE_TO_SPEAKER_ROT_RATE_TOLERANCE = 0.01;
 
   Optional<EstimatedRobotPose> possiblePose;
 
@@ -391,22 +391,28 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   private double getAlignToSpeakerRotRate(double currentAngle) {
+    // adding pi to account for the 180 degree rotation - without it, robot wants to
+    // point its front at the speaker, and we want the back pointed directly at
+    // speaker
     double angleToSpeaker = PhotonUtils.getYawToPose(robotPose,
         speakerPose).getRadians() + Math.PI;
+    // allows the robot to turn in the most efficient direction. for example, if the
+    // robot is six degrees off the target and needs to rotate counterclockwise,
+    // due to other needed corrections, this causes the robot to spin 354 degrees
+    // CLOCKWISE. subtracting 2pi from values over pi radians makesthese values
+    // negative and thus the robot rotates in the correct direction.
     if (angleToSpeaker > Math.PI) {
       angleToSpeaker -= (2 * Math.PI);
     }
     double rotRate = -keepPointedController.calculate((angleToSpeaker % (2 * Math.PI)), 0);
-    SmartDashboard.putNumber("/vision/desiredAngleDegrees speaker",
-        Units.radiansToDegrees(angleToSpeaker));
-    SmartDashboard.putNumber("/vision/rotRate SP pv",
-        rotRate);
     desiredAngle = currentAngle;
-    if (Math.abs(rotRate) < 0.01) {
+
+    // deadband to prevent overresponsiveness to small errors produced by pose
+    // estimator noise
+    if (Math.abs(rotRate) < ANGLE_TO_SPEAKER_ROT_RATE_TOLERANCE) {
       rotRate = 0;
     }
     return rotRate;
-    // return 0;
   }
 
   private double getHeadingCorrectionRotRate(double currentAngle, double rotRate, double polarXSpeed,
