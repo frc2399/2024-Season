@@ -135,7 +135,7 @@ public class Arm extends ProfiledPIDSubsystem {
   // https://docs.google.com/spreadsheets/d/1TCEiHto6ypUku9VXPN79PGwONyrlhI2SbMsfn337yTw/edit#gid=0
   // inverse tan of function above to get angle
 
-  public double getDesiredArmAngle(Pose2d robotPose, Pose2d speakerPose) {
+  public double getDesiredArmAnglePoseEstimation(Pose2d robotPose, Pose2d speakerPose) {
     double distToSpeaker;
     double desiredArmAngleRadians;
     distToSpeaker = PhotonUtils.getDistanceToPose(robotPose, speakerPose);

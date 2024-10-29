@@ -293,22 +293,22 @@ public class RobotContainer {
                 // driver b: reset gyro
                 m_driverController.b().onTrue(new InstantCommand(() -> m_gyro.setYaw(0.0)));
                 // driver a: align to speaker mode
-                // m_driverController.a().whileTrue(
-                // // The left stick controls translation of the robot.
-                // // Turning is controlled by the X axis of the right stick.
-                // new RunCommand(
-                // () -> robotDrive.drive(
-                // -(MathUtil.applyDeadband(
-                // m_driverController.getLeftY(),
-                // OIConstants.kDriveDeadband)),
-                // -(MathUtil.applyDeadband(
-                // m_driverController.getLeftX(),
-                // OIConstants.kDriveDeadband)),
-                // -(MathUtil.applyDeadband(
-                // m_driverController.getRightX(),
-                // OIConstants.kDriveDeadband)),
-                // fieldOrientedDrive, true),
-                // robotDrive).withName("drive default"));
+                m_driverController.a().whileTrue(
+                                // // The left stick controls translation of the robot.
+                                // // Turning is controlled by the X axis of the right stick.
+                                new RunCommand(
+                                                () -> robotDrive.drive(
+                                                                -(MathUtil.applyDeadband(
+                                                                                m_driverController.getLeftY(),
+                                                                                OIConstants.kDriveDeadband)),
+                                                                -(MathUtil.applyDeadband(
+                                                                                m_driverController.getLeftX(),
+                                                                                OIConstants.kDriveDeadband)),
+                                                                -(MathUtil.applyDeadband(
+                                                                                m_driverController.getRightX(),
+                                                                                OIConstants.kDriveDeadband)),
+                                                                fieldOrientedDrive, true),
+                                                robotDrive).withName("drive default"));
 
         }
 
@@ -344,8 +344,8 @@ public class RobotContainer {
 
         private void configureButtonBindingsOperatorNotClimber() {
 
-                // m_operatorController.leftTrigger().and(() -> !isInClimberMode).whileTrue(
-                // makeSetPositionCommandVision(m_arm));
+                m_operatorController.leftTrigger().and(() -> !isInClimberMode).whileTrue(
+                                makeSetPositionCommandVision(m_arm));
 
                 m_operatorController.rightTrigger().and(() -> !isInClimberMode).whileTrue(
                                 new ParallelCommandGroup(
@@ -389,12 +389,12 @@ public class RobotContainer {
         }
 
         private Command makeSetPositionCommandVision(Arm arm) {
-                DoubleSupplier target = () -> (arm.getDesiredArmAngle(robotDrive.robotPose,
+                DoubleSupplier target = () -> (arm.getDesiredArmAnglePoseEstimation(robotDrive.robotPose,
                                 robotDrive.getSpeakerPose()));
-                return new SequentialCommandGroup(
-                                new ConditionalCommand(new InstantCommand(() -> {
-                                }), new InstantCommand(() -> arm.enable(), arm), () -> arm.isEnabled()),
-                                new RunCommand(() -> arm.setGoal(target.getAsDouble()), arm));
+                return Commands.sequence(
+                                Commands.either(Commands.none(), Commands.runOnce(() -> arm.enable(), arm),
+                                                () -> arm.isEnabled()),
+                                Commands.run(() -> arm.setGoal(target.getAsDouble()), arm));
         }
 
         public static Command makeSetPositionCommandAuton(Arm arm,
