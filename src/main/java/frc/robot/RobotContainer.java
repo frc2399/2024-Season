@@ -124,6 +124,7 @@ public class RobotContainer {
 
                 subsystemFactory = new SubsystemFactory(RobotBase.isSimulation());
                 arm = subsystemFactory.buildArm();
+                SmartDashboard.putData("arm/instances", arm);
 
                 if (Robot.robotType == RobotType.SIMULATION) {
                         indexerIO = new SimIndexer();

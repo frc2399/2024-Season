@@ -10,13 +10,13 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDSubsystem;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.robot.Constants;
 import frc.utils.PIDUtil;
 
 public class Arm extends ProfiledPIDSubsystem {
@@ -45,6 +45,7 @@ public class Arm extends ProfiledPIDSubsystem {
     // Call periodic method in profile pid subsystem to prevent overriding
     super.periodic();
     ArmIO.periodicUpdate();
+    SmartDashboard.putBoolean("arm/arm enabled", isEnabled());
   }
 
   public double getEncoderPosition() {
@@ -107,10 +108,12 @@ public class Arm extends ProfiledPIDSubsystem {
   }
 
   public Command makeSetPositionCommand(double target) {
-    return new SequentialCommandGroup(
-        new ConditionalCommand(new InstantCommand(() -> {
-        }), new InstantCommand(() -> enable()), () -> isEnabled()),
-        new RunCommand(() -> setGoal(target)));
+    return Commands.sequence(
+        Commands.print("Sequential Cmd Group started!"),
+        Commands.either(Commands.none(), Commands.runOnce(() -> enable(), this), () -> isEnabled()),
+        Commands.print("Either Cmd run!"),
+        this.run(() -> setGoal(target)),
+        Commands.print("Set Goal run!"));
   }
 
   public Command makeSetPositionCommandAuton(double target) {

@@ -68,6 +68,8 @@ public class Robot extends TimedRobot {
     CommandScheduler.getInstance().onCommandInterrupt(cmd -> DataLogManager.log(cmd.getName() + ": Interrupted"));
     CommandScheduler.getInstance().onCommandFinish(cmd -> DataLogManager.log(cmd.getName() + ": End"));
 
+    SmartDashboard.putData(CommandScheduler.getInstance());
+
   }
 
   /**
