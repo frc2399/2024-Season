@@ -6,6 +6,7 @@ package frc.robot.subsystems.shooter;
 
 import java.util.function.BooleanSupplier;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -51,6 +52,7 @@ public class Shooter extends SubsystemBase {
   }
 
   public BooleanSupplier isUpToSpeed(double speed) {
+    SmartDashboard.putNumber("/Shooter/Speed", speed * Constants.ShooterConstants.SHOOT_MAX_SPEED_RPS);
     return () -> shooterIO.getEncoderSpeed() >= speed * Constants.ShooterConstants.SHOOT_MAX_SPEED_RPS;
   }
 }
