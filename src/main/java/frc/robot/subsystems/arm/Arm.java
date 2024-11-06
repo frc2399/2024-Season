@@ -112,7 +112,7 @@ public class Arm extends ProfiledPIDSubsystem {
         Commands.print("Sequential Cmd Group started!"),
         Commands.either(Commands.none(), Commands.runOnce(() -> enable(), this), () -> isEnabled()),
         Commands.print("Either Cmd run!"),
-        this.run(() -> setGoal(target)),
+        Commands.runOnce(() -> setGoal(target)),
         Commands.print("Set Goal run!"));
   }
 
