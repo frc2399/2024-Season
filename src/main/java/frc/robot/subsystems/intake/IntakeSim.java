@@ -5,14 +5,14 @@ import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.utils.SimEncoder;
 
-public class SimIntake implements IntakeIO {
+public class IntakeSim implements IntakeIO {
 
     public static SimEncoder leftIntakeEncoderSim;
     public static SimEncoder rightIntakeEncoderSim;
     private DCMotorSim leftIntakeMotorSim;
     private DCMotorSim rightIntakeMotorSim;
 
-    public SimIntake() {
+    public IntakeSim() {
         leftIntakeEncoderSim = new SimEncoder("left intake");
         rightIntakeEncoderSim = new SimEncoder("right intake");
         leftIntakeMotorSim = new DCMotorSim(DCMotor.getNeo550(1), 1, 1);
@@ -64,4 +64,8 @@ public class SimIntake implements IntakeIO {
         SmartDashboard.putNumber("intake/current (A)", getRightCurrent());
     }
     
+    @Override
+    public void setIntakePID(double percentOutput) {
+        
+    }
 }

@@ -1,16 +1,18 @@
 package frc.robot.subsystems.Indexer;
 
+import com.revrobotics.CANSparkBase.ControlType;
+
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.utils.SimEncoder;
 
-public class SimIndexer implements IndexerIO {
+public class IndexerSim implements IndexerIO {
     public static SimEncoder indexerEncoderSim;
     private DCMotorSim indexerMotorSim;
     public boolean isIntooked = false;
 
-    public SimIndexer() {
+    public IndexerSim() {
         indexerEncoderSim = new SimEncoder("indexer");
         indexerMotorSim = new DCMotorSim(DCMotor.getNeo550(1), 1, 1);
         SmartDashboard.putNumber("indexer current sim", 0);
@@ -47,6 +49,12 @@ public class SimIndexer implements IndexerIO {
 
     @Override
     public void setIsOverride() {
+        
+    }
+
+    @Override
+    public void setIndexerPID(double indexerVelocity)
+    {
         
     }
 }

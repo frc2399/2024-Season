@@ -5,35 +5,40 @@ import com.revrobotics.CANSparkLowLevel;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
+import com.revrobotics.CANSparkBase.ControlType;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.Constants.IndexerConstants; 
 
-public class RealIndexer implements IndexerIO {
+public class IndexerReal implements IndexerIO {
 
     public static CANSparkMax indexerMotorController;
     public static RelativeEncoder indexerEncoder;
     public static SparkPIDController indexerController;
-    private double slewRate = 0;
     public boolean isIntooked = false;
     public boolean isSensorOverriden = false;
-   // private static DigitalInput indexerSensorTop;  TODO: Do we need this? Never used. 
+    private double FEEDFORWARD = 0.01;
+    private double PVALUE = 0.01;
     private static DigitalInput indexerSensorBottom;
     boolean isIdleBreak;
 
-    public RealIndexer() {
+    public IndexerReal() {
         indexerMotorController = new CANSparkMax(IndexerConstants.INDEXER_MOTOR_ID, MotorType.kBrushless);
         indexerMotorController.restoreFactoryDefaults();
         indexerMotorController.setSmartCurrentLimit(Constants.NEO550_CURRENT_LIMIT);
         indexerMotorController.setIdleMode(CANSparkMax.IdleMode.kBrake);
 
-        // built in slew rate for spark max
-       indexerMotorController.setOpenLoopRampRate(slewRate);
-
         // initialize motor encoder
         indexerEncoder = indexerMotorController.getEncoder();
+        indexerEncoder.setVelocityConversionFactor(2*Math.PI/60.0); //convert to rps
+        indexerController = indexerMotorController.getPIDController();
+        indexerController.setFeedbackDevice(indexerEncoder);
+        indexerController.setFF(FEEDFORWARD);
+        indexerController.setP(PVALUE);
+
        // indexerSensorTop = new DigitalInput(IndexerConstants.INDEXER_SENSOR_CHANNEL_TOP);
         indexerSensorBottom = new DigitalInput(IndexerConstants.INDEXER_SENSOR_CHANNEL_BOTTOM);
         indexerMotorController.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus2, 32767);
@@ -47,7 +52,10 @@ public class RealIndexer implements IndexerIO {
     @Override
     public void setMotor(double indexerVelocity) {
         indexerMotorController.set(indexerVelocity);
+
+        SmartDashboard.putNumber("set speed", indexerVelocity);
     }
+
 
     public double getCurrent() {
         return indexerMotorController.getOutputCurrent();
@@ -72,6 +80,7 @@ public class RealIndexer implements IndexerIO {
     public void periodicUpdate() {
         SmartDashboard.putBoolean("indexer/isIntooked:", isIntooked);
         SmartDashboard.putBoolean("indexer/getIsBeamBroken", getIsBeamBroken());
+        SmartDashboard.putNumber("encoder value", indexerEncoder.getVelocity());
     }
 
     @Override
@@ -86,5 +95,11 @@ public class RealIndexer implements IndexerIO {
     @Override
     public void setIsOverride() {
         isSensorOverriden = !isSensorOverriden;
+    }
+
+    @Override
+    public void setIndexerPID(double indexerVelocity)
+    {
+        indexerController.setReference(indexerVelocity, ControlType.kVelocity);
     }
 }

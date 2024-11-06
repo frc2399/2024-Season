@@ -16,4 +16,6 @@ public interface IntakeIO {
     public void setRightCurrentLimit(int current);
 
     public void periodicUpdate();
+
+    public void setIntakePID(double percentOutput);
 }

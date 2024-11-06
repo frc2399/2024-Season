@@ -5,6 +5,7 @@
 package frc.robot.subsystems.Indexer;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Indexer extends SubsystemBase {
@@ -42,6 +43,11 @@ public class Indexer extends SubsystemBase {
 
   public boolean getIsBeamBroken() {
     return indexerIO.getIsBeamBroken();
+  }
+
+  public Command setIndexerPID(double indexerVelocity)
+  {
+    return this.run(() -> indexerIO.setIndexerPID(indexerVelocity));
   }
 
   @Override

@@ -16,4 +16,6 @@ public interface IndexerIO {
     public boolean getIsBeamBroken();
 
     public void setIsOverride();
+
+    public void setIndexerPID(double indexerVelocity);
 }

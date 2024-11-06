@@ -28,6 +28,7 @@ public final class Constants {
   public static final int NEO_MAX_SPEED_RPM = 5676;
   // MPS = (GearRatio * 2πr * RPM) / 60
   public static final double NEO550_MAX_SPEED_RPM = 11000;
+  public static final double NEO550_MAX_SPEED_RPS = 11000*((2*Math.PI)/60);
 
   public static final class DriveConstants {
     public static final int kGyroCanId = 3;
