@@ -1,12 +1,9 @@
 package frc.robot.subsystems.drive;
 
-import java.util.Optional;
-import org.photonvision.EstimatedRobotPose;
+import frc.utils.LimelightHelpers.PoseEstimate;
 
 public class VisionIO_Placebo implements VisionIO {
-
-  // public Optional<EstimatedRobotPose> getVisionPose() {
-  // Optional<EstimatedRobotPose> placeboPoseEstimate = Optional.empty();
-  // return placeboPoseEstimate;
-  // }
+  public PoseEstimate getVisionPose(double robotYaw) {
+    return new PoseEstimate();
+  }
 }

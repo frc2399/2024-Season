@@ -6,9 +6,6 @@ package frc.robot.subsystems.drive;
 
 import java.util.Optional;
 
-import org.photonvision.EstimatedRobotPose;
-import org.photonvision.PhotonUtils;
-
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
@@ -44,6 +41,7 @@ import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.Robot;
 import frc.robot.subsystems.gyro.GyroIO;
+import frc.utils.LimelightHelpers.PoseEstimate;
 
 public class DriveSubsystem extends SubsystemBase {
 
@@ -71,7 +69,7 @@ public class DriveSubsystem extends SubsystemBase {
       ANGULAR_P, 0, ANGULAR_D);
   final static double ANGLE_TO_SPEAKER_TOLERANCE_DEGREES = 5;
 
-  Optional<EstimatedRobotPose> possiblePose;
+  PoseEstimate possiblePose;
 
   // correction PID
   private double DRIVE_P = 1.1;
@@ -191,21 +189,15 @@ public class DriveSubsystem extends SubsystemBase {
 
     robotPose = poseEstimator.getEstimatedPosition();
 
-    // if (velocityMPS <= MAX_VISION_UPDATE_SPEED_MPS) {
-    // possiblePose = visionIO.getVisionPose();
-    // // makes sure that there is a new pose and that there are targets before
-    // getting
-    // // a robot pose
-    // if (possiblePose.isPresent()) {
-    // visionEstimatedPose3d = possiblePose.get().estimatedPose;
-    // visionEstimatedPose = visionEstimatedPose3d.toPose2d();
-    // double distanceToTag = Math.hypot(visionEstimatedPose.getX(),
-    // visionEstimatedPose.getY());
-    // poseEstimator.addVisionMeasurement(visionEstimatedPose,
-    // Timer.getFPGATimestamp(),
-    // VecBuilder.fill(distanceToTag / 2, distanceToTag / 2, 100));
-    // }
-    // }
+    if (velocityMPS <= MAX_VISION_UPDATE_SPEED_MPS) {
+      possiblePose = visionIO.getVisionPose(gyroIO.getYaw());
+      if (possiblePose != null) {
+        visionEstimatedPose = possiblePose.pose;
+        double distanceToTag = Math.hypot(visionEstimatedPose.getX(), visionEstimatedPose.getY());
+        poseEstimator.addVisionMeasurement(visionEstimatedPose, possiblePose.timestampSeconds,
+            VecBuilder.fill(distanceToTag / 2, distanceToTag / 2, 100));
+      }
+    }
 
     SmartDashboard.putNumber("robot pose theta", pose.getRotation().getDegrees());
     field2d.setRobotPose(pose);
@@ -395,19 +387,21 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   private double getAlignToSpeakerRotRate(double currentAngle) {
-    poseDifference = robotPose.minus(speakerPose);
-    double angleToSpeaker = (PhotonUtils.getYawToPose(robotPose,
-        speakerPose).getRadians());
-    if (angleToSpeaker <= Units.degreesToRadians(ANGLE_TO_SPEAKER_TOLERANCE_DEGREES)) {
-      angleToSpeaker = 0;
-    }
-    SmartDashboard.putNumber("/vision/rotRate",
-        keepPointedController.calculate(angleToSpeaker, 0));
-    // SmartDashboard.putNumber("/vision/angle pose diff",
-    // poseDifference.getRotation().getRadians());
-    SmartDashboard.putNumber("/vision/angle to speaker", angleToSpeaker);
-    desiredAngle = currentAngle;
-    return keepPointedController.calculate(angleToSpeaker, 0);
+    // poseDifference = robotPose.minus(speakerPose);
+    // // double angleToSpeaker = (PhotonUtils.getYawToPose(robotPose,
+    // // speakerPose).getRadians());
+    // if (angleToSpeaker <=
+    // Units.degreesToRadians(ANGLE_TO_SPEAKER_TOLERANCE_DEGREES)) {
+    // angleToSpeaker = 0;
+    // }
+    // SmartDashboard.putNumber("/vision/rotRate",
+    // keepPointedController.calculate(angleToSpeaker, 0));
+    // // SmartDashboard.putNumber("/vision/angle pose diff",
+    // // poseDifference.getRotation().getRadians());
+    // SmartDashboard.putNumber("/vision/angle to speaker", angleToSpeaker);
+    // desiredAngle = currentAngle;
+    // return keepPointedController.calculate(angleToSpeaker, 0);
+    return 0;
   }
 
   private double getHeadingCorrectionRotRate(double currentAngle, double rotRate, double polarXSpeed,
