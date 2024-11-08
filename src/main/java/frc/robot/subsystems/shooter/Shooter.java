@@ -24,6 +24,8 @@ public class Shooter extends SubsystemBase {
   private ShooterIO shooterIO;
   public static boolean isIntooked = false;
 
+  public double SPEED_TOLERANCE_RPS = 5;
+
   /** Creates a new Intake. */
   public Shooter(ShooterIO io) {
     shooterIO = io;
@@ -53,6 +55,9 @@ public class Shooter extends SubsystemBase {
 
   public BooleanSupplier isUpToSpeed(double speed) {
     SmartDashboard.putNumber("/Shooter/Speed", speed * Constants.ShooterConstants.SHOOT_MAX_SPEED_RPS);
-    return () -> shooterIO.getEncoderSpeed() >= speed * Constants.ShooterConstants.SHOOT_MAX_SPEED_RPS;
+    SmartDashboard.putBoolean("/Shooter/isUpToSpeed", Math.abs(
+        shooterIO.getEncoderSpeed() - speed * Constants.ShooterConstants.SHOOT_MAX_SPEED_RPS) <= SPEED_TOLERANCE_RPS);
+    return () -> Math.abs(
+        shooterIO.getEncoderSpeed() - speed * Constants.ShooterConstants.SHOOT_MAX_SPEED_RPS) <= SPEED_TOLERANCE_RPS;
   }
 }

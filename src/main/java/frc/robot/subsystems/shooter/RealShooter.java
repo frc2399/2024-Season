@@ -21,9 +21,10 @@ public class RealShooter implements ShooterIO {
     public static SparkPIDController shooterLowController;
 
     public double feedforward = 0.011;
-    public double pvalue = 0.035;
+    public double pvalue = 0.007;
     private double slewRate = 0;
-    private double dvalue = 0.015;
+    private double dvalue = 0.2;
+    private double ivalue = 0;
 
     public RealShooter() {
         shooterMotorControllerLow = MotorUtil.createSparkMAX(ShooterConstants.SHOOT_LOW_MOTOR_ID, MotorType.kBrushless,
@@ -52,9 +53,11 @@ public class RealShooter implements ShooterIO {
         shooterHighController.setFF(feedforward);
         shooterHighController.setP(pvalue);
         shooterHighController.setD(dvalue);
+        shooterHighController.setI(ivalue);
         shooterLowController.setFF(feedforward);
         shooterLowController.setP(pvalue);
         shooterLowController.setD(dvalue);
+        shooterLowController.setI(ivalue);
     }
 
     // Basic shooting command
@@ -82,7 +85,7 @@ public class RealShooter implements ShooterIO {
     @Override
     public void periodicUpdate() {
         SmartDashboard.putNumber("Shooter/shooter speed", getEncoderSpeed());
-        SmartDashboard.putNumber("/Shooter/Current", getCurrent());
+        SmartDashboard.putNumber("Shooter/Current", getCurrent());
     }
 
 }
