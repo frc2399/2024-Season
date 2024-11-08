@@ -17,10 +17,6 @@ import edu.wpi.first.math.util.Units;
 
 public final class Constants {
 
-  public static final class CodeConstants {
-    public static final double kMainLoopFrequency = 50; // Hz
-  }
-
   public static final int NEO550_CURRENT_LIMIT = 20;
   public static final int NEO_CURRENT_LIMIT = 50;
   public static final int NEO_MAX_SPEED_RPM = 5676;
@@ -28,37 +24,31 @@ public final class Constants {
   public static final double NEO550_MAX_SPEED_RPM = 11000;
 
   public static final class DriveConstants {
-    public static final int kGyroCanId = 3;
+    public static final int GYRO_CAN_ID = 3;
     // Driving Parameters
-    public static final double kMaxSpeedMetersPerSecond = 4.8;
-    public static final double kMaxAngularSpeed = 2 * Math.PI; // radians per second
+    public static final double MAX_SPEED_METERS_PER_SECOND = 4.8;
+    public static final double MAX_ANGULAR_SPEED = 2 * Math.PI; // radians per second
 
     // Chassis configuration
     // Distance between centers of right and left wheels on robot
-    public static final double kTrackWidth = Units.inchesToMeters(26 - 2 * 1.75);
+    public static final double TRACK_WIDTH = Units.inchesToMeters(26 - 2 * 1.75);
     // Distance between front and back wheels on robot
-    public static final double kWheelBase = Units.inchesToMeters(26 - 2 * 1.75);
-    public static final Translation2d FRONT_LEFT_OFFSET = new Translation2d(kWheelBase / 2, kTrackWidth / 2);
-    public static final Translation2d REAR_LEFT_OFFSET = new Translation2d(-kWheelBase / 2, kTrackWidth / 2);
-    public static final Translation2d FRONT_RIGHT_OFFSET = new Translation2d(kWheelBase / 2, -kTrackWidth / 2);
-    public static final Translation2d REAR_RIGHT_OFFSET = new Translation2d(-kWheelBase / 2, -kTrackWidth / 2);
-
-    public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(
-        FRONT_LEFT_OFFSET,
-        FRONT_RIGHT_OFFSET,
-        REAR_LEFT_OFFSET,
-        REAR_RIGHT_OFFSET);
+    public static final double WHEEL_BASE = Units.inchesToMeters(26 - 2 * 1.75);
+    public static final Translation2d FRONT_LEFT_OFFSET = new Translation2d(WHEEL_BASE / 2, TRACK_WIDTH / 2);
+    public static final Translation2d REAR_LEFT_OFFSET = new Translation2d(-WHEEL_BASE / 2, TRACK_WIDTH / 2);
+    public static final Translation2d FRONT_RIGHT_OFFSET = new Translation2d(WHEEL_BASE / 2, -TRACK_WIDTH / 2);
+    public static final Translation2d REAR_RIGHT_OFFSET = new Translation2d(-WHEEL_BASE / 2, -TRACK_WIDTH / 2);
 
     // SPARK MAX CAN IDs
-    public static final int kFrontLeftDrivingCanId = 11;
-    public static final int kRearLeftDrivingCanId = 21;
-    public static final int kFrontRightDrivingCanId = 31;
-    public static final int kRearRightDrivingCanId = 41;
+    public static final int FRONT_LEFT_DRIVING_CAN_ID = 11;
+    public static final int REAR_LEFT_DRIVING_CAN_ID = 21;
+    public static final int FRONT_RIGHT_DRIVING_CAN_ID = 31;
+    public static final int REAR_RIGHT_DRIVING_CAN_ID = 41;
 
-    public static final int kFrontLeftTurningCanId = 12;
-    public static final int kRearLeftTurningCanId = 22;
-    public static final int kFrontRightTurningCanId = 32;
-    public static final int kRearRightTurningCanId = 42;
+    public static final int FRONT_LEFT_TURNING_CAN_ID = 12;
+    public static final int REAR_LEFT_TURNING_CAN_ID = 22;
+    public static final int FRONT_RIGHT_TURNING_CAN_ID = 32;
+    public static final int REAR_RIGHT_TURNING_CAN_ID = 42;
 
   }
 
@@ -162,20 +152,8 @@ public final class Constants {
     public static final double kDriveDeadband = 0.05;
   }
 
-  public static final class AutoConstants {
-    public static final double kMaxSpeedMetersPerSecond = 3.0;
-    public static final double kMaxAccelerationMetersPerSecondSquared = 3;
-    public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI;
-    public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.PI;
-
-    public static final double kPXController = 1;
-    public static final double kPYController = 1;
-    public static final double kPThetaController = 1;
-
-  }
-
   public static final class NeoMotorConstants {
-    public static final double kFreeSpeedRpm = 5676;
+    public static final double FREE_SPEED_RPM = 5676;
   }
 
   public static final class LEDConstants {
@@ -186,6 +164,10 @@ public final class Constants {
     public static final int[] blue2399 = { 0, 100, 255 };
     public static final int[] pink2399 = { 255, 50, 200 };
     public static final int[] isIntookedGreen = { 112, 243, 121 };
+  }
+
+  public static final class CodeConstants {
+    public static final double MAIN_LOOP_FREQUENCY = 50; // Hz
   }
 
   public static final class VisionConstants {

@@ -10,7 +10,8 @@ import com.revrobotics.SparkAbsoluteEncoder.Type;
 import com.revrobotics.SparkPIDController;
 
 import frc.robot.Constants;
-import frc.robot.Constants.SwerveModuleConstants;
+import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.IndexerConstants;
 import frc.utils.MotorUtil;
 
 public class SwerveModuleIO_Real implements SwerveModuleIO {
@@ -34,8 +35,10 @@ public class SwerveModuleIO_Real implements SwerveModuleIO {
 
       this.name = name;
 
-      drivingSparkMax = MotorUtil.createSparkMAX(drivingCANId, MotorType.kBrushless,
-            Constants.NEO_CURRENT_LIMIT, SwerveModuleConstants.drivingEncoderInverted, true, 0);
+      drivingSparkMax = new CANSparkMax(DriveConstants.GYRO_CAN_ID, MotorType.kBrushless);
+
+      MotorUtil.createSparkMAX(drivingCANId, MotorType.kBrushless,
+            Constants.NEO_CURRENT_LIMIT, DriveSubsystem.DRIVING_ENCODER_INVERTED, true, 0);
       turningSparkMax = MotorUtil.createSparkMAX(turningCANId, MotorType.kBrushless,
             Constants.NEO550_CURRENT_LIMIT, true, 0);
 
@@ -57,25 +60,25 @@ public class SwerveModuleIO_Real implements SwerveModuleIO {
 
       errors += check(
             drivingEncoder
-                  .setPositionConversionFactor(SwerveModuleConstants.kDrivingEncoderPositionFactor));
+                  .setPositionConversionFactor(DriveSubsystem.DRIVING_ENCODER_POSITION_FACTOR));
       errors += check(
             drivingEncoder.setVelocityConversionFactor(
-                  (SwerveModuleConstants.kDrivingEncoderVelocityFactor)));
+                  (DriveSubsystem.DRIVING_ENCODER_VELOCITY_FACTOR)));
 
       // Apply position and velocity conversion factors for the turning encoder. We
       // want these in radians and radians per second to use with WPILib's swerve
       // APIs.
       errors += check(
-            turningEncoder.setPositionConversionFactor(SwerveModuleConstants.kTurningEncoderPositionFactor));
+            turningEncoder.setPositionConversionFactor(DriveSubsystem.TURNING_ENCODER_POSITION_FACTOR));
       errors += check(
-            turningEncoder.setVelocityConversionFactor(SwerveModuleConstants.kTurningEncoderVelocityFactor));
+            turningEncoder.setVelocityConversionFactor(DriveSubsystem.TURNING_ENCODER_VELOCITY_FACTOR));
 
       // Invert the turning encoder, since the output shaft rotates in the opposite
       // direction of
       // the steering motor in the MAXSwerve Module.
 
-      errors += check(turningEncoder.setInverted(SwerveModuleConstants.turningEncoderInverted));
-      drivingSparkMax.setInverted(SwerveModuleConstants.drivingEncoderInverted);
+      errors += check(turningEncoder.setInverted(DriveSubsystem.TURNING_ENCODER_INVERTED));
+      drivingSparkMax.setInverted(DriveSubsystem.DRIVING_ENCODER_INVERTED);
 
       // Enable PID wrap around for the turning motor. This will allow the PID
       // controller to go through 0 to get to the setpoint i.e. going from 350 degrees
@@ -84,25 +87,25 @@ public class SwerveModuleIO_Real implements SwerveModuleIO {
 
       errors += check(turningPIDController.setPositionPIDWrappingEnabled(true));
       errors += check(turningPIDController
-            .setPositionPIDWrappingMinInput(SwerveModuleConstants.kTurningEncoderPositionPIDMinInput));
+            .setPositionPIDWrappingMinInput(DriveSubsystem.TURNING_ENCODER_POSITION_PID_MIN_INPUT));
       errors += check(turningPIDController
-            .setPositionPIDWrappingMaxInput(SwerveModuleConstants.kTurningEncoderPositionPIDMaxInput));
+            .setPositionPIDWrappingMaxInput(DriveSubsystem.TURNING_ENCODER_POSITION_PID_MAX_INPUT));
 
       // Set the PID gains for the driving motor
-      errors += check(drivingPIDController.setP(SwerveModuleConstants.kDrivingP));
-      errors += check(drivingPIDController.setI(SwerveModuleConstants.kDrivingI));
-      errors += check(drivingPIDController.setD(SwerveModuleConstants.kDrivingD));
-      errors += check(drivingPIDController.setFF(SwerveModuleConstants.kDrivingFF));
-      errors += check(drivingPIDController.setOutputRange(SwerveModuleConstants.kDrivingMinOutput,
-            SwerveModuleConstants.kDrivingMaxOutput));
+      errors += check(drivingPIDController.setP(DriveSubsystem.DRIVING_P));
+      errors += check(drivingPIDController.setI(DriveSubsystem.DRIVING_I));
+      errors += check(drivingPIDController.setD(DriveSubsystem.DRIVING_D));
+      errors += check(drivingPIDController.setFF(DriveSubsystem.DRIVING_FF));
+      errors += check(drivingPIDController.setOutputRange(DriveSubsystem.DRIVING_MIN_OUTPUT,
+            DriveSubsystem.DRIVING_MAX_OUTPUT));
 
       // Set the PID gains for the turning motor
-      errors += check(turningPIDController.setP(SwerveModuleConstants.kTurningP));
-      errors += check(turningPIDController.setI(SwerveModuleConstants.kTurningI));
-      errors += check(turningPIDController.setD(SwerveModuleConstants.kTurningD));
-      errors += check(turningPIDController.setFF(SwerveModuleConstants.kTurningFF));
-      errors += check(turningPIDController.setOutputRange(SwerveModuleConstants.kTurningMinOutput,
-            SwerveModuleConstants.kTurningMaxOutput));
+      errors += check(turningPIDController.setP(DriveSubsystem.TURNING_P));
+      errors += check(turningPIDController.setI(DriveSubsystem.TURNING_1));
+      errors += check(turningPIDController.setD(DriveSubsystem.TURNING_D));
+      errors += check(turningPIDController.setFF(DriveSubsystem.TURNING_FF));
+      errors += check(turningPIDController.setOutputRange(DriveSubsystem.TURNING_MIN_OUTPUT,
+            DriveSubsystem.TURNING_MAX_OUTPUT));
 
       this.chassisAngularOffset = chassisAngularOffset;
 

@@ -32,9 +32,6 @@ import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.Constants.AutoConstants;
-import frc.robot.Constants.DriveConstants;
-import frc.robot.Constants.NeoMotorConstants;
 import frc.robot.Robot;
 import frc.robot.subsystems.gyro.GyroIO;
 
@@ -59,68 +56,69 @@ public class DriveSubsystem extends SubsystemBase {
   private SwerveModule rearLeft;
   private SwerveModule rearRight;
 
-  private double desiredAngle = 0;
+  private double DESIRED_ANGLE = 0;
 
   private GyroIO m_gyro;
 
   // Angular offsets of the modules relative to the chassis in radians
-  public static final double frontLeftChassisAngularOffset = -Math.PI / 2;
-  public static final double frontRightChassisAngularOffset = 0;
-  public static final double rearLeftChassisAngularOffset = Math.PI;
-  public static final double rearRightChassisAngularOffset = Math.PI / 2;
+  public static final double FRONT_LEFT_CHASSIS_ANGULAR_OFFSET = -Math.PI / 2;
+  public static final double FRONT_RIGHT_CHASSIS_ANGULAR_OFFSET = 0;
+  public static final double REAR_LEFT_CHASSIS_ANGULAR_OFFSET = Math.PI;
+  public static final double REAR_RIGHT_CHASSIS_ANGULAR_OFFSET = Math.PI / 2;
 
   // THIS IS 13 ON COMP BOT
-  public static final int drivingMotorPinionTeeth = 14;
+  public static final int DRIVING_MOTOR_PINION_TEETH = 14;
 
   // Invert the turning encoder, since the output shaft rotates in the opposite
   // direction of the steering motor in the MAXSwerve Module.
-  public static final boolean turningEncoderInverted = true;
-  public static final boolean drivingEncoderInverted = false;
+  public static final boolean TURNING_ENCODER_INVERTED = true;
+  public static final boolean DRIVING_ENCODER_INVERTED = false;
 
   // Calculations required for driving motor conversion factors and feed forward
-  public static final double drivingMotorFreeSpeedRps = NeoMotorConstants.kFreeSpeedRpm / 60;
-  public static final double wheelDiameterMeters = (3.0 * 0.0254);
-  public static final double wheelCircumferenceMeters = wheelDiameterMeters * Math.PI;
+  public static final double DRIVING_MOTOR_FREE_SPEED_RPS = Constants.NeoMotorConstants.FREE_SPEED_RPM / 60;
+  public static final double WHEEL_DIAMETER_METERS = (3.0 * 0.0254);
+  public static final double WHEEL_CIRCUMFERENCE_METERS = WHEEL_DIAMETER_METERS * Math.PI;
   // 45 teeth on the wheel's bevel gear, 22 teeth on the first-stage spur gear, 15
   // teeth on the bevel pinion
   // This is also the gear ratio (14T)
-  public static final double drivingMotorReduction = (45.0 * 22) / (drivingMotorPinionTeeth * 15);
-  public static final double turningMotorReduction = 9424d / 203;
-  public static final double driveWheelFreeSpeedRps = (drivingMotorFreeSpeedRps * wheelCircumferenceMeters)
-      / drivingMotorReduction;
+  public static final double DRIVING_MOTOR_REDUCTION = (45.0 * 22) / (DRIVING_MOTOR_PINION_TEETH * 15);
+  public static final double TURNING_MOTOR_REDUCTION = 9424d / 203;
+  public static final double DRIVE_WHEEL_FREE_SPEED_RPS = (DRIVING_MOTOR_FREE_SPEED_RPS * WHEEL_CIRCUMFERENCE_METERS)
+      / DRIVING_MOTOR_REDUCTION;
 
-  public static final double drivingEncoderPositionFactor = (wheelDiameterMeters * Math.PI)
-      / drivingMotorReduction / (260.0 / 254); // meters
-  public static final double drivingEncoderVelocityFactor = drivingEncoderPositionFactor / 60; // meters per second
+  public static final double DRIVING_ENCODER_POSITION_FACTOR = (WHEEL_DIAMETER_METERS * Math.PI)
+      / DRIVING_MOTOR_REDUCTION / (260.0 / 254); // meters
+  public static final double DRIVING_ENCODER_VELOCITY_FACTOR = DRIVING_ENCODER_POSITION_FACTOR / 60; // meters per
+                                                                                                     // second
 
-  public static final double turningEncoderPositionFactor = (2 * Math.PI); // radians
-  public static final double turningEncoderVelocityFactor = (2 * Math.PI) / 60.0; // radians per second
+  public static final double TURNING_ENCODER_POSITION_FACTOR = (2 * Math.PI); // radians
+  public static final double TURNING_ENCODER_VELOCITY_FACTOR = (2 * Math.PI) / 60.0; // radians per second
 
-  public static final double turningEncoderPositionPIDMinInput = 0; // radians
-  public static final double turningEncoderPositionPIDMaxInput = turningEncoderPositionFactor; // radians
+  public static final double TURNING_ENCODER_POSITION_PID_MIN_INPUT = 0; // radians
+  public static final double TURNING_ENCODER_POSITION_PID_MAX_INPUT = TURNING_ENCODER_POSITION_FACTOR; // radians
 
-  public static final double drivingP = 0.2;
-  public static final double drivingI = 0;
-  public static final double drivingD = 0;
-  public static final double drivingFF = 1 / driveWheelFreeSpeedRps;
-  public static final double drivingMinOutput = -1;
-  public static final double drivingMaxOutput = 1;
+  public static final double DRIVING_P = 0.2;
+  public static final double DRIVING_I = 0;
+  public static final double DRIVING_D = 0;
+  public static final double DRIVING_FF = 1 / DRIVE_WHEEL_FREE_SPEED_RPS;
+  public static final double DRIVING_MIN_OUTPUT = -1;
+  public static final double DRIVING_MAX_OUTPUT = 1;
 
-  public static final double turningP = 1.0;
-  public static final double turningI = 0;
-  public static final double turningD = 0.001;
-  public static final double turningFF = 0;
-  public static final double turningMinOutput = -1;
-  public static final double turningMaxOutput = 1;
+  public static final double TURNING_P = 1.0;
+  public static final double TURNING_1 = 0;
+  public static final double TURNING_D = 0.001;
+  public static final double TURNING_FF = 0;
+  public static final double TURNING_MIN_OUTPUT = -1;
+  public static final double TURNING_MAX_OUTPUT = 1;
 
   public static final CANSparkMax.IdleMode drivingMotorIdleMode = CANSparkMax.IdleMode.kBrake;
   public static final CANSparkMax.IdleMode turningMotorIdleMode = CANSparkMax.IdleMode.kBrake;
 
-  public static final int drivingMotorCurrentLimit = 50; // amps
-  public static final int turningMotorCurrentLimit = 20; // amps
+  public static final int DRIVING_MOTOR_CURRENT_LIMIT = 50; // amps
+  public static final int TURNING_MOTOR_CURRENT_LIMIT = 20; // amps
 
   // Driving Parameters
-  public static final double maxSpeedMetersPerSecond = 4.8;
+  public static final double MAX_SPEED_METERS_PER_SECOND_TELEOP = 4.8;
   public static final double MAX_ANGULAR_SPEED = 2 * Math.PI; // radians per second
 
   // Chassis configuration
@@ -132,6 +130,22 @@ public class DriveSubsystem extends SubsystemBase {
   public static final Translation2d REAR_LEFT_OFFSET = new Translation2d(-WHEEL_BASE / 2, TRACK_WIDTH / 2);
   public static final Translation2d FRONT_RIGHT_OFFSET = new Translation2d(WHEEL_BASE / 2, -TRACK_WIDTH / 2);
   public static final Translation2d REAR_RIGHT_OFFSET = new Translation2d(-WHEEL_BASE / 2, -TRACK_WIDTH / 2);
+
+  public static final SwerveDriveKinematics DRIVE_KINEMATICS = new SwerveDriveKinematics(
+      FRONT_LEFT_OFFSET,
+      FRONT_RIGHT_OFFSET,
+      REAR_LEFT_OFFSET,
+      REAR_RIGHT_OFFSET);
+
+  // auto constants
+  public static final double MAX_SPEED_METERS_PER_SECOND_AUTO = 3.0;
+  public static final double MAX_ACCELERATION_METERS_PER_SECOND_SQUARED = 3;
+  public static final double MAX_ANGULAR_SPEED_RADIANS_PER_SECOND = Math.PI;
+  public static final double MAX_ANGULAR_SPEED_RADIANS_PER_SECOND_SQUARED = Math.PI;
+
+  public static final double P_X_CONTROLLER = 1;
+  public static final double P_Y_CONTROLLER = 1;
+  public static final double P_THETA_CONTROLLER = 1;
 
   private final Field2d field2d = new Field2d();
   private FieldObject2d frontLeftField2dModule = field2d.getObject("front left module");
@@ -161,7 +175,7 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putData(field2d);
 
     poseEstimator = new SwerveDrivePoseEstimator(
-        DriveConstants.kDriveKinematics,
+        DRIVE_KINEMATICS,
         Rotation2d.fromDegrees(gyro.getYaw()),
         new SwerveModulePosition[] {
             frontLeft.getPosition(),
@@ -179,7 +193,7 @@ public class DriveSubsystem extends SubsystemBase {
         new HolonomicPathFollowerConfig(
             new PIDConstants(5, 0, 0), // Translation
             new PIDConstants(5, 0, 0), // Rotation
-            AutoConstants.kMaxSpeedMetersPerSecond,
+            MAX_SPEED_METERS_PER_SECOND_AUTO,
             0.385, /* Distance from furthest module to robot center in meters */
             new ReplanningConfig()),
 
@@ -220,19 +234,19 @@ public class DriveSubsystem extends SubsystemBase {
     field2d.setRobotPose(pose);
 
     frontLeftField2dModule.setPose(pose.transformBy(new Transform2d(
-        Constants.DriveConstants.FRONT_LEFT_OFFSET,
+        FRONT_LEFT_OFFSET,
         new Rotation2d(frontLeft.getTurnEncoderPosition()))));
 
     rearLeftField2dModule.setPose(pose.transformBy(new Transform2d(
-        Constants.DriveConstants.REAR_LEFT_OFFSET,
+        REAR_LEFT_OFFSET,
         new Rotation2d(rearLeft.getTurnEncoderPosition()))));
 
     frontRightField2dModule.setPose(pose.transformBy(new Transform2d(
-        Constants.DriveConstants.FRONT_RIGHT_OFFSET,
+        FRONT_RIGHT_OFFSET,
         new Rotation2d(frontRight.getTurnEncoderPosition()))));
 
     rearRightField2dModule.setPose(pose.transformBy(new Transform2d(
-        Constants.DriveConstants.REAR_RIGHT_OFFSET,
+        REAR_RIGHT_OFFSET,
         new Rotation2d(rearRight.getTurnEncoderPosition()))));
 
     SwerveModuleState[] swerveModuleStates = new SwerveModuleState[] {
@@ -244,8 +258,9 @@ public class DriveSubsystem extends SubsystemBase {
     swerveModuleStatePublisher.set(swerveModuleStates);
 
     if (Robot.isSimulation()) {
-      double angleChange = Constants.DriveConstants.kDriveKinematics
-          .toChassisSpeeds(swerveModuleStates).omegaRadiansPerSecond * (1 / Constants.CodeConstants.kMainLoopFrequency);
+      double angleChange = DRIVE_KINEMATICS
+          .toChassisSpeeds(swerveModuleStates).omegaRadiansPerSecond
+          * (1 / Constants.CodeConstants.MAIN_LOOP_FREQUENCY);
       lastAngle = lastAngle.plus(Rotation2d.fromRadians(angleChange));
       m_gyro.setYaw(lastAngle.getRadians());
     }
@@ -254,12 +269,6 @@ public class DriveSubsystem extends SubsystemBase {
   /** Returns the currently-estimated pose of the robot. */
   public Pose2d getPose() {
     return poseEstimator.getEstimatedPosition();
-  }
-
-  /** Returns the current odometry rotation. */
-  public Rotation2d getRotation() {
-    return getPose().getRotation();
-
   }
 
   /** Resets the odometry to the specified pose. */
@@ -295,7 +304,7 @@ public class DriveSubsystem extends SubsystemBase {
 
     // //Account for edge case when gyro resets
     if (currentAngle == 0) {
-      desiredAngle = 0;
+      DESIRED_ANGLE = 0;
     }
 
     // Debouncer ensures that there is no back-correction immediately after turning
@@ -303,16 +312,16 @@ public class DriveSubsystem extends SubsystemBase {
     // and correction causes robot to spasm
     if (rotationDebouncer.calculate(rotRate == 0)
         && (Math.abs(polarXSpeed) >= 0.075 || Math.abs(polarYSpeed) != 0.075)) {
-      newRotRate = newRotRate + drivePIDController.calculate(currentAngle, desiredAngle);
+      newRotRate = newRotRate + drivePIDController.calculate(currentAngle, DESIRED_ANGLE);
     } else {
       newRotRate = rotRate;
-      desiredAngle = currentAngle;
+      DESIRED_ANGLE = currentAngle;
     }
 
     // Convert the commanded speeds into the correct units for the drivetrain
-    double xSpeedDelivered = polarXSpeed * DriveConstants.kMaxSpeedMetersPerSecond;
-    double ySpeedDelivered = polarYSpeed * DriveConstants.kMaxSpeedMetersPerSecond;
-    double rotRateDelivered = newRotRate * DriveConstants.kMaxAngularSpeed;
+    double xSpeedDelivered = polarXSpeed * MAX_SPEED_METERS_PER_SECOND_TELEOP;
+    double ySpeedDelivered = polarYSpeed * MAX_SPEED_METERS_PER_SECOND_TELEOP;
+    double rotRateDelivered = newRotRate * MAX_ANGULAR_SPEED;
 
     if (fieldRelative) {
       relativeRobotSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotRateDelivered,
@@ -325,9 +334,9 @@ public class DriveSubsystem extends SubsystemBase {
         Math.sqrt(
             Math.pow(relativeRobotSpeeds.vxMetersPerSecond, 2) + Math.pow(relativeRobotSpeeds.vyMetersPerSecond, 2)));
 
-    var swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(relativeRobotSpeeds);
+    var swerveModuleStates = DRIVE_KINEMATICS.toSwerveModuleStates(relativeRobotSpeeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(
-        swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
+        swerveModuleStates, MAX_SPEED_METERS_PER_SECOND_TELEOP);
     frontLeft.setDesiredState(swerveModuleStates[0]);
     frontRight.setDesiredState(swerveModuleStates[1]);
     rearLeft.setDesiredState(swerveModuleStates[2]);
@@ -348,15 +357,15 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public ChassisSpeeds getRobotRelativeSpeeds() {
-    return DriveConstants.kDriveKinematics.toChassisSpeeds(frontLeft.getState(), frontRight.getState(),
+    return DRIVE_KINEMATICS.toChassisSpeeds(frontLeft.getState(), frontRight.getState(),
         rearLeft.getState(), rearRight.getState());
   }
 
   public void setRobotRelativeSpeeds(ChassisSpeeds speeds) {
     speeds = ChassisSpeeds.discretize(speeds, .02);
-    var swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(speeds);
+    var swerveModuleStates = DRIVE_KINEMATICS.toSwerveModuleStates(speeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(
-        swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
+        swerveModuleStates, MAX_SPEED_METERS_PER_SECOND_TELEOP);
     frontLeft.setDesiredState(swerveModuleStates[0]);
     frontRight.setDesiredState(swerveModuleStates[1]);
     rearLeft.setDesiredState(swerveModuleStates[2]);

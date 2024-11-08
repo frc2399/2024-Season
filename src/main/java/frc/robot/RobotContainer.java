@@ -146,20 +146,20 @@ public class RobotContainer {
 
                 } else {
 
-                        m_frontLeftIO = new SwerveModuleIO_Real(DriveConstants.kFrontLeftDrivingCanId,
-                                        DriveConstants.kFrontLeftTurningCanId,
+                        m_frontLeftIO = new SwerveModuleIO_Real(DriveConstants.FRONT_LEFT_DRIVING_CAN_ID,
+                                        DriveConstants.FRONT_LEFT_TURNING_CAN_ID,
                                         DriveConstants.kFrontLeftChassisAngularOffset,
                                         "front left");
-                        m_frontRightIO = new SwerveModuleIO_Real(DriveConstants.kFrontRightDrivingCanId,
-                                        DriveConstants.kFrontRightTurningCanId,
+                        m_frontRightIO = new SwerveModuleIO_Real(DriveConstants.FRONT_RIGHT_DRIVING_CAN_ID,
+                                        DriveConstants.FRONT_RIGHT_TURNING_CAN_ID,
                                         DriveConstants.kFrontRightChassisAngularOffset,
                                         "front right");
-                        m_rearLeftIO = new SwerveModuleIO_Real(DriveConstants.kRearLeftDrivingCanId,
-                                        DriveConstants.kRearLeftTurningCanId,
+                        m_rearLeftIO = new SwerveModuleIO_Real(DriveConstants.REAR_LEFT_DRIVING_CAN_ID,
+                                        DriveConstants.REAR_LEFT_TURNING_CAN_ID,
                                         DriveConstants.kRearLeftChassisAngularOffset,
                                         "rear left");
-                        m_rearRightIO = new SwerveModuleIO_Real(DriveConstants.kRearRightDrivingCanId,
-                                        DriveConstants.kRearRightTurningCanId,
+                        m_rearRightIO = new SwerveModuleIO_Real(DriveConstants.REAR_RIGHT_DRIVING_CAN_ID,
+                                        DriveConstants.REAR_RIGHT_TURNING_CAN_ID,
                                         DriveConstants.kRearRightChassisAngularOffset,
                                         "rear right");
 

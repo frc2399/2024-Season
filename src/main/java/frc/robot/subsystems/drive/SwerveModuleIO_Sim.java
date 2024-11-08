@@ -10,9 +10,9 @@ import frc.utils.SimEncoder;
 public class SwerveModuleIO_Sim implements SwerveModuleIO {
 
    // Simualaion Motors
-   private DCMotorSim driveMotor = new DCMotorSim(DCMotor.getNEO(1), Constants.SwerveModuleConstants.kDrivingMotorReduction,
+   private DCMotorSim driveMotor = new DCMotorSim(DCMotor.getNEO(1), DriveSubsystem.DRIVING_MOTOR_REDUCTION,
          0.025);
-   private DCMotorSim turnMotor = new DCMotorSim(DCMotor.getNeo550(1), Constants.SwerveModuleConstants.kTurningMotorReduction,
+   private DCMotorSim turnMotor = new DCMotorSim(DCMotor.getNeo550(1), DriveSubsystem.TURNING_MOTOR_REDUCTION,
          0.025);
 
    private SimEncoder m_turningEncoder;
@@ -35,15 +35,15 @@ public class SwerveModuleIO_Sim implements SwerveModuleIO {
    }
 
    public void updateInputs(SwerveModuleIOInputs inputs) {
-      driveMotor.update(1.0/Constants.CodeConstants.kMainLoopFrequency);
-      turnMotor.update(1.0/Constants.CodeConstants.kMainLoopFrequency);
-      m_drivingEncoder.setDistance(driveMotor.getAngularPositionRotations() );
-      m_drivingEncoder.setSpeed(driveMotor.getAngularVelocityRadPerSec() );
-      m_turningEncoder.setDistance(turnMotor.getAngularPositionRad() );
+      driveMotor.update(1.0 / Constants.CodeConstants.MAIN_LOOP_FREQUENCY);
+      turnMotor.update(1.0 / Constants.CodeConstants.MAIN_LOOP_FREQUENCY);
+      m_drivingEncoder.setDistance(driveMotor.getAngularPositionRotations());
+      m_drivingEncoder.setSpeed(driveMotor.getAngularVelocityRadPerSec());
+      m_turningEncoder.setDistance(turnMotor.getAngularPositionRad());
    };
 
    public void setDriveEncoderPosition(double position) {
-      m_drivingEncoder.setDistance(position);      
+      m_drivingEncoder.setDistance(position);
    };
 
    public double getDriveEncoderPosition() {
@@ -62,7 +62,7 @@ public class SwerveModuleIO_Sim implements SwerveModuleIO {
       driveMotorOutput = m_drivingPIDController.calculate(getDriveEncoderSpeedMPS(), speed);
 
       // Apply PID output
-      driveMotor.setInputVoltage(MathUtil.clamp(driveMotorOutput,-12, 12));
+      driveMotor.setInputVoltage(MathUtil.clamp(driveMotorOutput, -12, 12));
       driveMotor.getAngularVelocityRPM();
 
    };
@@ -90,11 +90,11 @@ public class SwerveModuleIO_Sim implements SwerveModuleIO {
       return turnMotorOutput;
    }
 
-   public String getName(){
+   public String getName() {
       return name;
    }
 
-   public double getChassisAngularOffset(){
+   public double getChassisAngularOffset() {
       return 0.0;
    }
 }
