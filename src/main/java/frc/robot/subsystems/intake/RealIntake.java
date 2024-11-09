@@ -23,27 +23,28 @@ public class RealIntake implements IntakeIO {
     private double FEEDFORWARD = 0.01;
     private double PVALUE = 0.01;
 
-    public RealIntake()
-    {
-        leftCenteringIntakeMotorController = MotorUtil.createSparkMAX(IntakeConstants.LEFT_CENTERING_MOTOR_ID, MotorType.kBrushless, 
-            Constants.NEO550_CURRENT_LIMIT, true, true, slewRate);
-        
-        rightCenteringIntakeMotorController = MotorUtil.createSparkMAX(IntakeConstants.RIGHT_CENTERING_MOTOR_ID, MotorType.kBrushless, 
-            Constants.NEO550_CURRENT_LIMIT, false, true, slewRate);
+    public RealIntake() {
+        leftCenteringIntakeMotorController = MotorUtil.createSparkMAX(IntakeConstants.LEFT_CENTERING_MOTOR_ID,
+                MotorType.kBrushless,
+                Constants.NEO550_CURRENT_LIMIT, true, true, slewRate);
+
+        rightCenteringIntakeMotorController = MotorUtil.createSparkMAX(IntakeConstants.RIGHT_CENTERING_MOTOR_ID,
+                MotorType.kBrushless,
+                Constants.NEO550_CURRENT_LIMIT, false, true, slewRate);
 
         intakeMotorController = MotorUtil.createSparkMAX(IntakeConstants.INTAKE_CENTERING_ID, MotorType.kBrushless,
-        Constants.NEO550_CURRENT_LIMIT, false, true, slewRate);
+                Constants.NEO550_CURRENT_LIMIT, false, true, slewRate);
 
         // initialize motor encoder
         leftCenteringIntakeEncoder = leftCenteringIntakeMotorController.getEncoder();
         rightCenteringIntakeEncoder = rightCenteringIntakeMotorController.getEncoder();
         intakeEncoder = intakeMotorController.getEncoder();
-        
-        intakeEncoder.setVelocityConversionFactor(1/60.0); //convert to rps
+
+        intakeEncoder.setVelocityConversionFactor(1 / 60.0); // convert to rps
 
         intakePIDController = intakeMotorController.getPIDController();
         intakePIDController.setFeedbackDevice(intakeEncoder);
-        
+
         intakePIDController.setFF(FEEDFORWARD);
         intakePIDController.setP(PVALUE);
 
@@ -54,12 +55,6 @@ public class RealIntake implements IntakeIO {
         leftCenteringIntakeMotorController.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus6, 32767);
         leftCenteringIntakeMotorController.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus2, 32767);
 
-        
-
-
-
-
-
     }
 
     @Override
@@ -69,13 +64,11 @@ public class RealIntake implements IntakeIO {
         intakeMotorController.set(intakeSpeed);
     }
 
-    public double getLeftCurrent()
-    {
+    public double getLeftCurrent() {
         return rightCenteringIntakeMotorController.getOutputCurrent();
     }
 
-    public double getRightCurrent()
-    {
+    public double getRightCurrent() {
         return leftCenteringIntakeMotorController.getOutputCurrent();
     }
 
@@ -105,12 +98,12 @@ public class RealIntake implements IntakeIO {
 
     @Override
     public void setLeftCurrentLimit(int current) {
-        leftCenteringIntakeMotorController.setSmartCurrentLimit(current);        
+        leftCenteringIntakeMotorController.setSmartCurrentLimit(current);
     }
 
     @Override
     public void setRightCurrentLimit(int current) {
-        rightCenteringIntakeMotorController.setSmartCurrentLimit(current);        
+        rightCenteringIntakeMotorController.setSmartCurrentLimit(current);
     }
 
     @Override

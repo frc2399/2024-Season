@@ -7,6 +7,7 @@ package frc.robot;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.math.MathUtil;
@@ -244,21 +245,35 @@ public class RobotContainer {
                 // The left stick controls translation of the robot.
                 // Turning is controlled by the X axis of the right stick.
                 robotDrive.setDefaultCommand(
-                                // The left stick controls translation of the robot.
-                                // Turning is controlled by the X axis of the right stick.
-                                new RunCommand(
-                                                () -> robotDrive.drive(
-                                                                -(MathUtil.applyDeadband(
-                                                                                m_driverController.getLeftY(),
-                                                                                OIConstants.kDriveDeadband)),
-                                                                -(MathUtil.applyDeadband(
-                                                                                m_driverController.getLeftX(),
-                                                                                OIConstants.kDriveDeadband)),
-                                                                -(MathUtil.applyDeadband(
-                                                                                m_driverController.getRightX(),
-                                                                                OIConstants.kDriveDeadband)),
-                                                                fieldOrientedDrive, false),
-                                                robotDrive).withName("drive default"));
+                                Commands.either(
+                                                // The left stick controls translation of the robot.
+                                                // Turning is controlled by the X axis of the right stick.
+                                                new RunCommand(
+                                                                () -> robotDrive.drive(
+                                                                                -(MathUtil.applyDeadband(
+                                                                                                m_driverController
+                                                                                                                .getLeftY(),
+                                                                                                OIConstants.kDriveDeadband)),
+                                                                                -(MathUtil.applyDeadband(
+                                                                                                m_driverController
+                                                                                                                .getLeftX(),
+                                                                                                OIConstants.kDriveDeadband)),
+                                                                                -(MathUtil.applyDeadband(
+                                                                                                m_driverController
+                                                                                                                .getRightX(),
+                                                                                                OIConstants.kDriveDeadband)),
+                                                                                fieldOrientedDrive, false),
+                                                                robotDrive).withName("drive default"),
+
+                                                new RunCommand(
+                                                                () -> robotDrive.drive(
+                                                                                0, 0, 0,
+
+                                                                                fieldOrientedDrive, false),
+                                                                robotDrive).withName("drive default"),
+                                                OutreachToggle()))
+
+                ;
         }
 
         private void configureButtonBindingsDriver() {
@@ -312,6 +327,13 @@ public class RobotContainer {
 
         }
 
+        private BooleanSupplier OutreachToggle() {
+                return () ->
+
+                m_operatorController.x().getAsBoolean();
+
+        }
+
         private void configureButtonBindingsOperatorClimber() {
                 // operater left trigger: climber mode: left climber up
                 m_operatorController.leftTrigger().and(() -> isInClimberMode).whileTrue(new RunCommand(
@@ -338,7 +360,8 @@ public class RobotContainer {
                                 .whileTrue(new RunCommand(() -> m_climber.setMotors(-0.9), m_climber));
 
                 // operator x: switch operator controller modes
-                m_operatorController.x().onTrue(new InstantCommand(() -> isInClimberMode = !isInClimberMode));
+                // m_operatorController.x().onTrue(new InstantCommand(() -> isInClimberMode =
+                // !isInClimberMode));
 
         }
 

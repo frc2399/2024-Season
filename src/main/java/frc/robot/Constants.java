@@ -32,7 +32,7 @@ public final class Constants {
   public static final class DriveConstants {
     public static final int kGyroCanId = 3;
     // Driving Parameters
-    public static final double MAX_SPEED_METERS_PER_SECOND = 4.8;
+    public static final double MAX_SPEED_METERS_PER_SECOND = 0.5;
     public static final double MAX_ANGULAR_SPEED = 2 * Math.PI; // radians per second
 
     // Chassis configuration
