@@ -54,8 +54,7 @@ public class DriveSubsystem extends SubsystemBase {
   private double velocityYMPS;
   private double velocityMPS;
   private Pose2d visionEstimatedPose;
-  private Pose3d visionEstimatedPose3d; // TODO: delete after testing :)
-  public Pose2d robotPose;
+  private Pose2d robotPose;
   private Pose2d speakerPose;
 
   // apriltags
@@ -195,8 +194,7 @@ public class DriveSubsystem extends SubsystemBase {
       // makes sure that there is a new pose and that there are targets before getting
       // a robot pose
       if (possiblePose.isPresent()) {
-        visionEstimatedPose3d = possiblePose.get().estimatedPose;
-        visionEstimatedPose = visionEstimatedPose3d.toPose2d();
+        visionEstimatedPose = possiblePose.get().estimatedPose.toPose2d();
         double distanceToTag = Math.hypot(visionEstimatedPose.getX(), visionEstimatedPose.getY());
         poseEstimator.addVisionMeasurement(visionEstimatedPose, Timer.getFPGATimestamp(),
             VecBuilder.fill(distanceToTag / 2, distanceToTag / 2, 100));
@@ -426,5 +424,9 @@ public class DriveSubsystem extends SubsystemBase {
       desiredAngle = currentAngle;
     }
     return newRotRate;
+  }
+
+  public Pose2d getRobotPose() {
+    return robotPose;
   }
 }

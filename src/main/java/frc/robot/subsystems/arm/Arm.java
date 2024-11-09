@@ -4,10 +4,13 @@
 
 package frc.robot.subsystems.arm;
 
+import org.photonvision.PhotonUtils;
+
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDSubsystem;
 import frc.robot.Constants;
@@ -30,6 +33,19 @@ public class Arm extends ProfiledPIDSubsystem {
   private static double feedForward = 1 / max_vel;
   private static double kpPos = 3.0;
   private static double kd = 0.01;
+  public static final double SPEAKER_SUBWOOFER_ANGLE = Units.degreesToRadians(14); // this constant needs to be here
+  // vision constants for arm
+  // 5.33E-03*x + 0.206 -
+  // https://docs.google.com/spreadsheets/d/1TCEiHto6ypUku9VXPN79PGwONyrlhI2SbMsfn337yTw/edit#gid=0
+  // inverse tan of function above to get angle
+  // all in inches except for eightyModelRange
+  public static final double VISION_ARM_ALIGNMENT_STAY_SUBWOOF_POSITION_BOUNDARY_INCHES = (46.5);
+  public static final double VISION_ARM_ALIGNMENT_EIGHTY_PERCENT_SHOOTER_SPEED_MODEL_SLOPE = 0.00346;
+  public static final double VISION_ARM_ALIGNMENT_EIGHTY_PERCENT_SHOOTER_SPEED_MODEL_Y_INTERCEPT = 0.298;
+  public static final double VISION_ARM_ALIGNMENT_EIGHTY_PERCENT_SHOOTER_SPEED_MODEL_RANGE = 144;
+  public static final double VISION_ARM_ALIGNMENT_HUNDRED_PERCENT_SHOOTER_SPEED_MODEL_SLOPE = 0.00346;
+  public static final double VISION_ARM_ALIGNMENT_HUNDRED_PERCENT_SHOOTER_SPEED_MODEL_Y_INTERCEPT = 0.298;
+  public static final double VISION_ARM_ALIGNMENT_ANGLE_TOLERANCE = 0.005;
 
   public Arm(ArmIO io) {
     super(new ProfiledPIDController(kpPos, 0, kd, constraints));
@@ -100,10 +116,6 @@ public class Arm extends ProfiledPIDSubsystem {
     armIO.setEncoderPosition(angle);
   }
 
-  public double getDesiredArmAngle(Pose2d robotPose, Pose2d speakerPose) {
-    return armIO.getDesiredArmAngle(robotPose, speakerPose);
-  }
-
   // TODO there's a duplicate of this in RealArm. Also, do we want this in
   // Robotçontainer instead?
   public double getSpeedFromArmHeight() {
@@ -127,4 +139,30 @@ public class Arm extends ProfiledPIDSubsystem {
   // https://docs.google.com/spreadsheets/d/1TCEiHto6ypUku9VXPN79PGwONyrlhI2SbMsfn337yTw/edit#gid=0
   // inverse tan of function above to get angle
 
+  public double getDesiredArmAnglePoseEstimation(Pose2d robotPose, Pose2d speakerPose) {
+    double distToSpeaker;
+    double desiredArmAngleRadians;
+    double curArmAngleRadians = getAbsoluteEncoderPosition();
+    distToSpeaker = Units.metersToInches(PhotonUtils.getDistanceToPose(robotPose, speakerPose));
+    if (distToSpeaker <= VISION_ARM_ALIGNMENT_STAY_SUBWOOF_POSITION_BOUNDARY_INCHES) {
+      desiredArmAngleRadians = SPEAKER_SUBWOOFER_ANGLE;
+      SmartDashboard.putString("/visionArm/branch", "stay down :)");
+
+    } else if (distToSpeaker <= VISION_ARM_ALIGNMENT_EIGHTY_PERCENT_SHOOTER_SPEED_MODEL_RANGE) {
+      desiredArmAngleRadians = VISION_ARM_ALIGNMENT_EIGHTY_PERCENT_SHOOTER_SPEED_MODEL_SLOPE
+          * (distToSpeaker)
+          + VISION_ARM_ALIGNMENT_EIGHTY_PERCENT_SHOOTER_SPEED_MODEL_Y_INTERCEPT;
+      SmartDashboard.putString("/visionArm/branch", "80 model!");
+
+    } else {
+      desiredArmAngleRadians = VISION_ARM_ALIGNMENT_HUNDRED_PERCENT_SHOOTER_SPEED_MODEL_SLOPE
+          * (distToSpeaker)
+          + VISION_ARM_ALIGNMENT_HUNDRED_PERCENT_SHOOTER_SPEED_MODEL_Y_INTERCEPT;
+      SmartDashboard.putString("/visionArm/branch", "100 model!");
+    }
+    if (Math.abs(desiredArmAngleRadians - curArmAngleRadians) < VISION_ARM_ALIGNMENT_ANGLE_TOLERANCE) {
+      desiredArmAngleRadians = curArmAngleRadians;
+    }
+    return desiredArmAngleRadians;
+  }
 }

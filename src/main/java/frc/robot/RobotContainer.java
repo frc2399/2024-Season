@@ -343,9 +343,9 @@ public class RobotContainer {
         }
 
         private void configureButtonBindingsOperatorNotClimber() {
-
-                // m_operatorController.leftTrigger().and(() -> !isInClimberMode).whileTrue(
-                // makeSetPositionCommandVision(m_arm));
+                // operator left trigger: vision alignment!
+                m_operatorController.leftTrigger().and(() -> !isInClimberMode).whileTrue(
+                                makeSetPositionCommandVision(m_arm));
 
                 m_operatorController.rightTrigger().and(() -> !isInClimberMode).whileTrue(
                                 new ParallelCommandGroup(
@@ -389,12 +389,12 @@ public class RobotContainer {
         }
 
         private Command makeSetPositionCommandVision(Arm arm) {
-                DoubleSupplier target = () -> (arm.getDesiredArmAngle(robotDrive.robotPose,
+                DoubleSupplier target = () -> (arm.getDesiredArmAnglePoseEstimation(robotDrive.getRobotPose(),
                                 robotDrive.getSpeakerPose()));
-                return new SequentialCommandGroup(
-                                new ConditionalCommand(new InstantCommand(() -> {
-                                }), new InstantCommand(() -> arm.enable(), arm), () -> arm.isEnabled()),
-                                new RunCommand(() -> arm.setGoal(target.getAsDouble()), arm));
+                return Commands.sequence(
+                                Commands.either(Commands.none(), Commands.runOnce(() -> arm.enable(), arm),
+                                                () -> arm.isEnabled()),
+                                Commands.run(() -> arm.setGoal(target.getAsDouble()), arm));
         }
 
         public static Command makeSetPositionCommandAuton(Arm arm,
