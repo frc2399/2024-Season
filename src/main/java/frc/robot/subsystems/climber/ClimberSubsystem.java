@@ -23,14 +23,4 @@ public class ClimberSubsystem extends SubsystemBase {
 
     }
 
-    public boolean isLeftSideStalling() {
-        return leftDebouncer
-                .calculate(Math.abs(climberIO.getLeftCurrent()) > Constants.ClimberConstants.CURRENT_THRESHOLD);
-    }
-
-    public boolean isRightSideStalling() {
-        return rightDebouncer
-                .calculate(Math.abs(climberIO.getRightCurrent()) > Constants.ClimberConstants.CURRENT_THRESHOLD);
-    }
-
 }
