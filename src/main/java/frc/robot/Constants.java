@@ -161,7 +161,7 @@ public final class Constants {
     // arm angles for intaking and shooting in different positions, in radians
     // intake angle same as initial offset
     public static final double INTAKE_ANGLE = Units.degreesToRadians(14);
-    public static final double SPEAKER_SUBWOOFER_ANGLE = Units.degreesToRadians(14);;
+    public static final double SPEAKER_SUBWOOFER_ANGLE = Units.degreesToRadians(14);
     public static final double SPEAKER_PODIUM_ANGLE = -0.06;
     public static final double AMP_ANGLE = Units.degreesToRadians(90);
 
@@ -260,18 +260,6 @@ public final class Constants {
             Y_OFFSET_TO_ROBOT,
             Z_OFFSET_TO_ROBOT),
         new Rotation3d(0.0, CAMERA_PITCH_RADIANS, Math.PI));
-
-    // 5.33E-03*x + 0.206 -
-    // https://docs.google.com/spreadsheets/d/1TCEiHto6ypUku9VXPN79PGwONyrlhI2SbMsfn337yTw/edit#gid=0
-    // inverse tan of function above to get angle
-    // all in inches except for eightyModelRange
-    public static final double STAYDOWNBOUNDARY = (46.5);
-    public static final double EIGHTYMODELSLOPE = 0.00346;
-    public static final double EIGHTYMODELINTERCEPT = 0.298;
-    public static final double EIGHTYMODELRANGE = Units.feetToMeters(12);
-    public static final double HUNDREDMODELSLOPE = 0.00346;
-    public static final double HUNDREDMODELINTERCEPT = 0.298;
-    public static final double ARMALIGNTOLERANCE = 0.01;
 
   }
 

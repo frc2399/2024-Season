@@ -16,7 +16,4 @@ public interface ArmIO {
     public double getAbsoluteEncoderPosition();
 
     public void setEncoderPosition(double angle);
-
-    public double getDesiredArmAngle(Pose2d robotPose, Pose2d speakerPose);
-
 }

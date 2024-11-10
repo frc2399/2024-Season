@@ -54,10 +54,8 @@ public class DriveSubsystem extends SubsystemBase {
   private double velocityYMPS;
   private double velocityMPS;
   private Pose2d visionEstimatedPose;
-  private Pose3d visionEstimatedPose3d; // TODO: delete after testing :)
-  public Pose2d robotPose;
+  private Pose2d robotPose;
   private Pose2d speakerPose;
-  private Transform2d poseDifference;
 
   // apriltags
   public int speakerID;
@@ -65,11 +63,11 @@ public class DriveSubsystem extends SubsystemBase {
   public boolean isAligned = false;
 
   // PID for the speaker-aiming method
-  final double ANGULAR_P = 0.2; // TODO: tune
-  final double ANGULAR_D = 0;
+  final double ANGULAR_P = 1.0;
+  final double ANGULAR_D = 0.015;
   PIDController keepPointedController = new PIDController(
       ANGULAR_P, 0, ANGULAR_D);
-  final static double ANGLE_TO_SPEAKER_TOLERANCE_DEGREES = 5;
+  final static double ANGLE_TO_SPEAKER_ROT_RATE_TOLERANCE = 0.01;
 
   Optional<EstimatedRobotPose> possiblePose;
 
@@ -196,8 +194,7 @@ public class DriveSubsystem extends SubsystemBase {
       // makes sure that there is a new pose and that there are targets before getting
       // a robot pose
       if (possiblePose.isPresent()) {
-        visionEstimatedPose3d = possiblePose.get().estimatedPose;
-        visionEstimatedPose = visionEstimatedPose3d.toPose2d();
+        visionEstimatedPose = possiblePose.get().estimatedPose.toPose2d();
         double distanceToTag = Math.hypot(visionEstimatedPose.getX(), visionEstimatedPose.getY());
         poseEstimator.addVisionMeasurement(visionEstimatedPose, Timer.getFPGATimestamp(),
             VecBuilder.fill(distanceToTag / 2, distanceToTag / 2, 100));
@@ -392,19 +389,28 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   private double getAlignToSpeakerRotRate(double currentAngle) {
-    poseDifference = robotPose.minus(speakerPose);
-    double angleToSpeaker = (PhotonUtils.getYawToPose(robotPose,
-        speakerPose).getRadians());
-    if (angleToSpeaker <= Units.degreesToRadians(ANGLE_TO_SPEAKER_TOLERANCE_DEGREES)) {
-      angleToSpeaker = 0;
+    // adding pi to account for the 180 degree rotation - without it, robot wants to
+    // point its front at the speaker, and we want the back pointed directly at
+    // speaker
+    double angleToSpeaker = PhotonUtils.getYawToPose(robotPose,
+        speakerPose).getRadians() + Math.PI;
+    // allows the robot to turn in the most efficient direction. for example, if the
+    // robot is six degrees off the target and needs to rotate counterclockwise,
+    // due to other needed corrections, this causes the robot to spin 354 degrees
+    // CLOCKWISE. subtracting 2pi from values over pi radians makesthese values
+    // negative and thus the robot rotates in the correct direction.
+    if (angleToSpeaker > Math.PI) {
+      angleToSpeaker -= (2 * Math.PI);
     }
-    SmartDashboard.putNumber("/vision/rotRate",
-        keepPointedController.calculate(angleToSpeaker, 0));
-    // SmartDashboard.putNumber("/vision/angle pose diff",
-    // poseDifference.getRotation().getRadians());
-    SmartDashboard.putNumber("/vision/angle to speaker", angleToSpeaker);
+    double rotRate = -keepPointedController.calculate((angleToSpeaker % (2 * Math.PI)), 0);
     desiredAngle = currentAngle;
-    return keepPointedController.calculate(angleToSpeaker, 0);
+
+    // deadband to prevent overresponsiveness to small errors produced by pose
+    // estimator noise
+    if (Math.abs(rotRate) < ANGLE_TO_SPEAKER_ROT_RATE_TOLERANCE) {
+      rotRate = 0;
+    }
+    return rotRate;
   }
 
   private double getHeadingCorrectionRotRate(double currentAngle, double rotRate, double polarXSpeed,
@@ -418,5 +424,9 @@ public class DriveSubsystem extends SubsystemBase {
       desiredAngle = currentAngle;
     }
     return newRotRate;
+  }
+
+  public Pose2d getRobotPose() {
+    return robotPose;
   }
 }
