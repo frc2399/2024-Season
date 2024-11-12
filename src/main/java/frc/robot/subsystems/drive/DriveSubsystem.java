@@ -63,7 +63,7 @@ public class DriveSubsystem extends SubsystemBase {
   public boolean isAligned = false;
 
   // PID for the speaker-aiming method
-  final double ANGULAR_P = 0.2; // TODO: tune
+  final double ANGULAR_P = 0.5; // TODO: tune
   final double ANGULAR_D = 0;
   PIDController keepPointedController = new PIDController(
       ANGULAR_P, 0, ANGULAR_D);
@@ -387,21 +387,18 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   private double getAlignToSpeakerRotRate(double currentAngle) {
-    // poseDifference = robotPose.minus(speakerPose);
-    // // double angleToSpeaker = (PhotonUtils.getYawToPose(robotPose,
-    // // speakerPose).getRadians());
-    // if (angleToSpeaker <=
-    // Units.degreesToRadians(ANGLE_TO_SPEAKER_TOLERANCE_DEGREES)) {
-    // angleToSpeaker = 0;
-    // }
-    // SmartDashboard.putNumber("/vision/rotRate",
-    // keepPointedController.calculate(angleToSpeaker, 0));
-    // // SmartDashboard.putNumber("/vision/angle pose diff",
-    // // poseDifference.getRotation().getRadians());
-    // SmartDashboard.putNumber("/vision/angle to speaker", angleToSpeaker);
-    // desiredAngle = currentAngle;
-    // return keepPointedController.calculate(angleToSpeaker, 0);
-    return 0;
+    poseDifference = robotPose.minus(speakerPose);
+    double angleToSpeaker = Math.atan2(poseDifference.getY(), poseDifference.getX());
+    if (robotPose.getX() < 0) {
+      // angleToSpeaker *= -1;
+    }
+    if (angleToSpeaker <= Units.degreesToRadians(ANGLE_TO_SPEAKER_TOLERANCE_DEGREES)) {
+      angleToSpeaker = 0;
+    }
+    SmartDashboard.putNumber("/vision/angleToSpeaker", Units.radiansToDegrees(angleToSpeaker));
+    desiredAngle = currentAngle;
+    return keepPointedController.calculate((currentAngle % (2 * Math.PI)), angleToSpeaker);
+    // return 0;
   }
 
   private double getHeadingCorrectionRotRate(double currentAngle, double rotRate, double polarXSpeed,
