@@ -25,9 +25,11 @@ public class Arm extends ProfiledPIDSubsystem {
   public static double speedFromArmHeight;
 
   // TODO tune max_vel and max_accel
-  private static final double MAX_VEL = 4; // rad/s (NEO specs / gear ratio, converted into rad/s ~ 4.1, give it a
-                                           // slightly lower one to make it acheivable)
-  private static final double MAX_ACCEL = 6; // rad/s/s pretty sure this number is just an estimate
+  private static final double MAX_VEL = 2;// original: 4, changed lower for testing purposes // rad/s (NEO specs / gear
+                                          // ratio, converted into rad/s ~ 4.1, give it a
+                                          // slightly lower one to make it acheivable)
+  private static final double MAX_ACCEL = 4;// original: 6, changed lower for testing purposes // rad/s/s pretty sure
+                                            // this number is just an estimate
   private static final Constraints velAndAccelConstraints = new Constraints(MAX_VEL, MAX_ACCEL);
   private static double GRAVITY_COMPENSATION = 0.025;
   private static double FEED_FORWARD = 1 / MAX_VEL;
@@ -56,16 +58,12 @@ public class Arm extends ProfiledPIDSubsystem {
     return ArmIO.getEncoderVelocity();
   }
 
-  public Command setSpeed(double speed) {
-    return this.run(() -> ArmIO.setSpeed(speed));
-  }
-
   // gravity compensation is a factor multiplied by vertical component of the
   // encoder position to
   // add scaled speed to the arm the in order to overcome the acceleration due to
   // gravity
   public Command setSpeedGravityCompensation(double speed) {
-    return this.run(() -> setSpeed(speed + GRAVITY_COMPENSATION * Math.cos(getEncoderPosition())));
+    return this.run(() -> ArmIO.setSpeed(speed + GRAVITY_COMPENSATION * Math.cos(getEncoderPosition())));
   }
 
   public double getArmCurrent() {
@@ -81,7 +79,7 @@ public class Arm extends ProfiledPIDSubsystem {
     // accounts for gravity in speed
     speed += GRAVITY_COMPENSATION * Math.cos(getEncoderPosition());
     speed += output;
-    setSpeed(speed);
+    ArmIO.setSpeed(speed);
   }
 
   @Override

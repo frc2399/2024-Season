@@ -46,6 +46,7 @@ public class RealArm implements ArmIO {
 
         // set the left motor to follow the right one, but inverted since left isn't
         armMotorControllerLeft.follow(armMotorControllerRight, true);
+        System.out.println("real arm being constructed");
     }
 
     public double getEncoderPosition() {
