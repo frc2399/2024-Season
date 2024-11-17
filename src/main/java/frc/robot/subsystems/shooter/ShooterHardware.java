@@ -8,7 +8,6 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
-import frc.robot.ShooterConstants;
 import frc.utils.MotorUtil;
 
 public class ShooterHardware implements ShooterIO {
@@ -20,22 +19,27 @@ public class ShooterHardware implements ShooterIO {
     public static SparkPIDController shooterHighController;
     public static SparkPIDController shooterLowController;
 
-    public double feedforward = 0.011;
-    public double pvalue = 0.01;
-    private double slewRate = 0;
+    // public double feedforward = 0.011;
+    // public double pvalue = 0.01;
+    // private double slewRate = 0;
+
+    public double SHOOTER_FEEDFORWARD = 0.03;
+    public double SHOOTER_PVALUE = 0.01;
 
     public ShooterHardware() {
-        shooterMotorControllerLow = new CANSparkMax(ShooterConstants.SHOOT_LOW_MOTOR_ID, MotorType.kBrushless);
+        shooterMotorControllerLow = new CANSparkMax(Constants.MotorIDConstants.SHOOT_LOW_MOTOR_ID,
+                MotorType.kBrushless);
         shooterMotorControllerLow.restoreFactoryDefaults();
         shooterMotorControllerLow.setSmartCurrentLimit(Constants.NEO_CURRENT_LIMIT);
         shooterMotorControllerLow.setInverted(true);
-        shooterMotorControllerLow.setIdleMode(CANSparkMax.IdleMode.kBrake);
+        shooterMotorControllerLow.setIdleMode(CANSparkMax.IdleMode.kCoast);
 
-        shooterMotorControllerHigh = new CANSparkMax(ShooterConstants.SHOOT_HIGH_MOTOR_ID, MotorType.kBrushless);
+        shooterMotorControllerHigh = new CANSparkMax(Constants.MotorIDConstants.SHOOT_HIGH_MOTOR_ID,
+                MotorType.kBrushless);
         shooterMotorControllerHigh.restoreFactoryDefaults();
         shooterMotorControllerHigh.setSmartCurrentLimit(Constants.NEO_CURRENT_LIMIT);
         shooterMotorControllerHigh.setInverted(true);
-        shooterMotorControllerHigh.setIdleMode(CANSparkMax.IdleMode.kBrake);
+        shooterMotorControllerHigh.setIdleMode(CANSparkMax.IdleMode.kCoast);
 
         // initialize motor encoder
         shooterLowEncoder = shooterMotorControllerLow.getEncoder();
@@ -53,18 +57,21 @@ public class ShooterHardware implements ShooterIO {
         shooterHighController.setOutputRange(0, 1);
         shooterLowController.setOutputRange(0, 1);
         // set gains for PID controllers
-        shooterHighController.setFF(feedforward);
-        shooterHighController.setP(pvalue);
-        shooterLowController.setFF(feedforward);
-        shooterLowController.setP(pvalue);
+        shooterHighController.setFF(SHOOTER_FEEDFORWARD);
+        shooterHighController.setP(SHOOTER_PVALUE);
+        shooterLowController.setFF(SHOOTER_FEEDFORWARD);
+        shooterLowController.setP(SHOOTER_PVALUE);
     }
 
     // Basic shooting command
     @Override
     public void setMotor(double shootSpeed) {
-        shooterHighController.setReference(shootSpeed * ShooterConstants.SHOOT_MAX_SPEED_RPS, ControlType.kVelocity);
-        shooterLowController.setReference(shootSpeed * ShooterConstants.SHOOT_MAX_SPEED_RPS, ControlType.kVelocity);
-        SmartDashboard.putNumber("Shooter/shooter goal speed", shootSpeed * ShooterConstants.SHOOT_MAX_SPEED_RPS);
+        shooterHighController.setReference(shootSpeed * Constants.SpeedConstants.SHOOT_MAX_SPEED_RPS,
+                ControlType.kVelocity);
+        shooterLowController.setReference(shootSpeed * Constants.SpeedConstants.SHOOT_MAX_SPEED_RPS,
+                ControlType.kVelocity);
+        SmartDashboard.putNumber("Shooter/shooter goal speed",
+                shootSpeed * Constants.SpeedConstants.SHOOT_MAX_SPEED_RPS);
     }
 
     @Override

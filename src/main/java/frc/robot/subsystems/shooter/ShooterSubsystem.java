@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems.shooter;
 
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class ShooterSubsystem extends SubsystemBase {
@@ -22,6 +24,12 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public double getEncoderSpeed() {
     return shooterIO.getEncoderSpeed();
+  }
+
+  public Command shooterDefaultStopCommand() {
+    return new RunCommand(
+        () -> shooterIO.setMotor(0),
+        this);
   }
 
   @Override

@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDSubsystem;
 import frc.robot.Constants;
 import frc.robot.Constants.ArmConstants;
-import frc.robot.ShooterConstants;
 import frc.utils.PIDUtil;
 
 public class Arm extends ProfiledPIDSubsystem {
@@ -104,13 +103,13 @@ public class Arm extends ProfiledPIDSubsystem {
   // Robotçontainer instead?
   public double getSpeedFromArmHeight() {
     if (getEncoderPosition() <= 0.37) {
-      speedFromArmHeight = ShooterConstants.SUBWOOFER_SPEED;
+      speedFromArmHeight = Constants.SpeedConstants.SUBWOOFER_SPEED;
     } else if (getEncoderPosition() > 0.37 & getEncoderPosition() <= 0.76) {
-      speedFromArmHeight = ShooterConstants.SPEAKER_SPEED;
+      speedFromArmHeight = Constants.SpeedConstants.SPEAKER_SPEED;
     } else if (getEncoderPosition() > 0.76 & getEncoderPosition() <= 1) {
-      speedFromArmHeight = ShooterConstants.FAR_AWAY_SPEED;
+      speedFromArmHeight = Constants.SpeedConstants.FAR_AWAY_SPEED;
     } else if (getEncoderPosition() > 1) {
-      speedFromArmHeight = ShooterConstants.AMP_SPEED;
+      speedFromArmHeight = Constants.SpeedConstants.AMP_SPEED;
     }
     return speedFromArmHeight;
   }

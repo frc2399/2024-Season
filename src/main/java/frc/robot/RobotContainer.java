@@ -80,6 +80,7 @@ public class RobotContainer {
         private SwerveModuleIO frontRightIO;
         private SwerveModuleIO rearLeftIO;
         private SwerveModuleIO rearRightIO;
+        private CommandFactory commandFactory;
 
         // subsystems
         public static ShooterSubsystem shooter;
@@ -88,7 +89,7 @@ public class RobotContainer {
         public static Climber climber;
         public static Arm arm;
         public static Vision vision;
-        public static LED Led;
+        public static LED led;
 
         // subsystem IOs
         ShooterIO shooterIO;
@@ -185,7 +186,8 @@ public class RobotContainer {
                 indexer = new Indexer(indexerIO);
                 intake = new Intake(intakeIO);
                 vision = new Vision(visionIO);
-                Led = new LED(vision, indexer);
+                led = new LED(vision, indexer);
+                commandFactory = new CommandFactory(shooter, indexer, intake, arm, climber);
 
         }
 
@@ -212,9 +214,7 @@ public class RobotContainer {
         private void configureDefaultCommands() {
                 // default command for the shooter: do nothing
                 shooter.setDefaultCommand(
-                                new RunCommand(
-                                                () -> shooter.setMotor(0),
-                                                shooter).withName("drive default"));
+                                shooter.shooterDefaultStopCommand());
 
                 // default command for intake: do nothing
                 intake.setDefaultCommand(
@@ -276,7 +276,7 @@ public class RobotContainer {
                 // gets arm height to assign to speed. lower arm, means cloesr to speaekr, so
                 // shoots less forecfully
                 driverController.leftBumper().whileTrue(new ParallelCommandGroup(
-                                new RunCommand(() -> shooter.setMotor(arm.getSpeedFromArmHeight()), shooter),
+                                commandFactory.getSpeedFromArmHeightCommand(),
                                 new RunCommand(() -> indexer.setIsIntooked(false))));
 
                 // driver right bumper: auto-shoot
@@ -443,12 +443,11 @@ public class RobotContainer {
                                                                 new WaitUntilCommand(() -> shooter
                                                                                 .getEncoderSpeed() >= (arm
                                                                                                 .getSpeedFromArmHeight()
-                                                                                                * ShooterConstants.SHOOT_MAX_SPEED_RPS)),
+                                                                                                * Constants.SpeedConstants.SHOOT_MAX_SPEED_RPS)),
                                                                 new RunCommand(() -> indexer.setMotor(
                                                                                 Constants.IndexerConstants.INDEXER_IN_SPEED),
                                                                                 indexer)),
-                                                new RunCommand(() -> shooter.setMotor(arm.getSpeedFromArmHeight()),
-                                                                shooter))
+                                                commandFactory.getSpeedFromArmHeightCommand())
                                                 .withTimeout(1), // 0.75
                                 new InstantCommand(() -> shooter.setMotor(0), shooter),
                                 new InstantCommand(() -> indexer.setMotor(0), indexer),
@@ -465,8 +464,7 @@ public class RobotContainer {
                                                                                 Constants.IndexerConstants.INDEXER_IN_SPEED),
                                                                                 indexer),
                                                                 new RunCommand(() -> indexer.setIsIntooked(false))),
-                                                new RunCommand(() -> shooter.setMotor(arm.getSpeedFromArmHeight()),
-                                                                shooter))
+                                                commandFactory.getSpeedFromArmHeightCommand())
                                                 .withTimeout(0.5),
                                 new InstantCommand(() -> shooter.setMotor(0), shooter),
                                 new InstantCommand(() -> indexer.setMotor(0), indexer),
