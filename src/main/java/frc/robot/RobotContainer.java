@@ -236,9 +236,7 @@ public class RobotContainer {
                 // where it is.
                 // Setpoint is in RADIANS
                 arm.setEncoderPosition(arm.getAbsoluteEncoderPosition());
-                arm.setDefaultCommand(
-                                new RunCommand(() -> arm.setSpeedGravityCompensation(0), arm)
-                                                .withName("drive default"));
+                arm.setDefaultCommand(arm.setSpeedGravityCompensation(0));
 
                 // default command for drivetrain: drive based on controller inputs
                 // actually driving robot
