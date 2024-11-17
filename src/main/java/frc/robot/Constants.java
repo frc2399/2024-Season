@@ -23,35 +23,6 @@ public final class Constants {
   // MPS = (GearRatio * 2πr * RPM) / 60
   public static final double NEO550_MAX_SPEED_RPM = 11000;
 
-  public static final class DriveConstants {
-    public static final int GYRO_CAN_ID = 3;
-    // Driving Parameters
-    public static final double MAX_SPEED_METERS_PER_SECOND = 4.8;
-    public static final double MAX_ANGULAR_SPEED = 2 * Math.PI; // radians per second
-
-    // Chassis configuration
-    // Distance between centers of right and left wheels on robot
-    public static final double TRACK_WIDTH = Units.inchesToMeters(26 - 2 * 1.75);
-    // Distance between front and back wheels on robot
-    public static final double WHEEL_BASE = Units.inchesToMeters(26 - 2 * 1.75);
-    public static final Translation2d FRONT_LEFT_OFFSET = new Translation2d(WHEEL_BASE / 2, TRACK_WIDTH / 2);
-    public static final Translation2d REAR_LEFT_OFFSET = new Translation2d(-WHEEL_BASE / 2, TRACK_WIDTH / 2);
-    public static final Translation2d FRONT_RIGHT_OFFSET = new Translation2d(WHEEL_BASE / 2, -TRACK_WIDTH / 2);
-    public static final Translation2d REAR_RIGHT_OFFSET = new Translation2d(-WHEEL_BASE / 2, -TRACK_WIDTH / 2);
-
-    // SPARK MAX CAN IDs
-    public static final int FRONT_LEFT_DRIVING_CAN_ID = 11;
-    public static final int REAR_LEFT_DRIVING_CAN_ID = 21;
-    public static final int FRONT_RIGHT_DRIVING_CAN_ID = 31;
-    public static final int REAR_RIGHT_DRIVING_CAN_ID = 41;
-
-    public static final int FRONT_LEFT_TURNING_CAN_ID = 12;
-    public static final int REAR_LEFT_TURNING_CAN_ID = 22;
-    public static final int FRONT_RIGHT_TURNING_CAN_ID = 32;
-    public static final int REAR_RIGHT_TURNING_CAN_ID = 42;
-
-  }
-
   public static final class IntakeConstants {
 
     public static final int LEFT_CENTERING_MOTOR_ID = 5;

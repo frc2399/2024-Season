@@ -10,7 +10,7 @@ package frc.robot.subsystems.gyro;
 import com.ctre.phoenix6.hardware.Pigeon2;
 
 import edu.wpi.first.math.util.Units;
-import frc.robot.Constants;
+import frc.robot.subsystems.drive.DriveSubsystem;
 
 /** IO implementation for Pigeon2 */
 public class GyroIOPigeon2 implements GyroIO {
@@ -18,7 +18,7 @@ public class GyroIOPigeon2 implements GyroIO {
 
   public GyroIOPigeon2() {
 
-    pigeon = new Pigeon2(Constants.DriveConstants.GYRO_CAN_ID, "rio");
+    pigeon = new Pigeon2(DriveSubsystem.GYRO_CAN_ID, "rio");
     this.setYaw(0.0);
 
   }

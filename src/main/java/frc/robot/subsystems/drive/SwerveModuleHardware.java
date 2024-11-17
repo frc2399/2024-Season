@@ -10,11 +10,8 @@ import com.revrobotics.SparkAbsoluteEncoder.Type;
 import com.revrobotics.SparkPIDController;
 
 import frc.robot.Constants;
-import frc.robot.Constants.DriveConstants;
-import frc.robot.Constants.IndexerConstants;
-import frc.utils.MotorUtil;
 
-public class SwerveModuleIO_Real implements SwerveModuleIO {
+public class SwerveModuleHardware implements SwerveModuleIO {
    private final CANSparkMax drivingSparkMax;
    private final CANSparkMax turningSparkMax;
 
@@ -28,19 +25,22 @@ public class SwerveModuleIO_Real implements SwerveModuleIO {
 
    private String name;
 
-   public SwerveModuleIO_Real(int drivingCANId, int turningCANId, double chassisAngularOffset,
+   public SwerveModuleHardware(int drivingCANId, int turningCANId, double chassisAngularOffset,
          String name) {
 
       int errors = 0;
 
       this.name = name;
 
-      drivingSparkMax = new CANSparkMax(DriveConstants.GYRO_CAN_ID, MotorType.kBrushless);
+      drivingSparkMax = new CANSparkMax(drivingCANId, MotorType.kBrushless);
+      drivingSparkMax.restoreFactoryDefaults();
+      drivingSparkMax.setSmartCurrentLimit(Constants.NEO550_CURRENT_LIMIT);
+      drivingSparkMax.setInverted(DriveSubsystem.DRIVING_ENCODER_INVERTED);
 
-      MotorUtil.createSparkMAX(drivingCANId, MotorType.kBrushless,
-            Constants.NEO_CURRENT_LIMIT, DriveSubsystem.DRIVING_ENCODER_INVERTED, true, 0);
-      turningSparkMax = MotorUtil.createSparkMAX(turningCANId, MotorType.kBrushless,
-            Constants.NEO550_CURRENT_LIMIT, true, 0);
+      turningSparkMax = new CANSparkMax(turningCANId, MotorType.kBrushless);
+      turningSparkMax.restoreFactoryDefaults();
+      turningSparkMax.setSmartCurrentLimit(Constants.NEO550_CURRENT_LIMIT);
+      turningSparkMax.setInverted(DriveSubsystem.TURNING_ENCODER_INVERTED);
 
       errors += check(drivingSparkMax.enableVoltageCompensation(12));
       errors += check(turningSparkMax.enableVoltageCompensation(12));

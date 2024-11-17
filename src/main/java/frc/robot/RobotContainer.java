@@ -23,7 +23,6 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Robot.RobotType;
 import frc.robot.commands.automaticIntakeAndIndexer;
@@ -43,8 +42,8 @@ import frc.robot.subsystems.climber.ClimberSim;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.drive.SwerveModule;
 import frc.robot.subsystems.drive.SwerveModuleIO;
-import frc.robot.subsystems.drive.SwerveModuleIO_Real;
-import frc.robot.subsystems.drive.SwerveModuleIO_Sim;
+import frc.robot.subsystems.drive.SwerveModuleHardware;
+import frc.robot.subsystems.drive.SwerveModuleSim;
 import frc.robot.subsystems.gyro.GyroIO;
 import frc.robot.subsystems.gyro.GyroIOPigeon2;
 import frc.robot.subsystems.gyro.GyroIOSim;
@@ -132,10 +131,10 @@ public class RobotContainer {
                         climberIO = new ClimberSim();
                         armIO = new SimArm();
                         m_gyro = new GyroIOSim();
-                        m_frontLeftIO = new SwerveModuleIO_Sim("front left");
-                        m_frontRightIO = new SwerveModuleIO_Sim("front right");
-                        m_rearLeftIO = new SwerveModuleIO_Sim("rear left");
-                        m_rearRightIO = new SwerveModuleIO_Sim("rear right");
+                        m_frontLeftIO = new SwerveModuleSim("front left");
+                        m_frontRightIO = new SwerveModuleSim("front right");
+                        m_rearLeftIO = new SwerveModuleSim("rear left");
+                        m_rearRightIO = new SwerveModuleSim("rear right");
 
                         m_robotDrive = new DriveSubsystem(
                                         new SwerveModule(m_frontLeftIO),
@@ -146,21 +145,21 @@ public class RobotContainer {
 
                 } else {
 
-                        m_frontLeftIO = new SwerveModuleIO_Real(DriveConstants.FRONT_LEFT_DRIVING_CAN_ID,
-                                        DriveConstants.FRONT_LEFT_TURNING_CAN_ID,
-                                        DriveConstants.kFrontLeftChassisAngularOffset,
+                        m_frontLeftIO = new SwerveModuleHardware(DriveSubsystem.FRONT_LEFT_DRIVING_CAN_ID,
+                                        DriveSubsystem.FRONT_LEFT_TURNING_CAN_ID,
+                                        DriveSubsystem.FRONT_LEFT_CHASSIS_ANGULAR_OFFSET,
                                         "front left");
-                        m_frontRightIO = new SwerveModuleIO_Real(DriveConstants.FRONT_RIGHT_DRIVING_CAN_ID,
-                                        DriveConstants.FRONT_RIGHT_TURNING_CAN_ID,
-                                        DriveConstants.kFrontRightChassisAngularOffset,
+                        m_frontRightIO = new SwerveModuleHardware(DriveSubsystem.FRONT_RIGHT_DRIVING_CAN_ID,
+                                        DriveSubsystem.FRONT_RIGHT_TURNING_CAN_ID,
+                                        DriveSubsystem.FRONT_RIGHT_CHASSIS_ANGULAR_OFFSET,
                                         "front right");
-                        m_rearLeftIO = new SwerveModuleIO_Real(DriveConstants.REAR_LEFT_DRIVING_CAN_ID,
-                                        DriveConstants.REAR_LEFT_TURNING_CAN_ID,
-                                        DriveConstants.kRearLeftChassisAngularOffset,
+                        m_rearLeftIO = new SwerveModuleHardware(DriveSubsystem.REAR_LEFT_DRIVING_CAN_ID,
+                                        DriveSubsystem.REAR_LEFT_TURNING_CAN_ID,
+                                        DriveSubsystem.REAR_LEFT_CHASSIS_ANGULAR_OFFSET,
                                         "rear left");
-                        m_rearRightIO = new SwerveModuleIO_Real(DriveConstants.REAR_RIGHT_DRIVING_CAN_ID,
-                                        DriveConstants.REAR_RIGHT_TURNING_CAN_ID,
-                                        DriveConstants.kRearRightChassisAngularOffset,
+                        m_rearRightIO = new SwerveModuleHardware(DriveSubsystem.REAR_RIGHT_DRIVING_CAN_ID,
+                                        DriveSubsystem.REAR_RIGHT_TURNING_CAN_ID,
+                                        DriveSubsystem.REAR_RIGHT_CHASSIS_ANGULAR_OFFSET,
                                         "rear right");
 
                         indexerIO = new RealIndexer();

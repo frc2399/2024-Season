@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import frc.robot.Constants;
 import frc.utils.SimEncoder;
 
-public class SwerveModuleIO_Sim implements SwerveModuleIO {
+public class SwerveModuleSim implements SwerveModuleIO {
 
    // Simualaion Motors
    private DCMotorSim driveMotor = new DCMotorSim(DCMotor.getNEO(1), DriveSubsystem.DRIVING_MOTOR_REDUCTION,
@@ -28,7 +28,7 @@ public class SwerveModuleIO_Sim implements SwerveModuleIO {
    private double driveMotorOutput = 0.0;
    private double turnMotorOutput = 0.0;
 
-   public SwerveModuleIO_Sim(String name) {
+   public SwerveModuleSim(String name) {
       m_drivingEncoder = new SimEncoder(name + " drive encoder");
       m_turningEncoder = new SimEncoder(name + " turn encoder");
       this.name = name;

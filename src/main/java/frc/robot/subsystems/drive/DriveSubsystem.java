@@ -155,6 +155,21 @@ public class DriveSubsystem extends SubsystemBase {
 
   private ChassisSpeeds relativeRobotSpeeds;
 
+  public static final int GYRO_CAN_ID = 3;
+  // Driving Parameters
+  public static final double MAX_SPEED_METERS_PER_SECOND = 4.8;
+
+  // SPARK MAX CAN IDs
+  public static final int FRONT_LEFT_DRIVING_CAN_ID = 11;
+  public static final int REAR_LEFT_DRIVING_CAN_ID = 21;
+  public static final int FRONT_RIGHT_DRIVING_CAN_ID = 31;
+  public static final int REAR_RIGHT_DRIVING_CAN_ID = 41;
+
+  public static final int FRONT_LEFT_TURNING_CAN_ID = 12;
+  public static final int REAR_LEFT_TURNING_CAN_ID = 22;
+  public static final int FRONT_RIGHT_TURNING_CAN_ID = 32;
+  public static final int REAR_RIGHT_TURNING_CAN_ID = 42;
+
   public Rotation2d lastAngle = new Rotation2d();
 
   StructArrayPublisher<SwerveModuleState> swerveModuleStatePublisher = NetworkTableInstance.getDefault()
