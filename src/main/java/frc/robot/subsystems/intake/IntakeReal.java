@@ -81,7 +81,7 @@ public class IntakeReal implements IntakeIO {
         rightCenteringIntakeMotorController.set(percentOutput);
         intakeMotorController.set(percentOutput);
 
-        SmartDashboard.putNumber("set speed", percentOutput*Constants.NEO550_MAX_SPEED_RPS);
+        SmartDashboard.putNumber("intake/set speed", percentOutput*Constants.NEO550_MAX_SPEED_RPS);
     }
 
     public double getLeftCurrent()
@@ -130,7 +130,7 @@ public class IntakeReal implements IntakeIO {
 
     @Override
     public void periodicUpdate() {
-        SmartDashboard.putNumber("encoder value", intakeEncoder.getVelocity());
+        SmartDashboard.putNumber("intake/encoder value", intakeEncoder.getVelocity());
     }
 
     @Override

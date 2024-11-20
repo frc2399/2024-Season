@@ -322,8 +322,8 @@ public class RobotContainer {
                                 () -> climber.setLeftSpeed(-0.5), climber));
 
                 // operater right bumper: climber mode: right climber down
-                operatorController.rightBumper().and(() -> isInClimberMode).whileTrue(new RunCommand(
-                                () -> climber.setRightSpeed(-0.5), climber));
+                // operatorController.rightBumper().and(() -> isInClimberMode).whileTrue(new RunCommand(
+                               // () -> climber.setRightSpeed(-0.5), climber));
 
                 // operator b (climber mode): automatic climber up
                 operatorController.b().and(() -> isInClimberMode)
@@ -359,9 +359,8 @@ public class RobotContainer {
                 operatorController.y().and(() -> !isInClimberMode).onTrue(makeSetPositionCommand(arm, 1.58));
 
                 // operator right bumper: intake
-                operatorController.rightBumper().and(() -> !isInClimberMode)
-                                .whileTrue(new RunCommand(() -> indexer.setMotor(0.3), indexer));
-
+                operatorController.rightBumper().and(() -> true)
+                                .whileTrue(indexer.setIndexerPID(200));
                 // operator left bumper: outtake
                 // outtake a little bittt to get shooter up to speed
                 operatorController.leftBumper().and(() -> !isInClimberMode)

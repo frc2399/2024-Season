@@ -18,6 +18,7 @@ public class Intake extends SubsystemBase {
     intakeIO = io;        
   }
 
+  // percent output goes from -1 - 1
   public void setMotor(double percentOutput) {
     intakeIO.setMotor(percentOutput);
   }

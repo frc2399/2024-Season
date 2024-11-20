@@ -20,8 +20,8 @@ public class IndexerReal implements IndexerIO {
     public static SparkPIDController indexerController;
     public boolean isIntooked = false;
     public boolean isSensorOverriden = false;
-    private double FEEDFORWARD = 0.01;
-    private double PVALUE = 0.01;
+    private double FEEDFORWARD = 0.000925;
+    private double PVALUE = 0.0000925;
     private static DigitalInput indexerSensorBottom;
     boolean isIdleBreak;
 
@@ -53,7 +53,7 @@ public class IndexerReal implements IndexerIO {
     public void setMotor(double indexerVelocity) {
         indexerMotorController.set(indexerVelocity);
 
-        SmartDashboard.putNumber("set speed", indexerVelocity);
+        //SmartDashboard.putNumber("indexer/set speed", indexerVelocity);
     }
 
 
@@ -80,7 +80,7 @@ public class IndexerReal implements IndexerIO {
     public void periodicUpdate() {
         SmartDashboard.putBoolean("indexer/isIntooked:", isIntooked);
         SmartDashboard.putBoolean("indexer/getIsBeamBroken", getIsBeamBroken());
-        SmartDashboard.putNumber("encoder value", indexerEncoder.getVelocity());
+        SmartDashboard.putNumber("indexer/encoder value", indexerEncoder.getVelocity());
     }
 
     @Override
@@ -101,5 +101,6 @@ public class IndexerReal implements IndexerIO {
     public void setIndexerPID(double indexerVelocity)
     {
         indexerController.setReference(indexerVelocity, ControlType.kVelocity);
+        SmartDashboard.putNumber("indexer/set speed", indexerVelocity);
     }
 }
