@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import java.util.function.DoubleSupplier;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
@@ -41,6 +43,9 @@ import frc.robot.subsystems.drive.SwerveModule;
 import frc.robot.subsystems.drive.SwerveModuleIO;
 import frc.robot.subsystems.drive.SwerveModuleIO_Real;
 import frc.robot.subsystems.drive.SwerveModuleIO_Sim;
+import frc.robot.subsystems.drive.VisionIO;
+import frc.robot.subsystems.drive.VisionIO_Hardware;
+import frc.robot.subsystems.drive.VisionIO_Placebo;
 import frc.robot.subsystems.gyro.GyroIO;
 import frc.robot.subsystems.gyro.GyroIOPigeon2;
 import frc.robot.subsystems.gyro.GyroIOSim;
@@ -52,10 +57,6 @@ import frc.robot.subsystems.shooter.RealShooter;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterIO;
 import frc.robot.subsystems.shooter.SimShooter;
-import frc.robot.subsystems.vision.Vision;
-import frc.robot.subsystems.vision.VisionIO;
-import frc.robot.subsystems.vision.VisionReal;
-import frc.robot.subsystems.vision.VisionSim;
 
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -65,7 +66,7 @@ import frc.robot.subsystems.vision.VisionSim;
  */
 public class RobotContainer {
         // The robot's subsystems
-        private DriveSubsystem robotDrive;
+        public DriveSubsystem robotDrive;
         private static GyroIO gyro;
         private SubsystemFactory subsystemFactory;
         private CommandFactory commandFactory;
@@ -85,7 +86,6 @@ public class RobotContainer {
         public static Indexer indexer;
         public static Climber climber;
         public static Arm arm;
-        public static Vision vision;
         public static LED led;
 
         // subsystem IOs
@@ -136,13 +136,13 @@ public class RobotContainer {
                         frontRightIO = new SwerveModuleIO_Sim("front right");
                         rearLeftIO = new SwerveModuleIO_Sim("rear left");
                         rearRightIO = new SwerveModuleIO_Sim("rear right");
+                        visionIO = new VisionIO_Placebo();
 
                         robotDrive = new DriveSubsystem(
                                         new SwerveModule(frontLeftIO),
                                         new SwerveModule(frontRightIO),
                                         new SwerveModule(rearLeftIO),
-                                        new SwerveModule(rearRightIO), gyro);
-                        visionIO = new VisionSim(robotDrive);
+                                        new SwerveModule(rearRightIO), gyro, visionIO);
 
                 } else {
 
@@ -168,13 +168,13 @@ public class RobotContainer {
                         intakeIO = new RealIntake();
                         climberIO = new ClimberReal();
                         gyro = new GyroIOPigeon2();
-                        visionIO = new VisionReal();
+                        visionIO = new VisionIO_Hardware();
 
                         robotDrive = new DriveSubsystem(
                                         new SwerveModule(frontLeftIO),
                                         new SwerveModule(frontRightIO),
                                         new SwerveModule(rearLeftIO),
-                                        new SwerveModule(rearRightIO), gyro);
+                                        new SwerveModule(rearRightIO), gyro, visionIO);
 
                 }
 
@@ -182,8 +182,7 @@ public class RobotContainer {
                 shooter = new Shooter(shooterIO);
                 indexer = new Indexer(indexerIO);
                 intake = new Intake(intakeIO);
-                vision = new Vision(visionIO);
-                led = new LED(vision, indexer);
+                led = new LED(indexer);
 
         }
 
@@ -254,9 +253,8 @@ public class RobotContainer {
                                                                 -(MathUtil.applyDeadband(
                                                                                 m_driverController.getRightX(),
                                                                                 OIConstants.kDriveDeadband)),
-                                                                fieldOrientedDrive),
+                                                                fieldOrientedDrive, false),
                                                 robotDrive).withName("drive default"));
-
         }
 
         private void configureButtonBindingsDriver() {
@@ -291,15 +289,22 @@ public class RobotContainer {
                 // driver b: reset gyro
                 m_driverController.b().onTrue(new InstantCommand(() -> gyro.setYaw(0.0)));
                 // driver a: align to speaker mode
-                m_driverController.a().whileTrue(
-                                new RunCommand(() -> robotDrive.drive(
-                                                -Math.pow(MathUtil.applyDeadband(m_driverController.getLeftY(),
-                                                                OIConstants.kDriveDeadband), 3),
-                                                -Math.pow(MathUtil.applyDeadband(m_driverController.getLeftX(),
-                                                                OIConstants.kDriveDeadband), 3),
-                                                vision.keepPointedAtSpeaker(),
-                                                fieldOrientedDrive), robotDrive))
-                                .onFalse(new InstantCommand(() -> vision.makeDriveTrainAlignedFalse()));
+                // m_driverController.a().whileTrue(
+                // // The left stick controls translation of the robot.
+                // // Turning is controlled by the X axis of the right stick.
+                // new RunCommand(
+                // () -> robotDrive.drive(
+                // -(MathUtil.applyDeadband(
+                // m_driverController.getLeftY(),
+                // OIConstants.kDriveDeadband)),
+                // -(MathUtil.applyDeadband(
+                // m_driverController.getLeftX(),
+                // OIConstants.kDriveDeadband)),
+                // -(MathUtil.applyDeadband(
+                // m_driverController.getRightX(),
+                // OIConstants.kDriveDeadband)),
+                // fieldOrientedDrive, true),
+                // robotDrive).withName("drive default"));
 
         }
 
@@ -347,7 +352,7 @@ public class RobotContainer {
                 m_operatorController.b().and(() -> !isInClimberMode).onTrue(arm.makeSetPositionCommand(0.66));
 
                 // operator y: arm to amp angle
-                m_operatorController.y().and(() -> !isInClimberMode).onTrue(arm.makeSetPositionCommand(1.58));
+                m_operatorController.y().and(() -> !isInClimberMode).onTrue(arm.makeSetPositionCommand(1.61));
 
                 // operator right bumper: intake
                 m_operatorController.rightBumper().and(() -> !isInClimberMode)
@@ -366,6 +371,38 @@ public class RobotContainer {
                                 .whileTrue(arm.makeSetSpeedGravityCompensationCommand(0.1));
                 m_operatorController.axisLessThan(5, -0.1)
                                 .whileTrue(arm.makeSetSpeedGravityCompensationCommand(-0.1));
+        }
+
+        public static Command makeSetPositionCommand(Arm arm,
+                        double target) {
+                return new SequentialCommandGroup(
+                                new ConditionalCommand(new InstantCommand(() -> {
+                                }), new InstantCommand(() -> arm.enable(), arm), () -> arm.isEnabled()),
+                                new RunCommand(() -> arm.setGoal(target), arm));
+        }
+
+        private Command makeSetPositionCommandVision(Arm arm) {
+                DoubleSupplier target = () -> (arm.getDesiredArmAngle(robotDrive.robotPose,
+                                robotDrive.getSpeakerPose()));
+                return new SequentialCommandGroup(
+                                new ConditionalCommand(new InstantCommand(() -> {
+                                }), new InstantCommand(() -> arm.enable(), arm), () -> arm.isEnabled()),
+                                new RunCommand(() -> arm.setGoal(target.getAsDouble()), arm));
+        }
+
+        public static Command makeSetPositionCommandAuton(Arm arm,
+                        double target) {
+                return new SequentialCommandGroup(
+                                new ConditionalCommand(new InstantCommand(() -> {
+                                }), new InstantCommand(() -> arm.enable(), arm), () -> arm.isEnabled()),
+                                new InstantCommand(() -> arm.setGoal(target), arm),
+                                new WaitCommand(0.5));
+        }
+
+        private Command makeSetSpeedGravityCompensationCommand(Arm a, double speed) {
+                return new SequentialCommandGroup(
+                                new InstantCommand(() -> a.disable(), a),
+                                new RunCommand(() -> a.setSpeedGravityCompensation(speed), a));
         }
 
         private Command intakeForTime(Intake intake, Indexer indexer) {

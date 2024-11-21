@@ -5,6 +5,7 @@
 package frc.robot.subsystems.arm;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.math.util.Units;
@@ -126,6 +127,10 @@ public class Arm extends ProfiledPIDSubsystem {
     return new SequentialCommandGroup(
         new InstantCommand(() -> disable()),
         new RunCommand(() -> setSpeedGravityCompensation(speed)));
+  }
+
+  public double getDesiredArmAngle(Pose2d robotPose, Pose2d speakerPose) {
+    return ArmIO.getDesiredArmAngle(robotPose, speakerPose);
   }
 
 }

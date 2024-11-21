@@ -1,5 +1,6 @@
 package frc.robot.subsystems.arm;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.BatterySim;
@@ -74,5 +75,10 @@ public class SimArm implements ArmIO {
 
     @Override
     public void setEncoderPosition(double angle) {
+        // TODO Auto-generated method stub
+    }
+
+    public double getDesiredArmAngle(Pose2d robotPose, Pose2d speakerPose) {
+        return 0.0;
     }
 }
