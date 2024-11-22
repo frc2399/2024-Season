@@ -5,6 +5,7 @@
 package frc.robot.subsystems.arm;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -97,6 +98,10 @@ public class Arm extends ProfiledPIDSubsystem {
 
   public void setEncoderPosition(double angle) {
     armIO.setEncoderPosition(angle);
+  }
+
+  public double getDesiredArmAngle(Pose2d robotPose, Pose2d speakerPose) {
+    return armIO.getDesiredArmAngle(robotPose, speakerPose);
   }
 
   // TODO there's a duplicate of this in RealArm. Also, do we want this in

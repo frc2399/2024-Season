@@ -45,6 +45,9 @@ import frc.robot.subsystems.drive.SwerveModule;
 import frc.robot.subsystems.drive.SwerveModuleIO;
 import frc.robot.subsystems.drive.SwerveModuleIO_Real;
 import frc.robot.subsystems.drive.SwerveModuleIO_Sim;
+import frc.robot.subsystems.drive.VisionIO;
+import frc.robot.subsystems.drive.VisionIO_Hardware;
+import frc.robot.subsystems.drive.VisionIO_Placebo;
 import frc.robot.subsystems.gyro.GyroIO;
 import frc.robot.subsystems.gyro.GyroIOPigeon2;
 import frc.robot.subsystems.gyro.GyroIOSim;
@@ -56,10 +59,6 @@ import frc.robot.subsystems.shooter.ShooterHardware;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.shooter.ShooterIO;
 import frc.robot.subsystems.shooter.SimShooter;
-import frc.robot.subsystems.vision.Vision;
-import frc.robot.subsystems.vision.VisionIO;
-import frc.robot.subsystems.vision.VisionReal;
-import frc.robot.subsystems.vision.VisionSim;
 
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -69,7 +68,7 @@ import frc.robot.subsystems.vision.VisionSim;
  */
 public class RobotContainer {
         // The robot's subsystems
-        private DriveSubsystem robotDrive;
+        public DriveSubsystem robotDrive;
         private static GyroIO gyro;
 
         public boolean fieldOrientedDrive = true;
@@ -88,8 +87,7 @@ public class RobotContainer {
         public static Indexer indexer;
         public static Climber climber;
         public static Arm arm;
-        public static Vision vision;
-        public static LED led;
+        public static LED Led;
 
         // subsystem IOs
         ShooterIO shooterIO;
@@ -132,6 +130,7 @@ public class RobotContainer {
                         intakeIO = new SimIntake();
                         climberIO = new ClimberSim();
                         armIO = new SimArm();
+                        visionIO = new VisionIO_Placebo();
                         gyro = new GyroIOSim();
                         frontLeftIO = new SwerveModuleIO_Sim("front left");
                         frontRightIO = new SwerveModuleIO_Sim("front right");
@@ -142,8 +141,7 @@ public class RobotContainer {
                                         new SwerveModule(frontLeftIO),
                                         new SwerveModule(frontRightIO),
                                         new SwerveModule(rearLeftIO),
-                                        new SwerveModule(rearRightIO), gyro);
-                        visionIO = new VisionSim(robotDrive);
+                                        new SwerveModule(rearRightIO), gyro, visionIO);
 
                 } else {
 
@@ -170,13 +168,13 @@ public class RobotContainer {
                         climberIO = new ClimberReal();
                         armIO = new RealArm();
                         gyro = new GyroIOPigeon2();
-                        visionIO = new VisionReal();
+                        visionIO = new VisionIO_Hardware();
 
                         robotDrive = new DriveSubsystem(
                                         new SwerveModule(frontLeftIO),
                                         new SwerveModule(frontRightIO),
                                         new SwerveModule(rearLeftIO),
-                                        new SwerveModule(rearRightIO), gyro);
+                                        new SwerveModule(rearRightIO), gyro, visionIO);
 
                 }
 
@@ -185,9 +183,7 @@ public class RobotContainer {
                 shooter = new ShooterSubsystem(shooterIO);
                 indexer = new Indexer(indexerIO);
                 intake = new Intake(intakeIO);
-                vision = new Vision(visionIO);
-                led = new LED(vision, indexer);
-                commandFactory = new CommandFactory(shooter, indexer, intake, arm, climber);
+                Led = new LED(indexer);
 
         }
 
@@ -244,6 +240,8 @@ public class RobotContainer {
 
                 // default command for drivetrain: drive based on controller inputs
                 // actually driving robot
+                // The left stick controls translation of the robot.
+                // Turning is controlled by the X axis of the right stick.
                 robotDrive.setDefaultCommand(
                                 // The left stick controls translation of the robot.
                                 // Turning is controlled by the X axis of the right stick.
@@ -258,9 +256,8 @@ public class RobotContainer {
                                                                 -(MathUtil.applyDeadband(
                                                                                 driverController.getRightX(),
                                                                                 OIConstants.kDriveDeadband)),
-                                                                fieldOrientedDrive),
+                                                                fieldOrientedDrive, false),
                                                 robotDrive).withName("drive default"));
-
         }
 
         private void configureButtonBindingsDriver() {
@@ -295,15 +292,22 @@ public class RobotContainer {
                 // driver b: reset gyro
                 driverController.b().onTrue(new InstantCommand(() -> gyro.setYaw(0.0)));
                 // driver a: align to speaker mode
-                driverController.a().whileTrue(
-                                new RunCommand(() -> robotDrive.drive(
-                                                -Math.pow(MathUtil.applyDeadband(driverController.getLeftY(),
-                                                                OIConstants.kDriveDeadband), 3),
-                                                -Math.pow(MathUtil.applyDeadband(driverController.getLeftX(),
-                                                                OIConstants.kDriveDeadband), 3),
-                                                vision.keepPointedAtSpeaker(),
-                                                fieldOrientedDrive), robotDrive))
-                                .onFalse(new InstantCommand(() -> vision.makeDriveTrainAlignedFalse()));
+                // m_driverController.a().whileTrue(
+                // // The left stick controls translation of the robot.
+                // // Turning is controlled by the X axis of the right stick.
+                // new RunCommand(
+                // () -> robotDrive.drive(
+                // -(MathUtil.applyDeadband(
+                // m_driverController.getLeftY(),
+                // OIConstants.kDriveDeadband)),
+                // -(MathUtil.applyDeadband(
+                // m_driverController.getLeftX(),
+                // OIConstants.kDriveDeadband)),
+                // -(MathUtil.applyDeadband(
+                // m_driverController.getRightX(),
+                // OIConstants.kDriveDeadband)),
+                // fieldOrientedDrive, true),
+                // robotDrive).withName("drive default"));
 
         }
 
@@ -339,9 +343,8 @@ public class RobotContainer {
 
         private void configureButtonBindingsOperatorNotClimber() {
 
-                operatorController.leftTrigger().and(() -> !isInClimberMode).whileTrue(
-                                makeSetPositionCommandVision(arm))
-                                .onFalse(new InstantCommand(() -> vision.makeArmAlignedFalse()));
+                // m_operatorController.leftTrigger().and(() -> !isInClimberMode).whileTrue(
+                // makeSetPositionCommandVision(m_arm));
 
                 operatorController.rightTrigger().and(() -> !isInClimberMode).whileTrue(
                                 new ParallelCommandGroup(
@@ -355,7 +358,7 @@ public class RobotContainer {
                 operatorController.b().and(() -> !isInClimberMode).onTrue(makeSetPositionCommand(arm, 0.66));
 
                 // operator y: arm to amp angle
-                operatorController.y().and(() -> !isInClimberMode).onTrue(makeSetPositionCommand(arm, 1.58));
+                operatorController.y().and(() -> !isInClimberMode).onTrue(makeSetPositionCommand(arm, 1.61));
 
                 // operator right bumper: intake
                 operatorController.rightBumper().and(() -> !isInClimberMode)
@@ -385,7 +388,8 @@ public class RobotContainer {
         }
 
         private Command makeSetPositionCommandVision(Arm arm) {
-                DoubleSupplier target = () -> (vision.keepArmAtAngle((arm.getAbsoluteEncoderPosition())));
+                DoubleSupplier target = () -> (arm.getDesiredArmAngle(robotDrive.robotPose,
+                                robotDrive.getSpeakerPose()));
                 return new SequentialCommandGroup(
                                 new ConditionalCommand(new InstantCommand(() -> {
                                 }), new InstantCommand(() -> arm.enable(), arm), () -> arm.isEnabled()),
