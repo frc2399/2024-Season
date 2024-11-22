@@ -101,7 +101,6 @@ public class Arm extends ProfiledPIDSubsystem {
     return ArmIO.getAbsoluteEncoderPosition();
   }
 
-  // why does this return a command? it's just a setter
   public Command setEncoderPosition(double angle) {
     return this.run(() -> ArmIO.setEncoderPosition(angle));
   }
