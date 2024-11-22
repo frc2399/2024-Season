@@ -184,6 +184,7 @@ public class RobotContainer {
                 indexer = new Indexer(indexerIO);
                 intake = new Intake(intakeIO);
                 Led = new LED(indexer);
+                commandFactory = new CommandFactory(shooter, indexer, intake, arm, climber);
 
         }
 
