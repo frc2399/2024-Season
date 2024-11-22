@@ -5,7 +5,6 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Constants;
 import frc.robot.subsystems.Indexer.Indexer;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.intake.Intake;
@@ -16,6 +15,7 @@ public class automaticIntakeAndIndexer extends Command {
   private final Arm arm;
   public static boolean isIntooked;
   public boolean pieceIntooked = false;
+
   /** Creates a new automaticIntakeAndIndexer. */
   public automaticIntakeAndIndexer(Indexer indexer, Intake intake, Arm arm) {
     this.indexer = indexer;
@@ -29,19 +29,18 @@ public class automaticIntakeAndIndexer extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-      if((arm.getEncoderPosition() < 0.5) && indexer.isIntooked == false) {
-          isIntooked = false;
-      }
-      else {
-        isIntooked = true;
-      }
+    if ((arm.getEncoderPosition() < 0.5) && indexer.isIntooked == false) {
+      isIntooked = false;
+    } else {
+      isIntooked = true;
+    }
 
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(indexer.getIsBeamBroken()) {
+    if (indexer.getIsBeamBroken()) {
       indexer.setIsIntooked(true);
       isIntooked = true;
     }

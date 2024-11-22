@@ -1,6 +1,5 @@
 package frc.robot.subsystems.drive;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -16,7 +15,7 @@ public class SwerveModule {
 
     private final SwerveModuleIOInputs inputs = new SwerveModuleIOInputs();
 
-    //name is used for smart dashboard values to distinguish between modules
+    // name is used for smart dashboard values to distinguish between modules
     private String name;
 
     public SwerveModule(SwerveModuleIO io) {
@@ -102,9 +101,8 @@ public class SwerveModule {
 
         // Optimize the reference state to avoid spinning further than 90 degrees.
 
-        SwerveModuleState optimizedDesiredState =
-        SwerveModuleState.optimize(correctedDesiredState,
-        new Rotation2d(getTurnEncoderPosition()));
+        SwerveModuleState optimizedDesiredState = SwerveModuleState.optimize(correctedDesiredState,
+                new Rotation2d(getTurnEncoderPosition()));
         io.setDesiredDriveSpeedMPS(optimizedDesiredState.speedMetersPerSecond);
         io.setDesiredTurnAngle(optimizedDesiredState.angle.getRadians());
         m_desiredState = desiredState;

@@ -8,7 +8,6 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
-import frc.utils.MotorUtil;
 
 public class ShooterHardware implements ShooterIO {
 
