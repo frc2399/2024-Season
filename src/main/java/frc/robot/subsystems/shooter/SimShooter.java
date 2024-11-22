@@ -13,8 +13,6 @@ public class SimShooter implements ShooterIO {
     public SimShooter() {
         shooterEncoderSim = new SimEncoder("shooter");
         shooterMotorSim = new DCMotorSim(DCMotor.getNeo550(1), 1, 1);
-        SmartDashboard.putNumber("shooter current sim", 0);
-        SmartDashboard.putNumber("shooter sim velocity", 0);
     }
 
     public void setMotor(double speed) {
@@ -22,15 +20,15 @@ public class SimShooter implements ShooterIO {
     }
 
     public double getCurrent() {
-        return SmartDashboard.getNumber("shooter current sim", -100);
+        return SmartDashboard.getNumber("shooter/current sim (A)", -100);
     }
 
     public double getEncoderSpeed() {
-        return SmartDashboard.getNumber("shooter sim velocity", -100);
+        return SmartDashboard.getNumber("shooter/sim velocity", -100);
     }
 
     public void setCurrentLimit(int current) {
-        SmartDashboard.getNumber("shooter current sim", current);
+        SmartDashboard.getNumber("shooter/current limit sim (A)", current);
     }
 
     public void periodicUpdate() {

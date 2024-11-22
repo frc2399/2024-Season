@@ -111,10 +111,10 @@ public class DriveSubsystem extends SubsystemBase {
   public Rotation2d lastAngle = new Rotation2d();
 
   StructArrayPublisher<SwerveModuleState> swerveModuleStatePublisher = NetworkTableInstance.getDefault()
-      .getStructArrayTopic("/SmartDashboard/Swerve/Current Modules States", SwerveModuleState.struct).publish();
+      .getStructArrayTopic("/SmartDashboard/drive/actual modules states", SwerveModuleState.struct).publish();
 
   StructArrayPublisher<SwerveModuleState> swerveModuleDesiredStatePublisher = NetworkTableInstance.getDefault()
-      .getStructArrayTopic("/SmartDashboard/Swerve/Desired Modules States", SwerveModuleState.struct).publish();
+      .getStructArrayTopic("/SmartDashboard/drive/desired modules states", SwerveModuleState.struct).publish();
 
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem(SwerveModule frontLeft, SwerveModule frontRight, SwerveModule rearLeft,
@@ -173,8 +173,7 @@ public class DriveSubsystem extends SubsystemBase {
     // This will get the simulated sensor readings that we set
     // in the previous article while in simulation, but will use
     // real values on the robot itself.
-    SmartDashboard.putNumber("left front distance (meters)", frontLeft.getDriveEncoderPosition());
-    SmartDashboard.putNumber("drive/gyro angle(degrees)", Math.toDegrees(gyroIO.getYaw()));
+    SmartDashboard.putNumber("drive/gyro angle (deg)", Math.toDegrees(gyroIO.getYaw()));
     poseEstimator.updateWithTime(Timer.getFPGATimestamp(), Rotation2d.fromRadians(gyroIO.getYaw()),
         new SwerveModulePosition[] {
             frontLeft.getPosition(),
@@ -182,6 +181,8 @@ public class DriveSubsystem extends SubsystemBase {
             rearLeft.getPosition(),
             rearRight.getPosition()
         });
+
+    SmartDashboard.putNumber("left front distance (meters)", frontLeft.getDriveEncoderPosition());
 
     Pose2d pose = getPose();
 

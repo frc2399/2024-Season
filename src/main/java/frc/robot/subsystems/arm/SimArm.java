@@ -6,7 +6,6 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.BatterySim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
-import frc.robot.Constants.ArmConstants;
 import frc.utils.SimEncoder;
 
 public class SimArm implements ArmIO {
@@ -16,16 +15,22 @@ public class SimArm implements ArmIO {
     private double armPower;
     public static double speedFromArmHeight;
 
+    private static final double INITIAL_OFFSET = 0.274;
+    private static final double MAX_ARM_ANGLE = Math.PI / 4 * 3; // in radians
+    private static final double MIN_ARM_ANGLE = 0;
+    private static final double ARM_MASS = 2.72155; // in kg
+    public static final double ARM_LENGTH = 0.65; // in meters
+
     public SimArm() {
         armEncoderSim = new SimEncoder("Elevator");
         armSim = new SingleJointedArmSim(
                 DCMotor.getNEO(1), // 1 NEO motor on the climber
                 75,
-                SingleJointedArmSim.estimateMOI(ArmConstants.ARM_LENGTH, ArmConstants.ARM_MASS),
-                ArmConstants.ARM_LENGTH,
-                ArmConstants.MIN_ARM_ANGLE,
-                ArmConstants.MAX_ARM_ANGLE,
-                true, ArmConstants.INITIAL_OFFSET);
+                SingleJointedArmSim.estimateMOI(ARM_LENGTH, ARM_MASS),
+                ARM_LENGTH,
+                MIN_ARM_ANGLE,
+                MAX_ARM_ANGLE,
+                true, INITIAL_OFFSET);
     }
 
     @Override
@@ -34,7 +39,7 @@ public class SimArm implements ArmIO {
     }
 
     @Override
-    public double getEncoderSpeed() {
+    public double getEncoderVelocity() {
         return armEncoderSim.getSpeed();
     }
 
@@ -65,7 +70,6 @@ public class SimArm implements ArmIO {
 
     @Override
     public double getAbsoluteEncoderPosition() {
-        // TODO Auto-generated method stub
         return 0;
     }
 

@@ -5,7 +5,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 public interface ArmIO {
     public double getEncoderPosition();
 
-    public double getEncoderSpeed();
+    public double getEncoderVelocity();
 
     public void setSpeed(double speed);
 

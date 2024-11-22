@@ -9,7 +9,7 @@ import com.revrobotics.SparkPIDController;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
-import frc.robot.Constants.IndexerConstants; 
+import frc.robot.Constants.IndexerConstants;
 import frc.utils.MotorUtil;
 
 public class RealIndexer implements IndexerIO {
@@ -38,7 +38,6 @@ public class RealIndexer implements IndexerIO {
         indexerMotorController.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus6, 32767);
     }
 
-
     @Override
     public void setMotor(double indexerSpeed) {
         indexerMotorController.set(indexerSpeed);
@@ -65,8 +64,8 @@ public class RealIndexer implements IndexerIO {
 
     @Override
     public void periodicUpdate() {
-        SmartDashboard.putBoolean("indexer/isIntooked:", isIntooked);
-        SmartDashboard.putBoolean("indexer/getIsBeamBroken", getIsBeamBroken());
+        SmartDashboard.putBoolean("indexer/is intooked:", isIntooked);
+        SmartDashboard.putBoolean("indexer/is beam broken", getIsBeamBroken());
     }
 
     @Override
