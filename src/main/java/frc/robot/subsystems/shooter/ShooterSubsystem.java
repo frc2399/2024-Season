@@ -4,15 +4,17 @@
 
 package frc.robot.subsystems.shooter;
 
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class Shooter extends SubsystemBase {
+public class ShooterSubsystem extends SubsystemBase {
 
   private ShooterIO shooterIO;
   public static boolean isIntooked = false;
 
   /** Creates a new Intake. */
-  public Shooter(ShooterIO io) {
+  public ShooterSubsystem(ShooterIO io) {
     shooterIO = io;
   }
 
@@ -20,17 +22,14 @@ public class Shooter extends SubsystemBase {
     shooterIO.setMotor(shooterSpeed);
   }
 
-  public double getCurrent() {
-    return shooterIO.getCurrent();
-  }
-
-  // returns speed of the intake
   public double getEncoderSpeed() {
     return shooterIO.getEncoderSpeed();
   }
 
-  public void setCurrentLimit(int current) {
-    shooterIO.setCurrentLimit(current);
+  public Command shooterDefaultStopCommand() {
+    return new RunCommand(
+        () -> shooterIO.setMotor(0),
+        this);
   }
 
   @Override

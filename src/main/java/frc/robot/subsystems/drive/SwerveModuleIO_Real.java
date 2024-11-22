@@ -8,8 +8,6 @@ import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkAbsoluteEncoder.Type;
 
-import edu.wpi.first.math.kinematics.SwerveModulePosition;
-
 import com.revrobotics.SparkPIDController;
 
 import frc.robot.Constants;

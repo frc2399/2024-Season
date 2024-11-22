@@ -29,11 +29,8 @@ public class SimShooter implements ShooterIO {
         return SmartDashboard.getNumber("shooter sim velocity", -100);
     }
 
-    public void setCurrentLimit(int current) {
-        SmartDashboard.getNumber("shooter current sim", current);
-    }
-
     public void periodicUpdate() {
         SmartDashboard.putNumber("shooter/current (A)", getCurrent());
     }
+
 }

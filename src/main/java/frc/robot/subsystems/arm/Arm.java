@@ -108,13 +108,13 @@ public class Arm extends ProfiledPIDSubsystem {
   // Robotçontainer instead?
   public double getSpeedFromArmHeight() {
     if (getEncoderPosition() <= 0.37) {
-      speedFromArmHeight = Constants.ShooterConstants.SUBWOOFER_SPEED;
+      speedFromArmHeight = Constants.SpeedConstants.SUBWOOFER_SPEED;
     } else if (getEncoderPosition() > 0.37 & getEncoderPosition() <= 0.76) {
-      speedFromArmHeight = Constants.ShooterConstants.SPEAKER_SPEED;
+      speedFromArmHeight = Constants.SpeedConstants.SPEAKER_SPEED;
     } else if (getEncoderPosition() > 0.76 & getEncoderPosition() <= 1) {
-      speedFromArmHeight = Constants.ShooterConstants.FAR_AWAY_SPEED;
+      speedFromArmHeight = Constants.SpeedConstants.FAR_AWAY_SPEED;
     } else if (getEncoderPosition() > 1) {
-      speedFromArmHeight = Constants.ShooterConstants.AMP_SPEED;
+      speedFromArmHeight = Constants.SpeedConstants.AMP_SPEED;
     }
     return speedFromArmHeight;
   }

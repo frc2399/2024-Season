@@ -1,6 +1,5 @@
 package frc.robot.subsystems.climber;
 
-import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.REVLibError;
@@ -33,10 +32,10 @@ public class ClimberReal implements ClimberIO {
 
     public ClimberReal() {
 
-        //TODO no more PID
+        // TODO no more PID
         // initialize motor controllers
-        leftMotorController = MotorUtil.createSparkMAX(ClimberConstants.LEFT_CLIMBER_MOTOR_ID, MotorType.kBrushless, 
-        50,true,true, 0.0);
+        leftMotorController = MotorUtil.createSparkMAX(ClimberConstants.LEFT_CLIMBER_MOTOR_ID, MotorType.kBrushless,
+                50, true, true, 0.0);
         rightMotorController = MotorUtil.createSparkMAX(ClimberConstants.RIGHT_CLIMBER_MOTOR_ID, MotorType.kBrushless,
                 50, true, true, 0.0);
 
@@ -52,14 +51,14 @@ public class ClimberReal implements ClimberIO {
         leftEncoder.setPositionConversionFactor(Constants.ClimberConstants.ENCODER_METERS);
         rightEncoder.setPositionConversionFactor(Constants.ClimberConstants.ENCODER_METERS);
 
-        leftMotorController.setSoftLimit(SoftLimitDirection.kReverse, (float)(ClimberConstants.MIN_HEIGHT + .01));
+        leftMotorController.setSoftLimit(SoftLimitDirection.kReverse, (float) (ClimberConstants.MIN_HEIGHT + .01));
         leftMotorController.enableSoftLimit(SoftLimitDirection.kReverse, true);
-        rightMotorController.setSoftLimit(SoftLimitDirection.kReverse, (float)(ClimberConstants.MIN_HEIGHT + .01));
+        rightMotorController.setSoftLimit(SoftLimitDirection.kReverse, (float) (ClimberConstants.MIN_HEIGHT + .01));
         rightMotorController.enableSoftLimit(SoftLimitDirection.kReverse, true);
 
-        leftMotorController.setSoftLimit(SoftLimitDirection.kForward, (float)(ClimberConstants.MAX_HEIGHT - .01));
+        leftMotorController.setSoftLimit(SoftLimitDirection.kForward, (float) (ClimberConstants.MAX_HEIGHT - .01));
         leftMotorController.enableSoftLimit(SoftLimitDirection.kForward, true);
-        rightMotorController.setSoftLimit(SoftLimitDirection.kForward, (float)(ClimberConstants.MAX_HEIGHT - .01));
+        rightMotorController.setSoftLimit(SoftLimitDirection.kForward, (float) (ClimberConstants.MAX_HEIGHT - .01));
         rightMotorController.enableSoftLimit(SoftLimitDirection.kForward, true);
 
         // initialize motor pid controllers
@@ -79,7 +78,8 @@ public class ClimberReal implements ClimberIO {
         // rightPIDController.setD(CLIMBER_KD);
         // rightPIDController.setIZone(CLIMBER_KIZ);
         // rightPIDController.setFF(CLIMBER_KF);
-        // rightPIDController.setOutputRange(CLIMBER_K_MIN_OUTPUT, CLIMBER_K_MAX_OUTPUT);
+        // rightPIDController.setOutputRange(CLIMBER_K_MIN_OUTPUT,
+        // CLIMBER_K_MAX_OUTPUT);
 
         // invert the motor controllers so climber climbs right
         leftMotorController.setInverted(false);
@@ -89,10 +89,9 @@ public class ClimberReal implements ClimberIO {
         leftEncoder.setVelocityConversionFactor(Constants.ClimberConstants.ENCODER_VELOCITY_MPS);
         rightEncoder.setVelocityConversionFactor(Constants.ClimberConstants.ENCODER_VELOCITY_MPS);
 
-
         // reset encoders to zero
-        //leftEncoder.setPosition(0.0);
-        //rightEncoder.setPosition(0.0);
+        // leftEncoder.setPosition(0.0);
+        // rightEncoder.setPosition(0.0);
 
         if (leftEncoder.setPosition(0.0) != REVLibError.kOk) {
             System.out.println("****************left encoder set position is not successful");
@@ -124,11 +123,11 @@ public class ClimberReal implements ClimberIO {
     // left basic climbing with just speed
     public void setLeftSpeed(double speed) {
 
-
         SmartDashboard.putBoolean("climber/at bottom left", (isLeftRetracted() && speed < 0));
         SmartDashboard.putBoolean("climber/at top left", (isLeftExtended() && speed > 0));
         SmartDashboard.putBoolean("climber/left stalling", (isLeftSideStalling() && !isRightSideStalling()));
-        if ((isLeftRetracted() && speed < 0) || ((isLeftExtended() && speed > 0)) || (isLeftSideStalling() && !isRightSideStalling() && speed < 0)) {
+        if ((isLeftRetracted() && speed < 0) || ((isLeftExtended() && speed > 0))
+                || (isLeftSideStalling() && !isRightSideStalling() && speed < 0)) {
             leftMotorController.set(0);
         } else if (leftEncoder.getPosition() < 0.10 && speed < 0) {
             leftMotorController.set(-0.15);
@@ -138,11 +137,10 @@ public class ClimberReal implements ClimberIO {
 
     }
 
-    
-
     // right basic climbing with just speed
     public void setRightSpeed(double speed) {
-        if ((isRightRetracted() && speed < 0) || ((isRightExtended() && speed > 0)) || (isRightSideStalling() && !isLeftSideStalling() && speed < 0)) {
+        if ((isRightRetracted() && speed < 0) || ((isRightExtended() && speed > 0))
+                || (isRightSideStalling() && !isLeftSideStalling() && speed < 0)) {
             rightMotorController.set(0);
         } else if (rightEncoder.getPosition() < 0.10 && speed < 0) {
             rightMotorController.set(-0.15);
@@ -153,7 +151,6 @@ public class ClimberReal implements ClimberIO {
     }
 
     // right climing with setpoint
-    
 
     public boolean isLeftExtended() {
         return (leftEncoder.getPosition() > ClimberConstants.MAX_HEIGHT);
@@ -185,11 +182,13 @@ public class ClimberReal implements ClimberIO {
 
     // if the left side is stalling, tell climber to stop
     public boolean isLeftSideStalling() {
-        return leftDebouncer.calculate(Math.abs(leftMotorController.getOutputCurrent()) > ClimberConstants.CURRENT_THRESHOLD);
+        return leftDebouncer
+                .calculate(Math.abs(leftMotorController.getOutputCurrent()) > ClimberConstants.CURRENT_THRESHOLD);
     }
 
     // if the right side is stalling, tell climber to stop
     public boolean isRightSideStalling() {
-        return rightDebouncer.calculate(Math.abs(rightMotorController.getOutputCurrent()) > ClimberConstants.CURRENT_THRESHOLD);
+        return rightDebouncer
+                .calculate(Math.abs(rightMotorController.getOutputCurrent()) > ClimberConstants.CURRENT_THRESHOLD);
     }
 }
