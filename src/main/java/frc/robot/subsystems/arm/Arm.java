@@ -33,9 +33,9 @@ public class Arm extends ProfiledPIDSubsystem {
                                             // this number is just an estimate
   private static final Constraints velAndAccelConstraints = new Constraints(MAX_VEL, MAX_ACCEL);
   private static double GRAVITY_COMPENSATION = 0.025;
-  private static double FEED_FORWARD = 1 / MAX_VEL;
-  private static double ARM_P = 3.0;
-  private static double ARM_D = 0.01;
+  private static double FEED_FORWARD = 0;
+  private static double ARM_P = 1;
+  private static double ARM_D = 0;
   private static final double ANGLE_TOLERANCE_AUTON = Units.degreesToRadians(2);
 
   public Arm(ArmIO io) {
