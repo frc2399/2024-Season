@@ -246,9 +246,7 @@ public class RobotContainer {
                 // Turning is controlled by the X axis of the right stick.
                 robotDrive.setDefaultCommand(
                                 Commands.either(
-                                                // The left stick controls translation of the robot.
-                                                // Turning is controlled by the X axis of the right stick.
-                                                new RunCommand(
+                                                new InstantCommand(
                                                                 () -> robotDrive.drive(
                                                                                 -(MathUtil.applyDeadband(
                                                                                                 m_driverController
@@ -263,15 +261,16 @@ public class RobotContainer {
                                                                                                                 .getRightX(),
                                                                                                 OIConstants.kDriveDeadband)),
                                                                                 fieldOrientedDrive, false),
-                                                                robotDrive).withName("drive default"),
+                                                                robotDrive).withName("normal drive default"),
 
-                                                new RunCommand(
+                                                new InstantCommand(
                                                                 () -> robotDrive.drive(
-                                                                                0, 0, 0,
-
+                                                                                0.0,
+                                                                                0.0,
+                                                                                0.0,
                                                                                 fieldOrientedDrive, false),
-                                                                robotDrive).withName("drive default"),
-                                                OutreachToggle()))
+                                                                robotDrive).withName("no drive default"),
+                                                () -> m_operatorController.a().getAsBoolean()));
 
                 ;
         }
@@ -356,8 +355,8 @@ public class RobotContainer {
                                 .whileTrue(new RunCommand(() -> m_climber.setMotors(0.9), m_climber));
 
                 // operator a (climber mode): automatic climber down
-                m_operatorController.a().and(() -> isInClimberMode)
-                                .whileTrue(new RunCommand(() -> m_climber.setMotors(-0.9), m_climber));
+                // m_operatorController.a().and(() -> isInClimberMode)
+                // .whileTrue(new RunCommand(() -> m_climber.setMotors(-0.9), m_climber));
 
                 // operator x: switch operator controller modes
                 // m_operatorController.x().onTrue(new InstantCommand(() -> isInClimberMode =
@@ -376,7 +375,8 @@ public class RobotContainer {
                                                 new RunCommand(() -> m_indexer.setMotor(1), m_indexer)));
 
                 // operater a: arm to intake/subwoofer angle
-                m_operatorController.a().and(() -> !isInClimberMode).onTrue(makeSetPositionCommand(m_arm, 0.31));
+                // m_operatorController.a().and(() ->
+                // !isInClimberMode).onTrue(makeSetPositionCommand(m_arm, 0.31));
 
                 // operator b: arm to podium shot angle
                 m_operatorController.b().and(() -> !isInClimberMode).onTrue(makeSetPositionCommand(m_arm, 0.66));
